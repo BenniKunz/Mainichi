@@ -1,4 +1,4 @@
-package com.example.mainichi.ui.newsScreen
+package bknz.example.mainichi.ui.newsScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -26,7 +26,7 @@ fun NewsScreen(
 
         viewModel.effect.collect {
             when (it) {
-
+                NewsEffect.NavigateToHomeScreen -> TODO()
             }
         }
     }

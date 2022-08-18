@@ -1,4 +1,4 @@
-package com.example.mainichi.navigationDrawer
+package bknz.example.mainichi.navigationDrawer
 
 import android.content.res.Configuration
 import androidx.compose.material.*

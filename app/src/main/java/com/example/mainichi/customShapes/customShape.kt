@@ -1,4 +1,4 @@
-package com.example.mainichi.customShapes
+package bknz.example.mainichi.customShapes
 
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.Composable

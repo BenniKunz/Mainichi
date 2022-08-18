@@ -1,4 +1,4 @@
-package com.example.mainichi.ui.newsScreen
+package bknz.example.mainichi.ui.newsScreen
 
 import com.example.mainichi.helper.api.news.Article
 

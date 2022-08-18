@@ -1,4 +1,4 @@
-package com.example.mainichi.helper.db
+package bknz.example.mainichi.helper.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -46,31 +46,31 @@ data class DbAsset(
     var favorite: Boolean = false
 )
 
-fun DbAsset.toAPIAsset() = APIAsset(
-    ath = this.ath,
-    athChangePercentage = this.athChangePercentage,
-    athDate = this.athDate,
-    atl = this.atl,
-    atlChangePercentage = this.atlChangePercentage,
-    atlDate = this.atlDate,
-    circulatingSupply = this.circulatingSupply,
-    currentPrice = this.currentPrice,
-    fullyDilutedValuation = this.fullyDilutedValuation,
-    high24h = this.high24h,
-    id = this.id,
-    image = this.image,
-    lastUpdated = this.lastUpdated,
-    low24h = this.low24h,
-    marketCap = this.marketCap,
-    marketCapChange24h = this.marketCapChange24h,
-    marketCapChangePercentage24h = this.marketCapChangePercentage24h,
-    marketCapRank = this.marketCapRank, maxSupply = this.maxSupply,
-    name = this.name,
-    priceChange24h = this.priceChange24h,
-    priceChangePercentage24h = this.priceChangePercentage24h,
-    priceChangePercentage24hInCurrency = this.priceChangePercentage24hInCurrency,
-    roi = ROI(this.roiCurrency, this.roiPercentage, this.roiTimes),
-    symbol = this.symbol,
-    totalSupply = this.totalSupply,
-    totalVolume = this.totalVolume
-)
+//fun DbAsset.toAPIAsset() = APIAsset(
+//    ath = this.ath,
+//    athChangePercentage = this.athChangePercentage,
+//    athDate = this.athDate,
+//    atl = this.atl,
+//    atlChangePercentage = this.atlChangePercentage,
+//    atlDate = this.atlDate,
+//    circulatingSupply = this.circulatingSupply,
+//    currentPrice = this.currentPrice,
+//    fullyDilutedValuation = this.fullyDilutedValuation,
+//    high24h = this.high24h,
+//    id = this.id,
+//    image = this.image,
+//    lastUpdated = this.lastUpdated,
+//    low24h = this.low24h,
+//    marketCap = this.marketCap,
+//    marketCapChange24h = this.marketCapChange24h,
+//    marketCapChangePercentage24h = this.marketCapChangePercentage24h,
+//    marketCapRank = this.marketCapRank, maxSupply = this.maxSupply,
+//    name = this.name,
+//    priceChange24h = this.priceChange24h,
+//    priceChangePercentage24h = this.priceChangePercentage24h,
+//    priceChangePercentage24hInCurrency = this.priceChangePercentage24hInCurrency,
+//    roi = ROI(this.roiCurrency, this.roiPercentage, this.roiTimes),
+//    symbol = this.symbol,
+//    totalSupply = this.totalSupply,
+//    totalVolume = this.totalVolume
+//)

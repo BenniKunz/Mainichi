@@ -1,4 +1,4 @@
-package com.example.mainichi.ui.coinScreen
+package bknz.example.mainichi.ui.coinScreen
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -62,6 +62,7 @@ fun CoinScreen(
         is CoinUiState.ContentState -> CoinContent(
             coin = state.asset
         )
+        CoinUiState.ErrorState -> TODO()
     }
 }
 

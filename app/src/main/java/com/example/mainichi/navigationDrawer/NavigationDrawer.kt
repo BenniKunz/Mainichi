@@ -1,4 +1,4 @@
-package com.example.mainichi.navigationDrawer
+package bknz.example.mainichi.navigationDrawer
 
 import android.content.Context
 import android.content.SharedPreferences

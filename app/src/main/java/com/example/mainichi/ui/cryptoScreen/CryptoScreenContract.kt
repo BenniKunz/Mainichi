@@ -1,4 +1,4 @@
-package com.example.mainichi.ui.cryptoScreen
+package bknz.example.mainichi.ui.cryptoScreen
 
 import com.example.mainichi.ui.uiElements.Asset
 

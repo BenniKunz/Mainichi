@@ -1,4 +1,4 @@
-package com.example.mainichi.helper.api.news
+package bknz.example.mainichi.helper.api.news
 
 import retrofit2.http.GET
 

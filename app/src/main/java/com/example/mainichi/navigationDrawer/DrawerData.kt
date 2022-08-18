@@ -1,4 +1,4 @@
-package com.example.mainichi.navigationDrawer
+package bknz.example.mainichi.navigationDrawer
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
@@ -29,10 +29,5 @@ val appMenuData = mapOf(
         title = "News",
         description = "Go to the news screen",
         icon = Icons.Default.Create
-    ),
-    ScreenType.Sports to DrawerData(
-        title = "Sports",
-        description = "Go to the sports screen",
-        icon = Icons.Default.Favorite
-    ),
+    )
 )

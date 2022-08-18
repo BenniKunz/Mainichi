@@ -1,4 +1,4 @@
-package com.example.mainichi.helper
+package bknz.example.mainichi.helper
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

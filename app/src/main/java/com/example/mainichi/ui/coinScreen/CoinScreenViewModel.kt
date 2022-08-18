@@ -1,4 +1,4 @@
-package com.example.mainichi.ui.coinScreen
+package bknz.example.mainichi.ui.coinScreen
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

@@ -1,15 +1,22 @@
-package com.example.mainichi.helper.api.crypto
+package bknz.example.mainichi.helper.api.crypto
 
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-@JsonClass(generateAdapter = true)
+//@JsonClass(generateAdapter = true)
+//data class ROI(
+//    @Json(name = "currency")
+//    val currency: String,
+//    @Json(name = "percentage")
+//    val percentage: Double,
+//    @Json(name = "times")
+//    val times: Double
+//)
+
+@kotlinx.serialization.Serializable
 data class ROI(
-    @Json(name = "currency")
     val currency: String,
-    @Json(name = "percentage")
     val percentage: Double,
-    @Json(name = "times")
     val times: Double
 )

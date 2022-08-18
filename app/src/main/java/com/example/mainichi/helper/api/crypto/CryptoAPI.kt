@@ -1,4 +1,4 @@
-package com.example.mainichi.helper.api.crypto
+package bknz.example.mainichi.helper.api.crypto
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -20,9 +20,9 @@ public interface CryptoAPI {
 //        @Query("sparkline") sparkline: Boolean = false,
 //    ) : SingleAsset
 
-    @GET("api/v3/simple/price")
-    suspend fun getPriceForAsset(
-        @Query("ids") coin : String,
-        @Query("vs_currencies") curr : String = "eur"
-    ) : Map<String, PriceInfo>
+//    @GET("api/v3/simple/price")
+//    suspend fun getPriceForAsset(
+//        @Query("ids") coin : String,
+//        @Query("vs_currencies") curr : String = "eur"
+//    ) : Map<String, PriceInfo>
 }

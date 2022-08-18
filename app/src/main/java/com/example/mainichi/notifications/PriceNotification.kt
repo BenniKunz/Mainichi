@@ -1,4 +1,4 @@
-package com.example.mainichi.notifications
+package bknz.example.mainichi.notifications
 
 import android.app.NotificationChannel
 import android.app.NotificationManager

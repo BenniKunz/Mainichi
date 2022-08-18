@@ -1,4 +1,4 @@
-package com.example.mainichi.ui.appMenu
+package bknz.example.mainichi.ui.appMenu
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

@@ -1,4 +1,4 @@
-package com.example.mainichi.ui.cryptoScreen
+package bknz.example.mainichi.ui.cryptoScreen
 
 import android.util.Log
 import com.example.mainichi.helper.api.crypto.CryptoAPI
@@ -40,13 +40,13 @@ class AssetRepository @Inject constructor(
 //        )
 //    }
 
-    suspend fun getPriceForAsset(coin : String): Double {
-
-        return cryptoAPI.getPriceForAsset(
-            coin = coin,
-            curr = "eur").values.first().eur
-
-    }
+//    suspend fun getPriceForAsset(coin : String): Double {
+//
+//        return cryptoAPI.getPriceForAsset(
+//            coin = coin,
+//            curr = "eur").values.first().eur
+//
+//    }
 
     private suspend fun checkIfFavorite(name: String): Boolean {
 
