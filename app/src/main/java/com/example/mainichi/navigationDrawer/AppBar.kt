@@ -13,24 +13,40 @@ import com.example.mainichi.ui.theme.MainichiTheme
 
 @Composable
 fun MainichiAppBar(
-    onToggleDrawer: () -> Unit
+    isDetailScreen: Boolean,
+    onToggleDrawer: () -> Unit,
+    onNavigateUp: () -> Unit
 ) {
     TopAppBar(
         title = {
             Text(
                 text = stringResource(id = R.string.app_name),
-                color = MaterialTheme.colors.primary)
+                color = MaterialTheme.colors.primary
+            )
         },
         backgroundColor = MaterialTheme.colors.background,
         contentColor = MaterialTheme.colors.primary,
-        navigationIcon = {
-            IconButton(onClick = onToggleDrawer) {
+        navigationIcon =  if (!isDetailScreen) {
+            {
+                IconButton(onClick = onToggleDrawer) {
 
-                Icon(
-                   imageVector = Icons.Default.Menu,
-                   contentDescription = "Toggle Drawer",
-                    tint = MaterialTheme.colors.onBackground
-                )
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = "Open menu",
+                        tint = MaterialTheme.colors.onBackground
+                    )
+                }
+            }
+        } else {
+            {
+                IconButton(onClick = onNavigateUp) {
+
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colors.onBackground
+                    )
+                }
             }
         }
     )
@@ -41,7 +57,7 @@ fun MainichiAppBar(
 @Composable
 fun PreviewAppBar() {
     MainichiTheme() {
-        MainichiAppBar {
+        MainichiAppBar(isDetailScreen = false, {}) {
 
         }
     }

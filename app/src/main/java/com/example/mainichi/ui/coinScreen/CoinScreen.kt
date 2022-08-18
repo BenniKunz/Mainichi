@@ -6,10 +6,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mainichi.helper.ImageLoader
 import com.example.mainichi.helper.LoadingStateProgressIndicator
+import com.example.mainichi.ui.theme.MainichiTheme
 import com.example.mainichi.ui.uiElements.Asset
 
 @Composable
@@ -59,9 +59,10 @@ fun CoinScreen(
             color = MaterialTheme.colors.onBackground,
             size = 50
         )
-        is CoinUiState.ContentState -> CoinContent(
-            coin = state.asset
-        )
+        is CoinUiState.ContentState ->
+            CoinContent(
+                coin = state.asset
+            )
         CoinUiState.ErrorState -> TODO()
     }
 }
@@ -96,8 +97,14 @@ fun CoinContent(coin: Asset) {
                 color = MaterialTheme.colors.onBackground,
                 style = MaterialTheme.typography.h5,
                 modifier = Modifier
-                    .padding(start = 16.dp)
+                    .padding(start = 16.dp, end = 40.dp)
 //                    .background(gradientGreenRed)
+            )
+
+            Text(
+                text = "$ ${coin.currentPrice}",
+                color = MaterialTheme.colors.onBackground,
+                style = MaterialTheme.typography.h4,
             )
         }
 
@@ -105,17 +112,6 @@ fun CoinContent(coin: Asset) {
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
             color = MaterialTheme.colors.primaryVariant
         )
-
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = "$ ${coin.currentPrice}",
-                color = MaterialTheme.colors.onBackground,
-                style = MaterialTheme.typography.h5,
-                modifier = Modifier
-                    .padding(start = 16.dp)
-//                    .background(gradientGreenRed)
-            )
-        }
 
         var textState by remember { mutableStateOf("NOTHING") }
 
@@ -190,9 +186,9 @@ fun CoinDataCard(title: String, text: String, onStateChange: (String) -> Unit) {
             .clip(RoundedCornerShape(16.dp))
             .border(
                 2.dp, if (colorState) {
-                    MaterialTheme.colors.secondary
+                    MaterialTheme.colors.onPrimary
                 } else {
-                    MaterialTheme.colors.secondaryVariant
+                    MaterialTheme.colors.background
                 }, RoundedCornerShape(16.dp)
             )
             .clickable {
@@ -200,11 +196,8 @@ fun CoinDataCard(title: String, text: String, onStateChange: (String) -> Unit) {
                 onStateChange(title)
             },
         elevation = 16.dp,
-        backgroundColor = if (colorState) {
-            MaterialTheme.colors.onBackground
-        } else {
-            MaterialTheme.colors.background
-        }
+        backgroundColor = MaterialTheme.colors.background
+
     ) {
 
         Column(
@@ -214,13 +207,14 @@ fun CoinDataCard(title: String, text: String, onStateChange: (String) -> Unit) {
         ) {
             Text(
                 text = title,
-                color = MaterialTheme.colors.primaryVariant,
+                color = MaterialTheme.colors.onPrimary,
                 style = MaterialTheme.typography.caption,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             Text(
                 text = text,
-                style = MaterialTheme.typography.caption
+                style = MaterialTheme.typography.caption,
+                color = Color.White,
             )
         }
     }
@@ -231,10 +225,23 @@ fun CoinDataCard(title: String, text: String, onStateChange: (String) -> Unit) {
 @Composable
 fun PreviewCoinContent() {
 
-//    MainichiTheme() {
-//
-//        CoinContent(coin = fakeAPIAsset)
-//
-//    }
+    MainichiTheme() {
+
+        CoinContent(
+            coin = Asset(
+                name = "Bitcoin",
+                currentPrice = 20000.0,
+                image = "",
+                symbol = "BTC",
+                isFavorite = true,
+                high24h = 21000.5,
+                low24h = 19000.0,
+                marketCap = 3000000,
+                ath = 60000.0,
+                atl = 0.5
+            )
+        )
+
+    }
 }
 

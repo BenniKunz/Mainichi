@@ -9,6 +9,8 @@ import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,6 +75,7 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     val scaffoldState = rememberScaffoldState()
+                    var isDetailScreen by remember { mutableStateOf(false) }
                     val scope = rememberCoroutineScope()
                     val navController = rememberNavController()
 
@@ -80,9 +83,13 @@ class MainActivity : ComponentActivity() {
                         scaffoldState = scaffoldState,
                         topBar = {
                             MainichiAppBar(
+                                isDetailScreen = isDetailScreen,
                                 onToggleDrawer = {
                                     navController.navigate(route = "AppMenu")
-                                })
+                                },
+                                onNavigateUp = {
+                                    isDetailScreen = false
+                                    navController.navigateUp() })
                         },
 
                         ) { paddingValues ->
@@ -150,9 +157,9 @@ class MainActivity : ComponentActivity() {
                                 CryptoScreen(
                                     viewModel = hiltViewModel(),
                                     onNavigate = { effect ->
-                                        when(effect) {
+                                        when (effect) {
                                             is CryptoEffect.NavigateToCoinScreen -> {
-
+                                                isDetailScreen = true
                                                 navController.navigate(route = "coin/${effect.coin}")
                                             }
                                         }
