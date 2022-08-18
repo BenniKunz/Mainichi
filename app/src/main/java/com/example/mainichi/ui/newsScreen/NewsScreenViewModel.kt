@@ -2,25 +2,12 @@ package com.example.mainichi.ui.newsScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mainichi.APICrypto
-import com.example.mainichi.MainichiApplication
-import com.example.mainichi.helper.api.APIConstants
-import com.example.mainichi.helper.api.crypto.CryptoAPI
-import com.example.mainichi.helper.api.news.Article
 import com.example.mainichi.helper.api.news.NewsAPI
-import com.example.mainichi.helper.repository.ArticleRepository
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import dagger.Provides
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.create
 import javax.inject.Inject
-import javax.inject.Singleton
 
 @HiltViewModel
 class NewsScreenViewModel @Inject constructor(

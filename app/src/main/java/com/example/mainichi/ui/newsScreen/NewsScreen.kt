@@ -16,30 +16,27 @@ import kotlinx.coroutines.flow.collect
 @Composable
 fun NewsScreen(
     viewModel: NewsScreenViewModel,
-    navController: NavController,
+    onNavigate: (NewsEffect) -> Unit,
     paddingValues: PaddingValues
 ) {
 
     val state = viewModel.uiState.collectAsState().value
 
-    LaunchedEffect(key1 = viewModel, key2 = navController) {
+    LaunchedEffect(key1 = viewModel, key2 = onNavigate) {
 
         viewModel.effect.collect {
             when (it) {
-                is NewsEffect.NavigateToHomeScreen -> {
-                    navController.navigate(route = "Home")
-                }
+
             }
         }
     }
 
-    NewsScreen(state = state, navController = navController, paddingValues = paddingValues)
+    NewsScreen(state = state, paddingValues = paddingValues)
 }
 
 @Composable
 fun NewsScreen(
     state: NewsUiState,
-    navController: NavController,
     paddingValues: PaddingValues
 ) {
     when (state) {
@@ -50,7 +47,6 @@ fun NewsScreen(
         is NewsUiState.ContentState ->
             DisplayArticles(
                 articles = state.articles,
-                navController = navController,
                 paddingValues = paddingValues
             )
     }
@@ -59,7 +55,6 @@ fun NewsScreen(
 @Composable
 fun DisplayArticles(
     articles: List<Article>,
-    navController: NavController,
     paddingValues: PaddingValues
 ) {
 

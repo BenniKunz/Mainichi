@@ -1,6 +1,6 @@
 package com.example.mainichi.ui.coinScreen
 
-import com.example.mainichi.helper.api.crypto.APIAsset
+import com.example.mainichi.ui.uiElements.Asset
 
 sealed class CoinUiState {
 
@@ -9,7 +9,7 @@ sealed class CoinUiState {
     object ErrorState : CoinUiState()
 
     data class ContentState(
-        val coin: APIAsset
+        val asset: Asset
     ) : CoinUiState()
 }
 

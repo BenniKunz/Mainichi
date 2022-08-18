@@ -2,6 +2,7 @@ package com.example.mainichi.helper.api.crypto
 
 
 import com.example.mainichi.helper.db.DbAsset
+import com.example.mainichi.ui.uiElements.Asset
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -95,4 +96,17 @@ fun APIAsset.toDbAsset() = DbAsset(
     symbol = this.symbol,
     totalSupply = this.totalSupply,
     totalVolume = this.totalVolume
+)
+
+fun APIAsset.asAsset(isFavorite : Boolean = false) = Asset(
+    name = this.name,
+    currentPrice = this.currentPrice,
+    image = this.image,
+    symbol = this.symbol,
+    isFavorite = isFavorite,
+    high24h = this.high24h,
+    low24h = this.low24h,
+    marketCap = this.marketCap,
+    ath = this.ath,
+    atl = this.atl
 )

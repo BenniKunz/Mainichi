@@ -3,10 +3,8 @@ package com.example.mainichi.ui.coinScreen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mainichi.MainichiApplication
-import com.example.mainichi.helper.api.crypto.APIAsset
 import com.example.mainichi.helper.db.AppDatabase
-import com.example.mainichi.helper.db.toAPIAsset
+import com.example.mainichi.ui.cryptoScreen.AssetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -14,13 +12,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CoinScreenViewModel@Inject constructor(
+class CoinScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val database: AppDatabase
+    private val database: AppDatabase,
+    private val assetRepository: AssetRepository
 ) :
     ViewModel() {
 
-    private val handle : String? = savedStateHandle.get("coinID")
+    private val handle: String? = savedStateHandle.get("coinID")
 
     private val _uiState: MutableStateFlow<CoinUiState> = MutableStateFlow(CoinUiState.LoadingState)
     val uiState: StateFlow<CoinUiState> = _uiState.asStateFlow()
@@ -42,14 +41,16 @@ class CoinScreenViewModel@Inject constructor(
     init {
         viewModelScope.launch {
 
-            val asset = handle?.let { database.assetDao().getAsset(coin = it).toAPIAsset() }
+//            val price = handle?.let { assetRepository.getPriceForAsset(it)
+
+            val asset = assetRepository.getAsset(name = handle ?: "")
 
             _uiState.update {
 
                 when (asset) {
                     null -> CoinUiState.ErrorState
                     else -> CoinUiState.ContentState(
-                        coin = asset
+                        asset = asset
                     )
                 }
             }

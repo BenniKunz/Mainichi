@@ -1,12 +1,10 @@
-package com.example.mainichi.helper.repository
+package com.example.mainichi.ui.newsScreen
 
 import android.util.Log
-import androidx.compose.runtime.Composable
 import com.example.mainichi.helper.api.news.Article
 import com.example.mainichi.helper.api.news.NewsAPI
 import com.example.mainichi.helper.api.news.toDbArticle
 import com.example.mainichi.helper.db.AppDatabase
-import com.example.mainichi.helper.db.ArticleDao
 import com.example.mainichi.helper.db.toArticle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

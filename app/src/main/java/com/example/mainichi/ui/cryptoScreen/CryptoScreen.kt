@@ -1,6 +1,5 @@
 package com.example.mainichi.ui.cryptoScreen
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,42 +10,36 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.mainichi.helper.ImageLoader
 import com.example.mainichi.helper.LoadingStateProgressIndicator
-import com.example.mainichi.helper.api.crypto.APIAsset
-import com.example.mainichi.helper.fakeAPIAsset
-import com.example.mainichi.ui.theme.MainichiTheme
-import kotlinx.coroutines.flow.collect
+import com.example.mainichi.ui.cryptoScreen.CryptoUiState.*
+import com.example.mainichi.ui.uiElements.Asset
 
 @Composable
 fun CryptoScreen(
     viewModel: CryptoScreenViewModel,
-    navController: NavController,
+    onNavigate: (CryptoEffect) -> Unit,
     paddingValues: PaddingValues
 ) {
 
     val state = viewModel.uiState.collectAsState().value
 
-    LaunchedEffect(key1 = viewModel, key2 = navController) {
+    LaunchedEffect(key1 = viewModel, key2 = onNavigate) {
 
         viewModel.effect.collect {
             when (it) {
-                is CryptoEffect.NavigateToCoinScreen -> navController.navigate(route = "coin/${it.coin}")
+                is CryptoEffect.NavigateToCoinScreen -> onNavigate(it)
             }
         }
     }
 
     CryptoScreen(
         state = state,
-        navController = navController,
         paddingValues = paddingValues,
         onViewModelEvent = { event -> viewModel.setEvent(event) })
 }
@@ -54,16 +47,15 @@ fun CryptoScreen(
 @Composable
 fun CryptoScreen(
     state: CryptoUiState,
-    navController: NavController,
     paddingValues: PaddingValues,
     onViewModelEvent: (CryptoEvent) -> Unit
 ) {
     when (state) {
-        is CryptoUiState.LoadingState -> LoadingStateProgressIndicator(
+        is LoadingState -> LoadingStateProgressIndicator(
             color = MaterialTheme.colors.onBackground,
             size = 50
         )
-        is CryptoUiState.ContentState -> CryptoContent(
+        is ContentState -> CryptoContent(
             assets = state.assets,
             onViewModelEvent = onViewModelEvent
         )
@@ -72,14 +64,14 @@ fun CryptoScreen(
 
 @Composable
 fun CryptoContent(
-    assets: List<APIAsset>,
+    assets: List<Asset>,
     onViewModelEvent: (CryptoEvent) -> Unit,
 ) {
 
     Column(modifier = Modifier.fillMaxWidth()) {
 
         Row(modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.End) {
+            horizontalArrangement = Arrangement.End) {
 
             IconButton(onClick = { onViewModelEvent(CryptoEvent.UpdateRequested) }) {
 
@@ -122,7 +114,7 @@ fun CryptoContent(
 
 @Composable
 fun AllAssets(
-    assets: List<APIAsset>,
+    assets: List<Asset>,
     onViewModelEvent: (CryptoEvent) -> Unit
 ) {
 
@@ -130,7 +122,7 @@ fun AllAssets(
 
         Card(
             modifier = Modifier.clickable {
-                onViewModelEvent(CryptoEvent.CoinClicked(coin = coin.name))
+                onViewModelEvent(CryptoEvent.CoinClicked(coin.name))
             },
             elevation = 10.dp
         ) {
@@ -215,7 +207,7 @@ fun AllAssets(
                         onViewModelEvent(
                             CryptoEvent.FavoriteClicked(
                                 coin.name,
-                                clicked = !coin.favorite
+                                setFavorite = !coin.isFavorite
                             )
                         )
                     }) {
@@ -223,7 +215,7 @@ fun AllAssets(
                             Icons.Filled.Favorite,
                             contentDescription = "Favorite",
                             tint = when {
-                                coin.favorite -> {
+                                coin.isFavorite -> {
                                     MaterialTheme.colors.primary
                                 }
                                 else -> {
@@ -240,7 +232,7 @@ fun AllAssets(
 }
 
 @Composable
-fun CryptoNews(assets: List<APIAsset>) {
+fun CryptoNews(assets: List<Asset>) {
 
     LazyRow(
         modifier = Modifier
@@ -269,7 +261,7 @@ fun CryptoNews(assets: List<APIAsset>) {
 @Composable
 fun CryptoRow(
     topic: String,
-    assets: List<APIAsset>,
+    assets: List<Asset>,
     onViewModelEvent: (CryptoEvent) -> Unit
 ) {
 
@@ -303,7 +295,7 @@ fun CryptoRow(
 
         assets.forEach { coin ->
 
-            if (coin.favorite) {
+            if (coin.isFavorite) {
                 item {
 
                     CryptoItem(
@@ -319,7 +311,7 @@ fun CryptoRow(
 
 @Composable
 fun CryptoItem(
-    coin: APIAsset,
+    coin: Asset,
     url: String?,
     onViewModelEvent: (CryptoEvent) -> Unit
 ) {
@@ -380,25 +372,25 @@ fun CryptoItem(
     }
 }
 
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun PreviewCryptoRow() {
-    MainichiTheme() {
-        CryptoItem(coin = fakeAPIAsset, url = "", onViewModelEvent = {})
-    }
-}
-
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun PreviewCryptoMain() {
-    MainichiTheme(
-    ) {
-
-        AllAssets(
-            assets = listOf(fakeAPIAsset),
-            onViewModelEvent = {}
-        )
-    }
-}
+//@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
+//@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+//@Composable
+//fun PreviewCryptoRow() {
+//    MainichiTheme() {
+//        CryptoItem(coin = fakeAPIAsset, url = "", onViewModelEvent = {})
+//    }
+//}
+//
+//@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
+//@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+//@Composable
+//fun PreviewCryptoMain() {
+//    MainichiTheme(
+//    ) {
+//
+//        AllAssets(
+//            assets = listOf(fakeAPIAsset),
+//            onViewModelEvent = {}
+//        )
+//    }
+//}
