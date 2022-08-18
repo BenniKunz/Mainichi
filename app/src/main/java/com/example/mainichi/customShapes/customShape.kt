@@ -1,4 +1,4 @@
-package bknz.example.mainichi.customShapes
+package com.example.mainichi.customShapes
 
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.Composable
@@ -11,8 +11,6 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
-import coil.ImageLoader
-import com.example.mainichi.helper.ImageLoader
 
 class CustomShape(private val cornerRadius: Float): Shape {
 

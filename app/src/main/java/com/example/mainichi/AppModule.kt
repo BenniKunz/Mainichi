@@ -1,4 +1,4 @@
-package bknz.example.mainichi
+package com.example.mainichi
 
 import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -9,8 +9,6 @@ import com.example.mainichi.helper.api.APIConstants
 import com.example.mainichi.helper.api.crypto.CryptoAPI
 import com.example.mainichi.helper.api.news.NewsAPI
 import com.example.mainichi.helper.db.AppDatabase
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +20,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 import javax.inject.Qualifier
 import javax.inject.Singleton

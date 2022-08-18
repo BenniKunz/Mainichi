@@ -1,4 +1,4 @@
-package bknz.example.mainichi.helper.api.crypto
+package com.example.mainichi.helper.api.crypto
 
 
 import com.squareup.moshi.Json

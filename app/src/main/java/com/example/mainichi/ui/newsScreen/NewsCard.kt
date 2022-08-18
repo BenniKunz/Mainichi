@@ -1,4 +1,4 @@
-package bknz.example.mainichi.ui.newsScreen
+package com.example.mainichi.ui.newsScreen
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background

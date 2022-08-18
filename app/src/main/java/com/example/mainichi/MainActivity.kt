@@ -1,4 +1,4 @@
-package bknz.example.mainichi
+package com.example.mainichi
 
 import android.content.Context
 import android.os.Build

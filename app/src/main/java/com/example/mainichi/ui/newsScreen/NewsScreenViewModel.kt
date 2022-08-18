@@ -1,4 +1,4 @@
-package bknz.example.mainichi.ui.newsScreen
+package com.example.mainichi.ui.newsScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,7 +1,6 @@
-package bknz.example.mainichi.helper.api.crypto
+package com.example.mainichi.helper.api.crypto
+import com.example.mainichi.helper.api.crypto.APIAsset
 import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
 
 public interface CryptoAPI {
 

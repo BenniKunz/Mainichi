@@ -1,4 +1,4 @@
-package bknz.example.mainichi
+package com.example.mainichi
 
 import android.app.Application
 import androidx.room.Room

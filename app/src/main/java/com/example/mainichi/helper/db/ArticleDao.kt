@@ -1,4 +1,4 @@
-package bknz.example.mainichi.helper.db
+package com.example.mainichi.helper.db
 
 import androidx.paging.PagingSource
 import androidx.room.Dao

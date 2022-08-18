@@ -1,4 +1,4 @@
-package bknz.example.mainichi.ui.coinScreen
+package com.example.mainichi.ui.coinScreen
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background

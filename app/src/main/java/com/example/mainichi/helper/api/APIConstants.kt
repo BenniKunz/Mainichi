@@ -1,4 +1,4 @@
-package bknz.example.mainichi.helper.api
+package com.example.mainichi.helper.api
 
 object APIConstants {
 

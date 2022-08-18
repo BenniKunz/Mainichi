@@ -1,4 +1,4 @@
-package bknz.example.mainichi.helper.api.crypto
+package com.example.mainichi.helper.api.crypto
 
 import okhttp3.Interceptor
 import okhttp3.Request

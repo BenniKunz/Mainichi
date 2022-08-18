@@ -1,4 +1,4 @@
-package bknz.example.mainichi.ui.coinScreen
+package com.example.mainichi.ui.coinScreen
 
 import com.example.mainichi.ui.uiElements.Asset
 

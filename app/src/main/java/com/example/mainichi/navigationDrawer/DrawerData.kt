@@ -1,4 +1,4 @@
-package bknz.example.mainichi.navigationDrawer
+package com.example.mainichi.navigationDrawer
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create

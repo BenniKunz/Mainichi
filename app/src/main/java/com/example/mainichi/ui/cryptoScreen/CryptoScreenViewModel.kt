@@ -1,4 +1,4 @@
-package bknz.example.mainichi.ui.cryptoScreen
+package com.example.mainichi.ui.cryptoScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

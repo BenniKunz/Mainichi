@@ -1,4 +1,4 @@
-package bknz.example.mainichi.ui.splashScreen
+package com.example.mainichi.ui.splashScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

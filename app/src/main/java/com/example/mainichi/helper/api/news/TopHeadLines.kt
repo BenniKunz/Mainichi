@@ -1,4 +1,6 @@
-package bknz.example.mainichi.helper.api.news
+package com.example.mainichi.helper.api.news
+
+import com.example.mainichi.helper.api.news.Article
 
 @kotlinx.serialization.Serializable
 data class TopHeadlines(

@@ -1,4 +1,4 @@
-package bknz.example.mainichi.ui.cryptoScreen
+package com.example.mainichi.ui.cryptoScreen
 
 import android.util.Log
 import com.example.mainichi.helper.api.crypto.CryptoAPI
