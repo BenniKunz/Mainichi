@@ -1,4 +1,4 @@
-package com.example.mainichi.ui.uiElements
+package com.example.mainichi.ui.entities
 
 data class Asset(
     val name : String,

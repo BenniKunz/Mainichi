@@ -1,5 +1,6 @@
 package com.example.mainichi.ui.cryptoScreen
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,15 +11,20 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mainichi.helper.ImageLoader
 import com.example.mainichi.helper.LoadingStateProgressIndicator
+import com.example.mainichi.helper.fakeAssets
 import com.example.mainichi.ui.cryptoScreen.CryptoUiState.*
-import com.example.mainichi.ui.uiElements.Asset
+import com.example.mainichi.ui.entities.Asset
+import com.example.mainichi.ui.theme.MainichiTheme
 
 @Composable
 fun CryptoScreen(
@@ -46,17 +52,18 @@ fun CryptoScreen(
 
 @Composable
 fun CryptoScreen(
-    state: CryptoUiState,
+    state: UiState,
     paddingValues: PaddingValues,
     onViewModelEvent: (CryptoEvent) -> Unit
 ) {
-    when (state) {
-        is LoadingState -> LoadingStateProgressIndicator(
+    when (state.isLoading) {
+         true -> LoadingStateProgressIndicator(
             color = MaterialTheme.colors.onBackground,
             size = 50
         )
-        is ContentState -> CryptoContent(
+        false -> CryptoContent(
             assets = state.assets,
+            filteredAssets = state.filteredAssets,
             onViewModelEvent = onViewModelEvent
         )
     }
@@ -65,20 +72,33 @@ fun CryptoScreen(
 @Composable
 fun CryptoContent(
     assets: List<Asset>,
+    filteredAssets: List<Asset>,
     onViewModelEvent: (CryptoEvent) -> Unit,
 ) {
 
     Column(modifier = Modifier.fillMaxWidth()) {
 
+//        Row(modifier = Modifier.fillMaxWidth(),
+//            horizontalArrangement = Arrangement.End) {
+//
+//            IconButton(onClick = { onViewModelEvent(CryptoEvent.UpdateRequested) }) {
+//
+//                Icon(
+//                    imageVector = Icons.Default.Create,
+//                    contentDescription = "Update page")
+//            }
+//        }
+
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End) {
 
-            IconButton(onClick = { onViewModelEvent(CryptoEvent.UpdateRequested) }) {
+            var text by remember { mutableStateOf("") }
 
-                Icon(
-                    imageVector = Icons.Default.Create,
-                    contentDescription = "Update page")
-            }
+            SearchBar(
+                text = text,
+                onFilterChanged = onViewModelEvent,
+                onTextChanged = { newText -> text = newText}
+            )
         }
 
         LazyColumn(
@@ -87,24 +107,27 @@ fun CryptoContent(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
 
-            item {
-                CryptoNews(
-                    assets = assets
-                )
-            }
+            if(filteredAssets.isEmpty()) {
+                item {
+                    CryptoNews(
+                        assets = assets
+                    )
+                }
 
-            item {
+                item {
 
-                CryptoRow(
-                    topic = "Your favorites",
-                    assets = assets,
-                    onViewModelEvent = onViewModelEvent
-                )
+                    FavoritesRow(
+                        topic = "Your favorites",
+                        assets = assets,
+                        onViewModelEvent = onViewModelEvent
+                    )
+                }
             }
 
             item {
                 AllAssets(
                     assets = assets,
+                    filteredAssets = filteredAssets,
                     onViewModelEvent = onViewModelEvent
                 )
             }
@@ -113,122 +136,168 @@ fun CryptoContent(
 }
 
 @Composable
+fun SearchBar(
+    text: String,
+    onFilterChanged: (CryptoEvent.FilterChanged) -> Unit,
+    onTextChanged: (String) -> Unit
+) {
+
+    TextField(
+        value = text,
+        onValueChange = { value ->
+            onFilterChanged(CryptoEvent.FilterChanged(value))
+            onTextChanged(value)
+        },
+        modifier = Modifier.fillMaxWidth(),
+        textStyle = TextStyle(color = MaterialTheme.colors.secondary),
+        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+        singleLine = true,
+        colors = TextFieldDefaults.textFieldColors(
+            textColor = MaterialTheme.colors.onBackground,
+            cursorColor = MaterialTheme.colors.primary,
+            leadingIconColor = if (text.isBlank()) {
+                MaterialTheme.colors.primaryVariant
+            } else {
+                MaterialTheme.colors.primary
+            },
+        )
+    )
+}
+
+@Composable
 fun AllAssets(
     assets: List<Asset>,
+    filteredAssets: List<Asset>,
     onViewModelEvent: (CryptoEvent) -> Unit
 ) {
 
-    assets.forEachIndexed { index, coin ->
+    if(filteredAssets.isNotEmpty()) {
+        filteredAssets.forEachIndexed { index, coin ->
 
-        Card(
-            modifier = Modifier.clickable {
-                onViewModelEvent(CryptoEvent.CoinClicked(coin.name))
-            },
-            elevation = 10.dp
+            AssetRow(onViewModelEvent, coin, index)
+        }
+    } else {
+        assets.forEachIndexed { index, coin ->
+
+            AssetRow(onViewModelEvent, coin, index)
+        }
+    }
+    Spacer(modifier = Modifier.height(10.dp))
+}
+
+@Composable
+private fun AssetRow(
+    onViewModelEvent: (CryptoEvent) -> Unit,
+    coin: Asset,
+    index: Int
+) {
+    Card(
+        modifier = Modifier.clickable {
+            onViewModelEvent(CryptoEvent.CoinClicked(coin.name))
+        },
+        elevation = 10.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .background(color = MaterialTheme.colors.background)
+                .height(100.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
+
         ) {
-            Row(
-                modifier = Modifier
-                    .background(color = MaterialTheme.colors.background)
-                    .height(100.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly
 
+            Column(
+                modifier = Modifier
+                    .weight(0.1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = (index + 1).toString(),
+                    style = MaterialTheme.typography.h5,
+                    color = MaterialTheme.colors.primaryVariant
+                )
+
+                Text(
+                    text = coin.symbol.uppercase(),
+                    style = MaterialTheme.typography.h5,
+                    color = MaterialTheme.colors.onBackground,
+                    modifier = Modifier.padding(top = 10.dp)
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(0.2f)
+                    .size(40.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                val url = coin.image
+
+                ImageLoader(
+                    data = when (url) {
+                        null -> ""
+                        else -> {
+                            url
+                        }
+                    }
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(0.2f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = coin.name,
+                    style = MaterialTheme.typography.h5,
+                    color = MaterialTheme.colors.onBackground
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(0.2f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = String.format("%.2f", coin.currentPrice) + " $",
+                    style = MaterialTheme.typography.h5,
+                    color = MaterialTheme.colors.onBackground
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(0.2f),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Column(
-                    modifier = Modifier
-                        .weight(0.1f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = (index + 1).toString(),
-                        style = MaterialTheme.typography.h5,
-                        color = MaterialTheme.colors.primaryVariant
+                IconButton(onClick = {
+                    onViewModelEvent(
+                        CryptoEvent.FavoriteClicked(
+                            coin.name,
+                            setFavorite = !coin.isFavorite
+                        )
                     )
-
-                    Text(
-                        text = coin.symbol.uppercase(),
-                        style = MaterialTheme.typography.h5,
-                        color = MaterialTheme.colors.onBackground,
-                        modifier = Modifier.padding(top = 10.dp)
-                    )
-                }
-
-                Column(
-                    modifier = Modifier
-                        .weight(0.2f)
-                        .size(40.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    val url = coin.image
-
-                    ImageLoader(
-                        data = when (url) {
-                            null -> ""
+                }) {
+                    Icon(
+                        Icons.Filled.Favorite,
+                        contentDescription = "Favorite",
+                        tint = when {
+                            coin.isFavorite -> {
+                                MaterialTheme.colors.primary
+                            }
                             else -> {
-                                url
+                                MaterialTheme.colors.onBackground
                             }
                         }
                     )
                 }
-
-                Column(
-                    modifier = Modifier
-                        .weight(0.2f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = coin.name,
-                        style = MaterialTheme.typography.h5,
-                        color = MaterialTheme.colors.onBackground
-                    )
-                }
-
-                Column(
-                    modifier = Modifier
-                        .weight(0.2f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = String.format("%.2f", coin.currentPrice) + " $",
-                        style = MaterialTheme.typography.h5,
-                        color = MaterialTheme.colors.onBackground
-                    )
-                }
-
-                Column(
-                    modifier = Modifier
-                        .weight(0.2f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    IconButton(onClick = {
-                        onViewModelEvent(
-                            CryptoEvent.FavoriteClicked(
-                                coin.name,
-                                setFavorite = !coin.isFavorite
-                            )
-                        )
-                    }) {
-                        Icon(
-                            Icons.Filled.Favorite,
-                            contentDescription = "Favorite",
-                            tint = when {
-                                coin.isFavorite -> {
-                                    MaterialTheme.colors.primary
-                                }
-                                else -> {
-                                    MaterialTheme.colors.onBackground
-                                }
-                            }
-                        )
-                    }
-                }
             }
         }
     }
-    Spacer(modifier = Modifier.height(10.dp))
 }
 
 @Composable
@@ -245,13 +314,15 @@ fun CryptoNews(assets: List<Asset>) {
         assets.forEach { coin ->
 
             item {
+
                 Box(
                     modifier = Modifier
-                        .size(280.dp, 200.dp)
-                        .padding(10.dp)
+                        .clip(shape = RoundedCornerShape(16.dp))
+                        .size(120.dp, 120.dp)
                         .background(MaterialTheme.colors.primaryVariant)
+
                 ) {
-                    Text(coin.name)
+                    Text(coin.name + " News")
                 }
             }
         }
@@ -259,7 +330,7 @@ fun CryptoNews(assets: List<Asset>) {
 }
 
 @Composable
-fun CryptoRow(
+fun FavoritesRow(
     topic: String,
     assets: List<Asset>,
     onViewModelEvent: (CryptoEvent) -> Unit
@@ -276,7 +347,7 @@ fun CryptoRow(
             color = MaterialTheme.colors.onBackground
         )
 
-        IconButton(onClick = { }) {
+        IconButton(onClick = { onViewModelEvent(CryptoEvent.UpdateRequested)}) {
             Icon(
                 Icons.Filled.Favorite,
                 contentDescription = "Favorite",
@@ -372,25 +443,40 @@ fun CryptoItem(
     }
 }
 
-//@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
-//@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-//@Composable
-//fun PreviewCryptoRow() {
-//    MainichiTheme() {
-//        CryptoItem(coin = fakeAPIAsset, url = "", onViewModelEvent = {})
-//    }
-//}
-//
-//@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
-//@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-//@Composable
-//fun PreviewCryptoMain() {
-//    MainichiTheme(
-//    ) {
-//
-//        AllAssets(
-//            assets = listOf(fakeAPIAsset),
-//            onViewModelEvent = {}
-//        )
-//    }
-//}
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewCryptoRow() {
+    MainichiTheme() {
+        CryptoItem(coin = fakeAssets.first(), url = "", onViewModelEvent = {})
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewCryptoMain() {
+    MainichiTheme(
+    ) {
+
+        AllAssets(
+            assets = fakeAssets,
+            filteredAssets = emptyList(),
+            onViewModelEvent = {}
+        )
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewSearchBar() {
+    MainichiTheme(
+    ) {
+       SearchBar(
+           text = "Bitfgc",
+           onFilterChanged = { /*TODO*/ },
+           onTextChanged = {}
+       )
+    }
+}

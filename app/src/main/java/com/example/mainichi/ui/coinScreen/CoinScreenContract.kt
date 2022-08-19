@@ -1,6 +1,6 @@
 package com.example.mainichi.ui.coinScreen
 
-import com.example.mainichi.ui.uiElements.Asset
+import com.example.mainichi.ui.entities.Asset
 
 sealed class CoinUiState {
 

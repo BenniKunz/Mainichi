@@ -1,13 +1,13 @@
 package com.example.mainichi.ui.cryptoScreen
 
-import com.example.mainichi.ui.uiElements.Asset
+import com.example.mainichi.ui.entities.Asset
 
 sealed class CryptoUiState {
 
-    object LoadingState : CryptoUiState()
-
-    data class ContentState(
-        val assets: List<Asset>
+    data class UiState(
+        val isLoading: Boolean,
+        val assets: List<Asset> = emptyList(),
+        val filteredAssets: List<Asset> = emptyList()
     ) : CryptoUiState() {
     }
 }
@@ -16,6 +16,7 @@ sealed class CryptoEvent {
 
     data class FavoriteClicked(val coin: String, val setFavorite: Boolean) : CryptoEvent()
     data class CoinClicked(val coin: String) : CryptoEvent()
+    data class FilterChanged(val text: String) : CryptoEvent()
     object UpdateRequested : CryptoEvent()
 
 }

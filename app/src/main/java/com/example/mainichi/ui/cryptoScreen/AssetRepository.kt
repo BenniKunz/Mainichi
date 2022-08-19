@@ -1,15 +1,13 @@
 package com.example.mainichi.ui.cryptoScreen
 
-import android.util.Log
 import com.example.mainichi.helper.api.crypto.CryptoAPI
 import com.example.mainichi.helper.api.crypto.asAsset
 import com.example.mainichi.helper.db.AppDatabase
 import com.example.mainichi.helper.db.DbFavoriteAsset
-import com.example.mainichi.ui.uiElements.Asset
+import com.example.mainichi.ui.entities.Asset
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.internal.wait
 import javax.inject.Inject
 import javax.inject.Singleton
 

@@ -2,10 +2,12 @@ package com.example.mainichi.ui.cryptoScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mainichi.ui.entities.Asset
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -13,9 +15,9 @@ class CryptoScreenViewModel @Inject constructor(
     private val assetRepo: AssetRepository,
 ) : ViewModel() {
 
-    private val _uiState: MutableStateFlow<CryptoUiState> =
-        MutableStateFlow(CryptoUiState.LoadingState)
-    val uiState: StateFlow<CryptoUiState> = _uiState.asStateFlow()
+    private val _uiState: MutableStateFlow<CryptoUiState.UiState> =
+        MutableStateFlow(CryptoUiState.UiState(isLoading = true))
+    val uiState: StateFlow<CryptoUiState.UiState> = _uiState.asStateFlow()
 
     private val _event: MutableSharedFlow<CryptoEvent> = MutableSharedFlow()
 
@@ -37,10 +39,12 @@ class CryptoScreenViewModel @Inject constructor(
 
             _uiState.update {
 
-                CryptoUiState.ContentState(
+                CryptoUiState.UiState(
+                    isLoading = false,
                     assets = assetRepo.changeFavorites(
                         coin = coin,
-                        clicked = clicked)
+                        clicked = clicked
+                    )
                 )
             }
         }
@@ -55,20 +59,55 @@ class CryptoScreenViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            _event.collect { event ->
+            handleEvents()
+        }
+    }
 
-                when (event) {
-                    is CryptoEvent.FavoriteClicked -> changeFavorites(
-                        coin = event.coin,
-                        clicked = event.setFavorite
-                    )
-                    is CryptoEvent.CoinClicked -> setEffect { CryptoEffect.NavigateToCoinScreen(coin = event.coin) }
+    private suspend fun handleEvents() {
+        _event.collect { event ->
 
-                    is CryptoEvent.UpdateRequested -> {
+            when (event) {
+                is CryptoEvent.FavoriteClicked -> changeFavorites(
+                    coin = event.coin,
+                    clicked = event.setFavorite
+                )
+                is CryptoEvent.CoinClicked -> setEffect { CryptoEffect.NavigateToCoinScreen(coin = event.coin) }
 
-//                        _uiState.update { CryptoUiState.LoadingState }
+                is CryptoEvent.UpdateRequested -> {
 
-                        loadData()
+                    loadData()
+                }
+                is CryptoEvent.FilterChanged -> {
+
+                    if (event.text.isNotBlank()) {
+
+                        _uiState.update { uiState ->
+
+                            val filteredAssets = mutableListOf<Asset>()
+                            for (asset in uiState.assets) {
+                                if (asset.name.lowercase(Locale.getDefault())
+                                        .contains(event.text.lowercase(Locale.getDefault()))
+                                ) {
+                                    filteredAssets.add(asset)
+                                }
+                            }
+
+                            CryptoUiState.UiState(
+                                isLoading = false,
+                                assets = uiState.assets,
+                                filteredAssets = filteredAssets
+                            )
+                        }
+                    } else {
+
+                        _uiState.update { uiState ->
+
+                            CryptoUiState.UiState(
+                                isLoading = false,
+                                assets = uiState.assets,
+                                filteredAssets = emptyList()
+                            )
+                        }
                     }
                 }
             }
@@ -76,8 +115,10 @@ class CryptoScreenViewModel @Inject constructor(
     }
 
     private suspend fun loadData() {
+
         _uiState.update {
-            CryptoUiState.ContentState(
+            CryptoUiState.UiState(
+                isLoading = false,
                 assets = assetRepo.getAssets()
             )
         }

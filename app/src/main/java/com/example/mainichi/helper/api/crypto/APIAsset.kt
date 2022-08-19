@@ -1,5 +1,5 @@
 package com.example.mainichi.helper.api.crypto
-import com.example.mainichi.ui.uiElements.Asset
+import com.example.mainichi.ui.entities.Asset
 
 
 @kotlinx.serialization.Serializable
