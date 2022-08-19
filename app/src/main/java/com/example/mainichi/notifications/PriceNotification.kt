@@ -34,8 +34,8 @@ class PriceNotification(
 
         val builder = NotificationCompat.Builder(context, "price_channel")
             .setSmallIcon(R.drawable.notification_bg)
-            .setContentText("Test...")
-            .setContentTitle("Test title")
+            .setContentText("Bitcoin is down 10% in the last 24h")
+            .setContentTitle("Price Change Alert")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
 
         with(NotificationManagerCompat.from(context)) {

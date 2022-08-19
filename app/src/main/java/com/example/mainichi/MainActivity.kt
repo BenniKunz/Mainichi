@@ -9,8 +9,6 @@ import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,14 +23,16 @@ import com.example.mainichi.ui.cryptoScreen.CryptoScreen
 import com.example.mainichi.ui.theme.MainichiTheme
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
-import com.example.mainichi.helper.worker.TestWorker
+import androidx.work.*
+import com.example.mainichi.helper.worker.PriceChangeWorker
 import com.example.mainichi.navigationDrawer.*
 import com.example.mainichi.ui.appMenu.AppMenu
 import com.example.mainichi.ui.coinScreen.CoinScreen
 import com.example.mainichi.ui.cryptoScreen.CryptoEffect
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.Duration
+import java.time.LocalDateTime
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
@@ -42,12 +42,20 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val request = PeriodicWorkRequestBuilder<TestWorker>(
-            repeatInterval = 5,
-            repeatIntervalTimeUnit = TimeUnit.SECONDS
-        ).build()
+        val priceChangeWorker = initializeDelayedPeriodicWorker<PriceChangeWorker>(
+            workerStartingDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK),
+            workerStartingHour = 12L,
+            workerStartingMinute = 52L,
+            tag = "Price_Change",
+            repeatInterval = 6,
+            repeatIntervalTimeUnit = TimeUnit.HOURS
+        )
 
-        val workManager = WorkManager.getInstance(applicationContext).enqueue(request)
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            "Price_Change",
+            ExistingPeriodicWorkPolicy.REPLACE,
+            priceChangeWorker
+        )
 
         setContent {
 
@@ -64,8 +72,6 @@ class MainActivity : ComponentActivity() {
             val editor = sharedPref.edit()
             editor.putBoolean("isDarkMode", isDarkMode)
             editor.apply()
-
-            Log.d("Shared Preferences: ", sharedPref.getBoolean("isDarkMode", false).toString())
 
             MainichiTheme(isDarkMode) {
                 // A surface container using the 'background' color from the theme
@@ -178,7 +184,6 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 CoinScreen(
                                     viewModel = hiltViewModel(),
-                                    navController = navController,
                                     paddingValues = paddingValues
                                 )
                             }
@@ -188,6 +193,80 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+private inline fun <reified T : CoroutineWorker> initializeDelayedPeriodicWorker(
+    workerStartingHour: Long,
+    workerStartingMinute: Long,
+    workerStartingDay: Int,
+    tag: String,
+    repeatInterval: Long,
+    repeatIntervalTimeUnit: TimeUnit
+): PeriodicWorkRequest {
+    val workerDelay: Duration = calculateDurationUntilStart(
+        workerStartingHour = workerStartingHour,
+        workerStartingMinute = workerStartingMinute,
+        workerStartingDay = workerStartingDay
+    )
+
+    Log.d("Notification Test", workerDelay.toMillis().toString())
+
+    return PeriodicWorkRequestBuilder<T>(
+        repeatInterval = repeatInterval,
+        repeatIntervalTimeUnit = repeatIntervalTimeUnit
+    )
+        .setInitialDelay(workerDelay.toMillis(), TimeUnit.MILLISECONDS)
+        .setBackoffCriteria(
+            BackoffPolicy.LINEAR,
+            PeriodicWorkRequest.MIN_BACKOFF_MILLIS,
+            TimeUnit.MILLISECONDS
+        )
+        .addTag(tag)
+        .build()
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+private fun calculateDurationUntilStart(
+    workerStartingHour: Long,
+    workerStartingMinute: Long,
+    workerStartingDay: Int = Calendar.TUESDAY
+): Duration {
+    val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+
+    val currentDateTime = LocalDateTime.now()
+
+    var dueDay = workerStartingDay
+
+    val dayDifference = dueDay - currentDay
+
+    var delayInDays = 0L
+
+    when {
+        dayDifference < 0 -> {
+            delayInDays += Calendar.SATURDAY + dayDifference
+        }
+        dayDifference == 0 &&
+                workerStartingHour < currentDateTime.hour -> {
+            delayInDays += Calendar.SATURDAY
+        }
+        dayDifference == 0 &&
+                workerStartingHour.toInt() == currentDateTime.hour &&
+                workerStartingMinute <= currentDateTime.minute -> {
+            delayInDays += Calendar.SATURDAY
+        }
+        else -> {
+            delayInDays += dayDifference
+        }
+    }
+
+    val firstExecutionDate: LocalDateTime = currentDateTime
+        .plusDays(delayInDays)
+        .plusHours(workerStartingHour - currentDateTime.hour)
+        .plusMinutes(workerStartingMinute - currentDateTime.minute)
+        .plusSeconds(0L - currentDateTime.second)
+
+    return Duration.between(currentDateTime, firstExecutionDate)
 }
 
 

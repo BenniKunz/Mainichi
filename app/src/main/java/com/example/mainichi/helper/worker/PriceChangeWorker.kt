@@ -7,16 +7,13 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.mainichi.notifications.PriceNotification
 
-
-
-class TestWorker(
+class PriceChangeWorker(
     private val appContext: Context, workerParams: WorkerParameters) :
-    Worker(appContext, workerParams) {
+    CoroutineWorker(appContext, workerParams) {
 
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result {
 
-
-        Log.d("Notification", "Doing my work")
+        Log.d("Notification Test", "Doing my work")
         sendNotification()
 
         return Result.success()

@@ -37,14 +37,19 @@ class CryptoScreenViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            _uiState.update {
+            _uiState.update { uiState ->
 
                 CryptoUiState.UiState(
                     isLoading = false,
                     assets = assetRepo.changeFavorites(
                         coin = coin,
-                        clicked = clicked
-                    )
+                        clicked = clicked,
+                    ),
+                    filteredAssets = uiState.filteredAssets.toMutableList().apply {
+                        val newFavorite = this.find { it.name == coin }
+                        remove(newFavorite)
+                        newFavorite?.let { add(newFavorite.copy(isFavorite = clicked)) }
+                    }.sortedByDescending { it.marketCap }
                 )
             }
         }
@@ -71,7 +76,14 @@ class CryptoScreenViewModel @Inject constructor(
                     coin = event.coin,
                     clicked = event.setFavorite
                 )
-                is CryptoEvent.CoinClicked -> setEffect { CryptoEffect.NavigateToCoinScreen(coin = event.coin) }
+                is CryptoEvent.CoinClicked -> {
+
+                    setEffect {
+
+                        CryptoEffect.NavigateToCoinScreen(coin = event.coin)
+
+                    }
+                }
 
                 is CryptoEvent.UpdateRequested -> {
 

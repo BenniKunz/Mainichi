@@ -3,7 +3,6 @@ package com.example.mainichi.ui.coinScreen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mainichi.helper.db.AppDatabase
 import com.example.mainichi.ui.cryptoScreen.AssetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -14,15 +13,15 @@ import javax.inject.Inject
 @HiltViewModel
 class CoinScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val database: AppDatabase,
     private val assetRepository: AssetRepository
 ) :
     ViewModel() {
 
-    private val handle: String? = savedStateHandle.get("coinID")
+    private val handle: String? = savedStateHandle["coinID"]
 
-    private val _uiState: MutableStateFlow<CoinUiState> = MutableStateFlow(CoinUiState.LoadingState)
-    val uiState: StateFlow<CoinUiState> = _uiState.asStateFlow()
+    private val _uiState: MutableStateFlow<CoinUiState.UiState> =
+        MutableStateFlow(CoinUiState.UiState(isLoading = true))
+    val uiState: StateFlow<CoinUiState.UiState> = _uiState.asStateFlow()
 
     private val _event: MutableSharedFlow<CoinEvent> = MutableSharedFlow()
 
@@ -41,19 +40,43 @@ class CoinScreenViewModel @Inject constructor(
     init {
         viewModelScope.launch {
 
-//            val price = handle?.let { assetRepository.getPriceForAsset(it)
-
             val asset = assetRepository.getAsset(name = handle ?: "")
 
-            _uiState.update {
+            _uiState.update { uiState ->
 
                 when (asset) {
-                    null -> CoinUiState.ErrorState
-                    else -> CoinUiState.ContentState(
+                    null -> CoinUiState.UiState(
+                        isLoading = false,
+                        isError = true,
+                        asset = asset
+                    )
+                    else -> CoinUiState.UiState(
+                        isLoading = false,
+                        isError = false,
                         asset = asset
                     )
                 }
             }
         }
+
+    viewModelScope.launch {
+        _event.collect() { event ->
+            when (event) {
+                is CoinEvent.FavoriteClicked -> {
+
+                    assetRepository.changeFavorites(event.coin, event.clicked)
+
+                    _uiState.update { uiState ->
+
+                        CoinUiState.UiState(
+                            isLoading = false,
+                            isError = false,
+                            asset = uiState.asset?.copy(isFavorite = event.clicked)
+                        )
+                    }
+                }
+            }
+        }
     }
+}
 }

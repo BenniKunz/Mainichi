@@ -8,6 +8,7 @@ import com.example.mainichi.ui.entities.Asset
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -65,11 +66,13 @@ class AssetRepository @Inject constructor(
 
         repositoryScope.launch {
 
-            if (clicked) {
-                database.favoriteAssetDao().insertFavoriteAsset(DbFavoriteAsset(name = coin))
+            withContext(Dispatchers.IO) {
+                if (clicked) {
+                    database.favoriteAssetDao().insertFavoriteAsset(DbFavoriteAsset(name = coin))
 
-            } else {
-                database.favoriteAssetDao().deleteFavoriteAsset(coin)
+                } else {
+                    database.favoriteAssetDao().deleteFavoriteAsset(coin)
+                }
             }
         }
         return getAssets()

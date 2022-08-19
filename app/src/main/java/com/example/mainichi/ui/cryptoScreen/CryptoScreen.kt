@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -78,21 +79,10 @@ fun CryptoContent(
 
     Column(modifier = Modifier.fillMaxWidth()) {
 
-//        Row(modifier = Modifier.fillMaxWidth(),
-//            horizontalArrangement = Arrangement.End) {
-//
-//            IconButton(onClick = { onViewModelEvent(CryptoEvent.UpdateRequested) }) {
-//
-//                Icon(
-//                    imageVector = Icons.Default.Create,
-//                    contentDescription = "Update page")
-//            }
-//        }
-
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End) {
 
-            var text by remember { mutableStateOf("") }
+            var text by rememberSaveable { mutableStateOf("") }
 
             SearchBar(
                 text = text,
@@ -160,6 +150,7 @@ fun SearchBar(
             } else {
                 MaterialTheme.colors.primary
             },
+            backgroundColor = MaterialTheme.colors.background
         )
     )
 }
@@ -315,17 +306,23 @@ fun CryptoNews(assets: List<Asset>) {
 
             item {
 
-                Box(
-                    modifier = Modifier
-                        .clip(shape = RoundedCornerShape(16.dp))
-                        .size(120.dp, 120.dp)
-                        .background(MaterialTheme.colors.primaryVariant)
-
-                ) {
-                    Text(coin.name + " News")
-                }
+                NewsCard(coin)
             }
         }
+    }
+}
+
+@Composable
+private fun NewsCard(coin: Asset) {
+    Box(
+        modifier = Modifier
+            .clip(shape = RoundedCornerShape(16.dp))
+            .size(120.dp, 120.dp)
+            .background(MaterialTheme.colors.primaryVariant),
+        contentAlignment = Alignment.Center
+
+    ) {
+        Text(coin.name)
     }
 }
 

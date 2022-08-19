@@ -7,6 +7,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,7 +16,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.mainichi.helper.ImageLoader
 import com.example.mainichi.helper.LoadingStateProgressIndicator
 import com.example.mainichi.ui.theme.MainichiTheme
@@ -23,13 +24,12 @@ import com.example.mainichi.ui.entities.Asset
 @Composable
 fun CoinScreen(
     viewModel: CoinScreenViewModel,
-    navController: NavController,
     paddingValues: PaddingValues
 ) {
 
     val state = viewModel.uiState.collectAsState().value
 
-    LaunchedEffect(key1 = viewModel, key2 = navController) {
+    LaunchedEffect(key1 = viewModel) {
 
         viewModel.effect.collect {
             when (it) {
@@ -40,33 +40,35 @@ fun CoinScreen(
 
     CoinScreen(
         state = state,
-        navController = navController,
         paddingValues = paddingValues,
-        onEventFired = { event -> viewModel.setEvent(event) })
+        onViewModelEvent = { event -> viewModel.setEvent(event) })
 }
 
 @Composable
 fun CoinScreen(
-    state: CoinUiState,
-    navController: NavController,
+    state: CoinUiState.UiState,
     paddingValues: PaddingValues,
-    onEventFired: (CoinEvent) -> Unit
+    onViewModelEvent: (CoinEvent) -> Unit
 ) {
-    when (state) {
-        is CoinUiState.LoadingState -> LoadingStateProgressIndicator(
+    when {
+        state.isLoading -> LoadingStateProgressIndicator(
             color = MaterialTheme.colors.onBackground,
             size = 50
         )
-        is CoinUiState.ContentState ->
+        state.isError -> throw IllegalStateException("no such state")
+        state.asset != null ->
             CoinContent(
-                coin = state.asset
+                coin = state.asset,
+                onViewModelEvent = onViewModelEvent
             )
-        CoinUiState.ErrorState -> TODO()
     }
 }
 
 @Composable
-fun CoinContent(coin: Asset) {
+fun CoinContent(
+    coin: Asset,
+    onViewModelEvent: (CoinEvent) -> Unit
+) {
 
     Column(modifier = Modifier.fillMaxWidth()) {
 
@@ -104,6 +106,28 @@ fun CoinContent(coin: Asset) {
                 color = MaterialTheme.colors.onBackground,
                 style = MaterialTheme.typography.h4,
             )
+
+            IconButton(onClick = {
+                onViewModelEvent(
+                    CoinEvent.FavoriteClicked(
+                        coin.name,
+                        !coin.isFavorite
+                    )
+                )
+            }) {
+                Icon(
+                    Icons.Filled.Favorite,
+                    contentDescription = "Favorite",
+                    tint = when {
+                        coin.isFavorite -> {
+                            MaterialTheme.colors.primary
+                        }
+                        else -> {
+                            MaterialTheme.colors.onBackground
+                        }
+                    }
+                )
+            }
         }
 
         Divider(
@@ -237,9 +261,9 @@ fun PreviewCoinContent() {
                 marketCap = 3000000,
                 ath = 60000.0,
                 atl = 0.5
-            )
+            ),
+            {}
         )
-
     }
 }
 
