@@ -1,4 +1,4 @@
-package com.example.mainichi.helper.worker
+package com.example.mainichi.worker
 
 import android.content.Context
 import android.util.Log

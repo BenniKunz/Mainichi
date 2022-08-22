@@ -16,8 +16,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mainichi.helper.ImageLoader
-import com.example.mainichi.helper.api.news.Article
-import com.example.mainichi.helper.api.news.Source
+import com.example.mainichi.api.news.Article
+import com.example.mainichi.api.news.Source
 import com.example.mainichi.ui.theme.MainichiTheme
 
 @Composable

@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mainichi.helper.LoadingStateProgressIndicator
-import com.example.mainichi.helper.api.news.Article
+import com.example.mainichi.api.news.Article
 import kotlinx.coroutines.flow.collect
 
 @Composable

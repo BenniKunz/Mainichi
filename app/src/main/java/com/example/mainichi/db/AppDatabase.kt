@@ -1,4 +1,4 @@
-package com.example.mainichi.helper.db
+package com.example.mainichi.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

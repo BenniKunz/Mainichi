@@ -5,10 +5,10 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import kotlinx.serialization.json.Json
 import androidx.room.Room
 import androidx.work.WorkManager
-import com.example.mainichi.helper.api.APIConstants
-import com.example.mainichi.helper.api.crypto.CryptoAPI
-import com.example.mainichi.helper.api.news.NewsAPI
-import com.example.mainichi.helper.db.AppDatabase
+import com.example.mainichi.api.APIConstants
+import com.example.mainichi.api.crypto.CryptoAPI
+import com.example.mainichi.api.news.NewsAPI
+import com.example.mainichi.db.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

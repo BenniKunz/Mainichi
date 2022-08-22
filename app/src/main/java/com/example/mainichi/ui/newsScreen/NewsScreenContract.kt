@@ -1,6 +1,6 @@
 package com.example.mainichi.ui.newsScreen
 
-import com.example.mainichi.helper.api.news.Article
+import com.example.mainichi.api.news.Article
 
 sealed class NewsUiState {
 

@@ -1,9 +1,9 @@
-package com.example.mainichi.helper.db
+package com.example.mainichi.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.mainichi.helper.api.news.Article
-import com.example.mainichi.helper.api.news.Source
+import com.example.mainichi.api.news.Article
+import com.example.mainichi.api.news.Source
 
 @Entity(tableName = "articles")
 data class DbArticle(

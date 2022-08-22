@@ -24,11 +24,12 @@ import com.example.mainichi.ui.theme.MainichiTheme
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.work.*
-import com.example.mainichi.helper.worker.PriceChangeWorker
+import com.example.mainichi.worker.PriceChangeWorker
 import com.example.mainichi.navigationDrawer.*
 import com.example.mainichi.ui.appMenu.AppMenu
 import com.example.mainichi.ui.coinScreen.CoinScreen
 import com.example.mainichi.ui.cryptoScreen.CryptoEffect
+import com.example.mainichi.ui.settingsScreen.SettingsScreen
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
 import java.time.LocalDateTime
@@ -95,7 +96,11 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onNavigateUp = {
                                     isDetailScreen = false
-                                    navController.navigateUp() })
+                                    navController.navigateUp()
+                                },
+                                onNavigateToSettings = { navController.navigate(route = "Settings") {
+                                    launchSingleTop = true
+                                } })
                         },
 
                         ) { paddingValues ->
@@ -185,6 +190,15 @@ class MainActivity : ComponentActivity() {
                                 CoinScreen(
                                     viewModel = hiltViewModel(),
                                     paddingValues = paddingValues
+                                )
+                            }
+
+                            composable(
+                                route = "Settings"
+                            ) {
+                                SettingsScreen(
+                                    viewModel = hiltViewModel(),
+                                    onNavigateUpRequested = {navController.navigateUp()}
                                 )
                             }
                         }

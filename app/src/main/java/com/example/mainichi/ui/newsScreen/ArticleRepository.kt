@@ -1,11 +1,11 @@
 package com.example.mainichi.ui.newsScreen
 
 import android.util.Log
-import com.example.mainichi.helper.api.news.Article
-import com.example.mainichi.helper.api.news.NewsAPI
-import com.example.mainichi.helper.api.news.toDbArticle
-import com.example.mainichi.helper.db.AppDatabase
-import com.example.mainichi.helper.db.toArticle
+import com.example.mainichi.api.news.Article
+import com.example.mainichi.api.news.NewsAPI
+import com.example.mainichi.api.news.toDbArticle
+import com.example.mainichi.db.AppDatabase
+import com.example.mainichi.db.toArticle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*

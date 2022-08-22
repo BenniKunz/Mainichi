@@ -1,12 +1,14 @@
 package com.example.mainichi.ui.cryptoScreen
 
-import com.example.mainichi.helper.api.crypto.CryptoAPI
-import com.example.mainichi.helper.api.crypto.asAsset
-import com.example.mainichi.helper.db.AppDatabase
-import com.example.mainichi.helper.db.DbFavoriteAsset
+import android.util.Log
+import com.example.mainichi.api.crypto.CryptoAPI
+import com.example.mainichi.api.crypto.asAsset
+import com.example.mainichi.db.AppDatabase
+import com.example.mainichi.db.DbFavoriteAsset
 import com.example.mainichi.ui.entities.Asset
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -21,9 +23,10 @@ class AssetRepository @Inject constructor(
 
     suspend fun getAssets(): List<Asset> {
 
+        Log.d("Flow Test", "API Called")
         return cryptoAPI.getAllCryptoAssets().map { apiAsset ->
 
-            apiAsset.asAsset(checkIfFavorite(name = apiAsset.name))
+            apiAsset.asAsset()
 
         }
     }
@@ -47,22 +50,27 @@ class AssetRepository @Inject constructor(
 //
 //    }
 
-    private suspend fun checkIfFavorite(name: String): Boolean {
+//    private suspend fun checkIfFavorite(name: String): Boolean {
+//
+//        if (getAllFavoriteAssets().find { favoriteAsset ->
+//                favoriteAsset.name == name
+//            } != null) {
+//            return true
+//        }
+//        return false
+//    }
 
-        if (getAllFavoriteAssets().find { favoriteAsset ->
-                favoriteAsset.name == name
-            } != null) {
-            return true
-        }
-        return false
+//    private suspend fun getAllFavoriteAssets(): List<DbFavoriteAsset> {
+//
+//        return database.favoriteAssetDao().getAllFavoriteAssets()
+//    }
+
+    fun observeFavoriteAssets(): Flow<List<DbFavoriteAsset>> {
+
+        return database.favoriteAssetDao().observeFavoriteAssets()
     }
 
-    private suspend fun getAllFavoriteAssets(): List<DbFavoriteAsset> {
-
-        return database.favoriteAssetDao().getAllFavoriteAssets()
-    }
-
-    suspend fun changeFavorites(coin: String, clicked: Boolean): List<Asset> {
+    suspend fun changeFavorites(coin: String, clicked: Boolean) {
 
         repositoryScope.launch {
 
@@ -75,7 +83,6 @@ class AssetRepository @Inject constructor(
                 }
             }
         }
-        return getAssets()
     }
 }
 

@@ -2,7 +2,7 @@ package com.example.mainichi
 
 import android.app.Application
 import androidx.room.Room
-import com.example.mainichi.helper.db.AppDatabase
+import com.example.mainichi.db.AppDatabase
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp

@@ -1,4 +1,4 @@
-package com.example.mainichi.helper.api.news
+package com.example.mainichi.api.news
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

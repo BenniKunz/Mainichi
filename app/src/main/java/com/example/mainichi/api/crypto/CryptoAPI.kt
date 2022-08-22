@@ -1,5 +1,5 @@
-package com.example.mainichi.helper.api.crypto
-import com.example.mainichi.helper.api.crypto.APIAsset
+package com.example.mainichi.api.crypto
+import com.example.mainichi.api.crypto.APIAsset
 import retrofit2.http.GET
 
 public interface CryptoAPI {

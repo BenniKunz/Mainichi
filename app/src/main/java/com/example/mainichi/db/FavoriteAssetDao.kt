@@ -1,7 +1,7 @@
-package com.example.mainichi.helper.db
+package com.example.mainichi.db
 
 import androidx.room.*
-import com.example.mainichi.helper.db.DbFavoriteAsset
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FavoriteAssetDao {
@@ -14,4 +14,7 @@ interface FavoriteAssetDao {
 
     @Query("SELECT * FROM favoriteAssets")
     suspend fun getAllFavoriteAssets() : List<DbFavoriteAsset>
+
+    @Query("SELECT * FROM favoriteAssets")
+    fun observeFavoriteAssets() : Flow<List<DbFavoriteAsset>>
 }

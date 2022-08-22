@@ -1,6 +1,6 @@
-package com.example.mainichi.helper.api.news
+package com.example.mainichi.api.news
 
-import com.example.mainichi.helper.db.DbArticle
+import com.example.mainichi.db.DbArticle
 
 //@JsonClass(generateAdapter = true)
 //data class Article(

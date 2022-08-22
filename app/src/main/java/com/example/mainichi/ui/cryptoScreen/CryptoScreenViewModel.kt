@@ -37,21 +37,10 @@ class CryptoScreenViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            _uiState.update { uiState ->
-
-                CryptoUiState.UiState(
-                    isLoading = false,
-                    assets = assetRepo.changeFavorites(
-                        coin = coin,
-                        clicked = clicked,
-                    ),
-                    filteredAssets = uiState.filteredAssets.toMutableList().apply {
-                        val newFavorite = this.find { it.name == coin }
-                        remove(newFavorite)
-                        newFavorite?.let { add(newFavorite.copy(isFavorite = clicked)) }
-                    }.sortedByDescending { it.marketCap }
-                )
-            }
+            assetRepo.changeFavorites(
+                coin = coin,
+                clicked = clicked,
+            )
         }
     }
 
@@ -59,7 +48,7 @@ class CryptoScreenViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            loadData()
+            observeFavoriteAssets()
         }
 
         viewModelScope.launch {
@@ -68,8 +57,49 @@ class CryptoScreenViewModel @Inject constructor(
         }
     }
 
+    private suspend fun observeFavoriteAssets() {
+        assetRepo.observeFavoriteAssets().collect { favoriteAssets ->
+
+            val assets = assetRepo.getAssets()
+
+            _uiState.update { uiState ->
+                uiState.copy(isLoading = false)
+            }
+
+            _uiState.update { uiState ->
+
+                uiState.copy(
+                    assets = assets.map { asset ->
+                        if (favoriteAssets.find { favorite -> favorite.name == asset.name } != null) {
+                            asset.copy(isFavorite = true)
+                        } else {
+                            if (asset.isFavorite) {
+                                asset.copy(isFavorite = false)
+                            } else {
+                                asset
+                            }
+                        }
+                    },
+                    filteredAssets = uiState.filteredAssets.map { filteredAsset ->
+                        if (favoriteAssets.find { favorite -> favorite.name == filteredAsset.name } != null) {
+                            filteredAsset.copy(isFavorite = true)
+                        } else {
+                            if (filteredAsset.isFavorite) {
+                                filteredAsset.copy(isFavorite = false)
+                            } else {
+                                filteredAsset
+                            }
+                        }
+                    }
+                )
+            }
+        }
+    }
+
     private suspend fun handleEvents() {
-        _event.collect { event ->
+        _event
+            .debounce(timeoutMillis = 300)
+            .collect { event ->
 
             when (event) {
                 is CryptoEvent.FavoriteClicked -> changeFavorites(
@@ -87,7 +117,7 @@ class CryptoScreenViewModel @Inject constructor(
 
                 is CryptoEvent.UpdateRequested -> {
 
-                    loadData()
+                    updateData()
                 }
                 is CryptoEvent.FilterChanged -> {
 
@@ -126,12 +156,20 @@ class CryptoScreenViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadData() {
+    private suspend fun updateData() {
 
-        _uiState.update {
-            CryptoUiState.UiState(
-                isLoading = false,
-                assets = assetRepo.getAssets()
+        _uiState.update { uiState ->
+
+            val favorites = uiState.assets.filter { asset -> asset.isFavorite }
+
+            uiState.copy(
+                assets = assetRepo.getAssets().map { asset ->
+                    if(favorites.find {asset.name == it.name} != null) {
+                        asset.copy(isFavorite = true)
+                    } else {
+                        asset
+                    }
+                }
             )
         }
     }

@@ -1,4 +1,4 @@
-package com.example.mainichi.helper.api.crypto
+package com.example.mainichi.api.crypto
 import com.example.mainichi.ui.entities.Asset
 
 
@@ -33,12 +33,12 @@ data class APIAsset(
     val total_volume: Double,
 )
 
-fun APIAsset.asAsset(isFavorite : Boolean = false) = Asset(
+fun APIAsset.asAsset() = Asset(
     name = this.name,
     currentPrice = this.current_price,
     image = this.image,
     symbol = this.symbol,
-    isFavorite = isFavorite,
+    isFavorite = false,
     high24h = this.high_24h,
     low24h = this.low_24h,
     marketCap = this.market_cap,

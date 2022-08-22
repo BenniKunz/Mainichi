@@ -2,7 +2,7 @@ package com.example.mainichi.ui.newsScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mainichi.helper.api.news.NewsAPI
+import com.example.mainichi.api.news.NewsAPI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*

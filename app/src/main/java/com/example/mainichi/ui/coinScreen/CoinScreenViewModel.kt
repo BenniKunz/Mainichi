@@ -42,20 +42,28 @@ class CoinScreenViewModel @Inject constructor(
 
             val asset = assetRepository.getAsset(name = handle ?: "")
 
-            _uiState.update { uiState ->
+            assetRepository.observeFavoriteAssets().collect { favoriteAssets ->
 
-                when (asset) {
-                    null -> CoinUiState.UiState(
-                        isLoading = false,
-                        isError = true,
-                        asset = asset
-                    )
-                    else -> CoinUiState.UiState(
-                        isLoading = false,
-                        isError = false,
-                        asset = asset
-                    )
+                _uiState.update { uiState ->
+
+                    when (asset) {
+                        null -> CoinUiState.UiState(
+                            isLoading = false,
+                            isError = true,
+                            asset = asset
+                        )
+                        else -> CoinUiState.UiState(
+                            isLoading = false,
+                            isError = false,
+                            asset = if(favoriteAssets.find{ favorite -> favorite.name == asset.name} != null) {
+                                asset.copy(isFavorite = true)
+                            } else {
+                                asset
+                            }
+                        )
+                    }
                 }
+
             }
         }
 
