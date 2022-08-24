@@ -23,18 +23,12 @@ import com.example.mainichi.ui.cryptoScreen.CryptoScreen
 import com.example.mainichi.ui.theme.MainichiTheme
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.work.*
-import com.example.mainichi.worker.PriceChangeWorker
 import com.example.mainichi.navigationDrawer.*
 import com.example.mainichi.ui.appMenu.AppMenu
 import com.example.mainichi.ui.coinScreen.CoinScreen
 import com.example.mainichi.ui.cryptoScreen.CryptoEffect
 import com.example.mainichi.ui.settingsScreen.SettingsScreen
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.Duration
-import java.time.LocalDateTime
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -42,21 +36,6 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val priceChangeWorker = initializeDelayedPeriodicWorker<PriceChangeWorker>(
-            workerStartingDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK),
-            workerStartingHour = 12L,
-            workerStartingMinute = 52L,
-            tag = "Price_Change",
-            repeatInterval = 6,
-            repeatIntervalTimeUnit = TimeUnit.HOURS
-        )
-
-        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
-            "Price_Change",
-            ExistingPeriodicWorkPolicy.REPLACE,
-            priceChangeWorker
-        )
 
         setContent {
 
@@ -208,81 +187,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-@RequiresApi(Build.VERSION_CODES.O)
-private inline fun <reified T : CoroutineWorker> initializeDelayedPeriodicWorker(
-    workerStartingHour: Long,
-    workerStartingMinute: Long,
-    workerStartingDay: Int,
-    tag: String,
-    repeatInterval: Long,
-    repeatIntervalTimeUnit: TimeUnit
-): PeriodicWorkRequest {
-    val workerDelay: Duration = calculateDurationUntilStart(
-        workerStartingHour = workerStartingHour,
-        workerStartingMinute = workerStartingMinute,
-        workerStartingDay = workerStartingDay
-    )
-
-    Log.d("Notification Test", workerDelay.toMillis().toString())
-
-    return PeriodicWorkRequestBuilder<T>(
-        repeatInterval = repeatInterval,
-        repeatIntervalTimeUnit = repeatIntervalTimeUnit
-    )
-        .setInitialDelay(workerDelay.toMillis(), TimeUnit.MILLISECONDS)
-        .setBackoffCriteria(
-            BackoffPolicy.LINEAR,
-            PeriodicWorkRequest.MIN_BACKOFF_MILLIS,
-            TimeUnit.MILLISECONDS
-        )
-        .addTag(tag)
-        .build()
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-private fun calculateDurationUntilStart(
-    workerStartingHour: Long,
-    workerStartingMinute: Long,
-    workerStartingDay: Int = Calendar.TUESDAY
-): Duration {
-    val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
-
-    val currentDateTime = LocalDateTime.now()
-
-    var dueDay = workerStartingDay
-
-    val dayDifference = dueDay - currentDay
-
-    var delayInDays = 0L
-
-    when {
-        dayDifference < 0 -> {
-            delayInDays += Calendar.SATURDAY + dayDifference
-        }
-        dayDifference == 0 &&
-                workerStartingHour < currentDateTime.hour -> {
-            delayInDays += Calendar.SATURDAY
-        }
-        dayDifference == 0 &&
-                workerStartingHour.toInt() == currentDateTime.hour &&
-                workerStartingMinute <= currentDateTime.minute -> {
-            delayInDays += Calendar.SATURDAY
-        }
-        else -> {
-            delayInDays += dayDifference
-        }
-    }
-
-    val firstExecutionDate: LocalDateTime = currentDateTime
-        .plusDays(delayInDays)
-        .plusHours(workerStartingHour - currentDateTime.hour)
-        .plusMinutes(workerStartingMinute - currentDateTime.minute)
-        .plusSeconds(0L - currentDateTime.second)
-
-    return Duration.between(currentDateTime, firstExecutionDate)
-}
-
 
 @Preview(showBackground = true)
 @Composable

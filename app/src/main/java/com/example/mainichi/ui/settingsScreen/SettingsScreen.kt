@@ -1,8 +1,9 @@
 package com.example.mainichi.ui.settingsScreen
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -12,8 +13,12 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.mainichi.helper.ImageLoader
+import com.example.mainichi.helper.LoadingStateProgressIndicator
+import java.util.concurrent.TimeUnit
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
@@ -31,71 +36,186 @@ fun SettingsScreen(
         }
     }
 
-    SettingsScreen()
+    SettingsScreen(
+        state = state,
+        onViewModelEvent = { event -> viewModel.setEvent(event) })
 
 }
 
 @Composable
 fun SettingsScreen(
-
+    state: SettingsContract.UiState,
+    onViewModelEvent: (SettingsContract.SettingsEvent) -> Unit
 ) {
 
-    Column(modifier = Modifier.fillMaxWidth(),
-    verticalArrangement = Arrangement.spacedBy(24.dp)) {
-
-        Text(
-            text = "Create new Notification",
-            modifier = Modifier.padding(bottom = 16.dp)
+    when {
+        state.isLoading -> LoadingStateProgressIndicator(
+            color = MaterialTheme.colors.onBackground,
+            size = 50
         )
+        else -> {
 
-        val selectedAssetMap = remember { mutableStateMapOf<String, Boolean>() }
-        val selectedEventMap = remember { mutableStateMapOf<String, Boolean>() }
-        val selectedIntervalMap = remember { mutableStateMapOf<String, Boolean>() }
+            val selectedAssetMap = remember { mutableStateMapOf<String, Boolean>() }
+            val selectedEventMap = remember { mutableStateMapOf<String, Boolean>() }
+            val selectedEventValueMap = remember { mutableStateMapOf<String, Boolean>() }
+            val selectedIntervalUnitMap = remember { mutableStateMapOf<String, Boolean>() }
+            val selectedIntervalValueMap = remember { mutableStateMapOf<String, Boolean>() }
 
-        val content = listOf("Bitcoin", "Ethereum", "Cardano")
-
-        content.forEach {
-            selectedAssetMap[it] = false
-            selectedEventMap[it] = false
-            selectedIntervalMap[it] = false
-        }
-
-
-        SelectableDropDown(
-            title = "Asset",
-            content = content,
-            selectedMap = selectedAssetMap,
-            onSelect = { name ->
-
-                remapSelection(selectedAssetMap, name)
-            })
-
-        SelectableDropDown(
-            title = "Event",
-            content = content,
-            selectedMap = selectedEventMap,
-            onSelect = { name ->
-                remapSelection(selectedEventMap, name)
+            state.assets.forEach {
+                selectedAssetMap[it.name] = false
             }
-        )
-//
-            SelectableDropDown(
-                title = "Interval",
-                content = content,
-                selectedMap = selectedIntervalMap,
-                onSelect = { name ->
-                    remapSelection(selectedIntervalMap, name)
-                }
-            )
+            state.notificationParameters.priceEvents.forEach {
+                selectedEventMap[it] = false
+            }
 
-        Button(
-            onClick = { /*TODO*/ },
-            modifier = Modifier
-                .size(100.dp, 60.dp)
-                .padding(top = 16.dp)
-        ) {
-            Text(text = "Save")
+            state.notificationParameters.percentageThresholds.forEach {
+                selectedEventValueMap[it] = false
+            }
+
+            state.notificationParameters.intervalTypes.forEach {
+                selectedIntervalUnitMap[it] = false
+            }
+
+            state.notificationParameters.intervalValues.forEach {
+                selectedIntervalValueMap[it] = false
+            }
+
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                item {
+                    Text(
+                        text = "Create new Notification",
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+
+                item {
+                    SelectableDropDown(
+                        title = "Asset",
+                        content = state.assets.map { it.name },
+                        selectedMap = selectedAssetMap,
+                        onSelect = { name ->
+
+                            remapSelection(selectedAssetMap, name)
+                        })
+                }
+
+                item {
+                    SelectableDropDown(
+                        title = "Event",
+                        content = state.notificationParameters.priceEvents,
+                        selectedMap = selectedEventMap,
+                        onSelect = { name ->
+                            remapSelection(selectedEventMap, name)
+                        }
+                    )
+                }
+
+                item {
+                    SelectableDropDown(
+                        title = "Event Value",
+                        content = state.notificationParameters.percentageThresholds,
+                        selectedMap = selectedEventValueMap,
+                        onSelect = { name ->
+                            remapSelection(selectedEventValueMap, name)
+                        }
+                    )
+                }
+
+
+                item {
+                    SelectableDropDown(
+                        title = "Interval Unit",
+                        content = state.notificationParameters.intervalTypes,
+                        selectedMap = selectedIntervalUnitMap,
+                        onSelect = { name ->
+                            remapSelection(selectedIntervalUnitMap, name)
+                        }
+                    )
+                }
+
+                item {
+                    SelectableDropDown(
+                        title = "Interval value",
+                        content = state.notificationParameters.intervalValues,
+                        selectedMap = selectedIntervalValueMap,
+                        onSelect = { name ->
+                            remapSelection(selectedIntervalValueMap, name)
+                        }
+                    )
+                }
+
+
+                item {
+                    Button(
+                        onClick = {
+                            onViewModelEvent(
+                                SettingsContract.SettingsEvent.CreateCustomNotification(
+                                    asset = selectedAssetMap.filter { it.value }.keys.first(),
+                                    eventType = selectedEventMap.filter { it.value }.keys.first(),
+                                    eventValue = selectedEventValueMap.filter { it.value }.keys.first(),
+                                    repeatIntervalTimeUnit = if (selectedIntervalValueMap.filter { it.value }.keys.first() == "Day") {
+                                        TimeUnit.DAYS
+                                    } else {
+                                        TimeUnit.HOURS
+                                    },
+                                    repeatInterval = selectedIntervalValueMap.filter { it.value }.keys.first()
+                                        .toLong()
+
+                                )
+                            )
+                        },
+                        modifier = Modifier
+                            .size(100.dp, 60.dp)
+                            .padding(top = 16.dp)
+                    ) {
+                        Text(text = "Save")
+                    }
+                }
+
+                item {
+                    Text(text = "Created Notifications")
+                }
+
+                state.notifications.forEach {
+                    item {
+                        NotificationsCard(
+                            it
+                        )
+                    }
+                }
+            }
         }
+    }
+}
+
+@Composable
+fun NotificationsCard(
+    notification: AssetNotification
+) {
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        ImageLoader(
+            data = notification.image,
+            modifier = Modifier.size(32.dp)
+        )
+
+        Text(notification.symbol.uppercase())
+
+        Text(notification.event)
+
+        Text(notification.interval)
+
+        Text(notification.date)
     }
 }
 
@@ -122,67 +242,57 @@ fun SelectableDropDown(
     onSelect: (String) -> Unit
 ) {
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOption by remember { mutableStateOf("") }
+
+    Button(
+        onClick = { expanded = !expanded },
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = MaterialTheme.colors.onBackground,
+        ),
+        modifier = Modifier.size(200.dp, 40.dp)
     ) {
 
-        var expanded by remember { mutableStateOf(false) }
-        var selectedAsset by remember { mutableStateOf("") }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .background(MaterialTheme.colors.onBackground),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Row(horizontalArrangement = Arrangement.Center) {
+            Text(
+                text = "$title: ",
+                color = MaterialTheme.colors.primary
+            )
 
             Text(
-                text = title,
-                color = MaterialTheme.colors.secondaryVariant,
-                modifier = Modifier
-                    .clickable {
-                        expanded = !expanded
-                    })
+                text = selectedOption,
+                color = MaterialTheme.colors.secondaryVariant
+            )
+        }
 
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.heightIn(max = 220.dp)
+        ) {
 
-                content.forEach { name ->
+            content.forEach { name ->
 
-                    DropdownMenuItem(onClick = {
+                DropdownMenuItem(onClick = {
 
-                        onSelect(name)
-                        selectedAsset = name
+                    onSelect(name)
+                    selectedOption = name
 
-                    }) {
+                }) {
 
-                        Row() {
-                            Icon(
-                                imageVector = if (selectedMap[name] == true) {
-                                    Icons.Filled.CheckCircle
-                                } else {
-                                    Icons.Default.Check
-                                }, contentDescription = null
-                            )
+                    Row() {
+                        Icon(
+                            imageVector = if (selectedMap[name] == true) {
+                                Icons.Filled.CheckCircle
+                            } else {
+                                Icons.Default.Check
+                            }, contentDescription = null
+                        )
 
-                            Text(text = name)
-                        }
+                        Text(text = name)
                     }
                 }
             }
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colors.onBackground),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = selectedAsset,
-                color = MaterialTheme.colors.secondaryVariant
-            )
         }
     }
 }

@@ -13,8 +13,5 @@ interface FavoriteAssetDao {
     suspend fun deleteFavoriteAsset(name: String)
 
     @Query("SELECT * FROM favoriteAssets")
-    suspend fun getAllFavoriteAssets() : List<DbFavoriteAsset>
-
-    @Query("SELECT * FROM favoriteAssets")
     fun observeFavoriteAssets() : Flow<List<DbFavoriteAsset>>
 }
