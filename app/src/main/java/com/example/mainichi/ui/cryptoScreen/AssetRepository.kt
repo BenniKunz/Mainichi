@@ -6,13 +6,12 @@ import com.example.mainichi.api.crypto.asAsset
 import com.example.mainichi.db.AppDatabase
 import com.example.mainichi.db.DbFavoriteAsset
 import com.example.mainichi.ui.entities.Asset
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.seconds
 
 @Singleton
 class AssetRepository @Inject constructor(
@@ -23,11 +22,17 @@ class AssetRepository @Inject constructor(
 
     suspend fun getAssets(): List<Asset> {
 
-        Log.d("Flow Test", "API Called")
         return cryptoAPI.getAllCryptoAssets().map { apiAsset ->
 
             apiAsset.asAsset()
 
+        }
+    }
+
+    fun observeAssets() = flow {
+        while(true) {
+            emit(getAssets())
+            delay(10.seconds)
         }
     }
 

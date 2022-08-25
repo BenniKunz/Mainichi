@@ -9,17 +9,15 @@ class SettingsContract {
         val isLoading: Boolean,
         val assets: List<Asset> = emptyList(),
         val notifications: List<AssetNotification> = emptyList(),
-        val notificationParameters: NotificationParameters
+        val categoryMap : Map<String,List<CategoryItem>>
     )
 
      sealed class SettingsEvent {
 
-         data class CreateCustomNotification(
-             val asset : String,
-             val eventType : String,
-             val eventValue: String,
-             val repeatIntervalTimeUnit: TimeUnit,
-             val repeatInterval: Long
+         data class CreateCustomNotification(val asset : String) : SettingsEvent()
+
+         data class SelectCategoryItem(
+             val categoryType : CategoryValues,
          ) : SettingsEvent()
      }
 

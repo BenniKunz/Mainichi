@@ -19,27 +19,43 @@ class PriceChangeWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
 
-        Log.d("Notification Test", "Doing my work for ${inputData.getString("asset")}")
+        Log.d("Notification Test", "Doing my work for name: ${inputData.getString("asset")}")
+        Log.d("Notification Test", "Doing my work for event: ${inputData.getString("event")}")
+        Log.d("Notification Test", "Doing my work for value: ${inputData.getString("eventValue")}")
 
-        val asset = api.getAllCryptoAssets().first { asset -> asset.name == inputData.getString("asset") }
+        val name = inputData.getString("asset") ?: ""
+        val event = inputData.getString("event") ?: ""
+        val eventValue = inputData.getString("eventValue") ?: ""
 
-        sendNotification(
-            asset = asset.name,
-            priceChangePercentage = asset.price_change_percentage_24h
-        )
+        val asset = api.getAllCryptoAssets().first { asset -> asset.name == name }
+
+        val priceChangePercentage = asset.price_change_percentage_24h
+
+        when {
+            priceChangePercentage >= eventValue.toDouble() -> if (event == "Price up" || event == "Price up or down") {
+                sendNotification(
+                    text = "$name is up ${String.format("%.2f", priceChangePercentage)}% in the last 24h"
+
+                )
+            }
+            priceChangePercentage < eventValue.toDouble() -> if (event == "Price down" || event == "Price up or down") {
+                sendNotification(
+                    text = "$name is down ${String.format("%.2f", priceChangePercentage)}% in the last 24h"
+
+                )
+            }
+        }
 
         return Result.success()
     }
 
     private fun sendNotification(
-        asset : String,
-        priceChangePercentage : Double
+        text: String
     ) {
         val notification = PriceNotification(applicationContext)
         notification.createNotificationChannel()
         notification.showNotification(
-            asset = asset,
-            priceChangePercentage = priceChangePercentage
+            text = text
         )
     }
 }

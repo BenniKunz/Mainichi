@@ -31,17 +31,12 @@ class PriceNotification(
     }
 
     fun showNotification(
-         asset : String,
-         priceChangePercentage : Double
+         text : String
     ) {
 
         val builder = NotificationCompat.Builder(context, "price_channel")
             .setSmallIcon(R.drawable.notification_bg)
-            .setContentText(if(priceChangePercentage >= 0) {
-                "$asset is up $priceChangePercentage% in the last 24h"
-            }else {
-                "$asset is down $priceChangePercentage% in the last 24h\""
-            })
+            .setContentText(text)
             .setContentTitle("Price Change Alert")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
 

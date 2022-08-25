@@ -11,6 +11,8 @@ data class DbNotification(
     val image: String,
     val symbol: String,
     val event: String,
+    val eventValue: String,
+    val intervalType: String,
     val interval: String,
     val date: String,
 )

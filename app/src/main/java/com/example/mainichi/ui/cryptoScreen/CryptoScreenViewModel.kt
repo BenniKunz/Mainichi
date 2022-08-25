@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mainichi.ui.entities.Asset
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -57,103 +58,115 @@ class CryptoScreenViewModel @Inject constructor(
         }
     }
 
+    var favoriteObserver: Job? = null
+
     private suspend fun observeFavoriteAssets() {
         assetRepo.observeFavoriteAssets().collect { favoriteAssets ->
 
-            val assets = assetRepo.getAssets()
+            //val assets = assetRepo.getAssets()
 
-            _uiState.update { uiState ->
-                uiState.copy(isLoading = false)
-            }
+            favoriteObserver?.cancel()
+            favoriteObserver = viewModelScope.launch {
+                assetRepo.observeAssets().collect { assets ->
 
-            _uiState.update { uiState ->
-
-                uiState.copy(
-                    assets = assets.map { asset ->
-                        if (favoriteAssets.find { favorite -> favorite.name == asset.name } != null) {
-                            asset.copy(isFavorite = true)
-                        } else {
-                            if (asset.isFavorite) {
-                                asset.copy(isFavorite = false)
-                            } else {
-                                asset
-                            }
-                        }
-                    },
-                    filteredAssets = uiState.filteredAssets.map { filteredAsset ->
-                        if (favoriteAssets.find { favorite -> favorite.name == filteredAsset.name } != null) {
-                            filteredAsset.copy(isFavorite = true)
-                        } else {
-                            if (filteredAsset.isFavorite) {
-                                filteredAsset.copy(isFavorite = false)
-                            } else {
-                                filteredAsset
-                            }
-                        }
+                    _uiState.update { uiState ->
+                        uiState.copy(isLoading = false)
                     }
-                )
+
+                    _uiState.update { uiState ->
+
+                        uiState.copy(
+                            assets = assets.map { asset ->
+                                if (favoriteAssets.find { favorite -> favorite.name == asset.name } != null) {
+                                    asset.copy(isFavorite = true)
+                                } else {
+                                    if (asset.isFavorite) {
+                                        asset.copy(isFavorite = false)
+                                    } else {
+                                        asset
+                                    }
+                                }
+                            },
+                            filteredAssets = uiState.filteredAssets.map { filteredAsset ->
+                                if (favoriteAssets.find { favorite -> favorite.name == filteredAsset.name } != null) {
+                                    filteredAsset.copy(isFavorite = true)
+                                } else {
+                                    if (filteredAsset.isFavorite) {
+                                        filteredAsset.copy(isFavorite = false)
+                                    } else {
+                                        filteredAsset
+                                    }
+                                }
+                            }
+                        )
+                    }
+                }
             }
         }
     }
+
+//    val state2 =  combine(assetRepo.observeFavoriteAssets(), assetRepo.observeAssets()) { favorites, assets ->
+//        assets.map { asset ->  UiAsset(favorite = favorites.any { it.name == asset.name } }
+//    }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = emptyList())
 
     private suspend fun handleEvents() {
         _event
             .debounce(timeoutMillis = 300)
             .collect { event ->
 
-            when (event) {
-                is CryptoEvent.FavoriteClicked -> changeFavorites(
-                    coin = event.coin,
-                    clicked = event.setFavorite
-                )
-                is CryptoEvent.CoinClicked -> {
+                when (event) {
+                    is CryptoEvent.FavoriteClicked -> changeFavorites(
+                        coin = event.coin,
+                        clicked = event.setFavorite
+                    )
+                    is CryptoEvent.CoinClicked -> {
 
-                    setEffect {
+                        setEffect {
 
-                        CryptoEffect.NavigateToCoinScreen(coin = event.coin)
+                            CryptoEffect.NavigateToCoinScreen(coin = event.coin)
 
-                    }
-                }
-
-                is CryptoEvent.UpdateRequested -> {
-
-                    updateData()
-                }
-                is CryptoEvent.FilterChanged -> {
-
-                    if (event.text.isNotBlank()) {
-
-                        _uiState.update { uiState ->
-
-                            val filteredAssets = mutableListOf<Asset>()
-                            for (asset in uiState.assets) {
-                                if (asset.name.lowercase(Locale.getDefault())
-                                        .contains(event.text.lowercase(Locale.getDefault()))
-                                ) {
-                                    filteredAssets.add(asset)
-                                }
-                            }
-
-                            CryptoUiState.UiState(
-                                isLoading = false,
-                                assets = uiState.assets,
-                                filteredAssets = filteredAssets
-                            )
                         }
-                    } else {
+                    }
 
-                        _uiState.update { uiState ->
+                    is CryptoEvent.UpdateRequested -> {
 
-                            CryptoUiState.UiState(
-                                isLoading = false,
-                                assets = uiState.assets,
-                                filteredAssets = emptyList()
-                            )
+                        updateData()
+                    }
+                    is CryptoEvent.FilterChanged -> {
+
+                        if (event.text.isNotBlank()) {
+
+                            _uiState.update { uiState ->
+
+                                val filteredAssets = mutableListOf<Asset>()
+                                for (asset in uiState.assets) {
+                                    if (asset.name.lowercase(Locale.getDefault())
+                                            .contains(event.text.lowercase(Locale.getDefault()))
+                                    ) {
+                                        filteredAssets.add(asset)
+                                    }
+                                }
+
+                                CryptoUiState.UiState(
+                                    isLoading = false,
+                                    assets = uiState.assets,
+                                    filteredAssets = filteredAssets
+                                )
+                            }
+                        } else {
+
+                            _uiState.update { uiState ->
+
+                                CryptoUiState.UiState(
+                                    isLoading = false,
+                                    assets = uiState.assets,
+                                    filteredAssets = emptyList()
+                                )
+                            }
                         }
                     }
                 }
             }
-        }
     }
 
     private suspend fun updateData() {
@@ -164,7 +177,7 @@ class CryptoScreenViewModel @Inject constructor(
 
             uiState.copy(
                 assets = assetRepo.getAssets().map { asset ->
-                    if(favorites.find {asset.name == it.name} != null) {
+                    if (favorites.find { asset.name == it.name } != null) {
                         asset.copy(isFavorite = true)
                     } else {
                         asset
