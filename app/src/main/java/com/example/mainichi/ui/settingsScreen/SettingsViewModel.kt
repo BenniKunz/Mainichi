@@ -136,6 +136,19 @@ class SettingsViewModel @Inject constructor(
                         createCustomUserNotification(
                             notification = uiState.value.notificationConfiguration
                         )
+
+                        _uiState.update { uiState ->
+
+                            uiState.copy(
+                                notificationConfiguration = uiState.notificationConfiguration.copy(
+                                    priceEvent = PriceEvent.None,
+                                    eventValue = "",
+                                    anyEventValue = false,
+                                    notificationInterval = "",
+                                    intervalPeriod = Periodically.Hourly
+                                )
+                            )
+                        }
                     }
 
                     is SettingsEvent.SelectAsset -> {
@@ -207,11 +220,11 @@ class SettingsViewModel @Inject constructor(
 
                             uiState.copy(
                                 notificationConfiguration = uiState.notificationConfiguration.copy(
-                                    anyEventValue = !uiState.notificationConfiguration.anyEventValue
+                                    anyEventValue = !uiState.notificationConfiguration.anyEventValue,
+                                    eventValue = ""
                                 )
                             )
                         }
-
                     }
                 }
             }
