@@ -7,6 +7,8 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.mainichi.api.crypto.CryptoAPI
 import com.example.mainichi.notifications.PriceNotification
+import com.example.mainichi.ui.settingsScreen.SettingsContract
+import com.example.mainichi.ui.settingsScreen.SettingsContract.*
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -32,15 +34,29 @@ class PriceChangeWorker @AssistedInject constructor(
         val priceChangePercentage = asset.price_change_percentage_24h
 
         when {
-            priceChangePercentage >= eventValue.toDouble() -> if (event == "Price up" || event == "Price up or down") {
+            priceChangePercentage >= eventValue.toDouble() -> if (event == NotificationConfiguration.PriceEvent.PriceUp.toString()
+                || event == NotificationConfiguration.PriceEvent.PriceUpDown.toString()
+            ) {
                 sendNotification(
-                    text = "$name is up ${String.format("%.2f", priceChangePercentage)}% in the last 24h"
+                    text = "$name is up ${
+                        String.format(
+                            "%.2f",
+                            priceChangePercentage
+                        )
+                    }% in the last 24h"
 
                 )
             }
-            priceChangePercentage < eventValue.toDouble() -> if (event == "Price down" || event == "Price up or down") {
+            priceChangePercentage < eventValue.toDouble() -> if (event == NotificationConfiguration.PriceEvent.PriceDown.toString()
+                || event == NotificationConfiguration.PriceEvent.PriceUpDown.toString()
+            ) {
                 sendNotification(
-                    text = "$name is down ${String.format("%.2f", priceChangePercentage)}% in the last 24h"
+                    text = "$name is down ${
+                        String.format(
+                            "%.2f",
+                            priceChangePercentage
+                        )
+                    }% in the last 24h"
 
                 )
             }

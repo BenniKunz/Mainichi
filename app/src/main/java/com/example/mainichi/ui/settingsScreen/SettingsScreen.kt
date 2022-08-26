@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandCircleDown
@@ -18,10 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.mainichi.helper.ImageLoader
 import com.example.mainichi.helper.LoadingStateProgressIndicator
 import com.example.mainichi.ui.settingsScreen.SettingsContract.NotificationConfiguration
+import com.example.mainichi.ui.settingsScreen.SettingsContract.NotificationConfiguration.*
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -147,19 +150,134 @@ fun SettingsScreen(
                         }
                     }
 
+
+                item {
+
+                    Text(text = "Event")
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+
+                        var checkedStateUp by remember { mutableStateOf(false) }
+                        var checkedStateDown by remember { mutableStateOf(false) }
+
+                        Checkbox(checked = checkedStateUp, onCheckedChange = {
+                            checkedStateUp = !checkedStateUp
+
+                            when {
+                                !checkedStateUp && !checkedStateDown -> onViewModelEvent(
+                                    SettingsContract.SettingsEvent.ChangePriceEvent(
+                                        PriceEvent.None
+                                    )
+                                )
+                                checkedStateUp && checkedStateDown -> onViewModelEvent(
+                                    SettingsContract.SettingsEvent.ChangePriceEvent(
+                                        PriceEvent.PriceUpDown
+                                    )
+                                )
+                                checkedStateUp -> onViewModelEvent(
+                                    SettingsContract.SettingsEvent.ChangePriceEvent(
+                                        PriceEvent.PriceUp
+                                    )
+                                )
+                            }
+                        })
+
+                        Text(text = "Price Up")
+
+
+                        Checkbox(checked = checkedStateDown, onCheckedChange = {
+                            checkedStateDown = !checkedStateDown
+
+                            when {
+                                !checkedStateUp && !checkedStateDown -> onViewModelEvent(
+                                    SettingsContract.SettingsEvent.ChangePriceEvent(
+                                        PriceEvent.None
+                                    )
+                                )
+                                checkedStateUp && checkedStateDown -> onViewModelEvent(
+                                    SettingsContract.SettingsEvent.ChangePriceEvent(
+                                        PriceEvent.PriceUpDown
+                                    )
+                                )
+                                checkedStateDown -> onViewModelEvent(
+                                    SettingsContract.SettingsEvent.ChangePriceEvent(
+                                        PriceEvent.PriceDown
+                                    )
+                                )
+                            }
+                        })
+
+                        Text(text = "Price Down")
+                    }
+
+                }
+
+                item {
+                    var checkedState by remember { mutableStateOf(false) }
+
+                    Text(text = "Event Threshold")
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+
+                        OutlinedTextField(
+                            value = when {
+                                checkedState -> ""
+                                else -> state.notificationConfiguration.eventValue
+                            },
+                            onValueChange = {
+                                onViewModelEvent(
+                                    SettingsContract.SettingsEvent.ChangeEventValue(
+                                        eventValue = it
+                                    )
+                                )
+                            },
+                            enabled = when {
+                                checkedState -> false
+                                else -> true
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            maxLines = 1,
+                            modifier = Modifier.width(80.dp)
+                        )
+
+                        Checkbox(checked = checkedState, onCheckedChange = {
+                            checkedState = !checkedState
+
+                            onViewModelEvent(SettingsContract.SettingsEvent.ToggleAnyValue)
+                        })
+
+                        Text(text = "Any Value Change")
+                    }
+                }
+
                 item {
 
                     Text(text = "Interval")
 
                     var expandedIntervalField by remember { mutableStateOf(false) }
-                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    var text by remember { mutableStateOf("") }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
 
-
-                        Column(modifier = Modifier.fillMaxWidth(0.3f)) {
+                        Column(modifier = Modifier.fillMaxWidth(0.2f)) {
                             OutlinedTextField(
-                                value = state.notificationConfiguration.notificationInterval.toString(),
-                                onValueChange = {},
-                                enabled = true
+                                value = state.notificationConfiguration.notificationInterval,
+                                onValueChange = {
+
+                                    onViewModelEvent(
+                                        SettingsContract.SettingsEvent.ChangeIntervalValue(
+                                            intervalValue = it
+                                        )
+                                    )
+                                },
+                                enabled = true,
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                maxLines = 1
                             )
                         }
 
@@ -188,7 +306,7 @@ fun SettingsScreen(
                                 modifier = Modifier.heightIn(max = 220.dp)
                             ) {
 
-                                enumValues<NotificationConfiguration.Periodically>().forEach { priceEvent ->
+                                enumValues<Periodically>().forEach { priceEvent ->
 
                                     DropdownMenuItem(onClick = {
 
@@ -218,9 +336,12 @@ fun SettingsScreen(
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = MaterialTheme.colors.primaryVariant
                         ),
-                        enabled = true,
+                        enabled = state.notificationConfiguration.assets[0].selected
+                            && state.notificationConfiguration.priceEvent != PriceEvent.None
+                            && state.notificationConfiguration.notificationInterval.isNotEmpty()
+                            && (state.notificationConfiguration.eventValue.isNotEmpty() || state.notificationConfiguration.anyEventValue),
                         onClick = {
-
+                            onViewModelEvent(SettingsContract.SettingsEvent.CreateCustomNotification)
                         },
                         modifier = Modifier
                             .size(100.dp, 60.dp)

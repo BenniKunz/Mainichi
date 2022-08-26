@@ -6,21 +6,21 @@ class SettingsContract {
 
     data class UiState(
         val isLoading: Boolean,
-        val notificationConfiguration: NotificationConfiguration? = null,
+        val notificationConfiguration: NotificationConfiguration,
 //        val notifications: List<AssetNotification> = emptyList(), // own screen
     )
 
     //reuse in different screens // edit, create, show
     data class NotificationConfiguration(
-        val assets: List<SelectableAsset>,
-        val notifyIncrease: Boolean = false,
-        val notifyDecrease: Boolean = false,
+        val assets: List<SelectableAsset> = emptyList(),
+//        val notifyIncrease: Boolean = false,
+//        val notifyDecrease: Boolean = false,
 
-        val priceEvent: PriceEvent = PriceEvent.PriceUp,
-        val eventValue: Int = 5,
-        val anyEventValue: Boolean = true,
+        val priceEvent: PriceEvent = PriceEvent.None,
+        val eventValue: String = "",
+        val anyEventValue: Boolean = false,
 
-        val notificationInterval: Int = 1,
+        val notificationInterval: String = "",
         val intervalPeriod: Periodically = Periodically.Hourly
     ) {
         data class SelectableAsset(
@@ -35,20 +35,26 @@ class SettingsContract {
         }
 
         enum class PriceEvent {
+            None,
             PriceUp,
-            PriceDown
+            PriceDown,
+            PriceUpDown
         }
     }
 
     sealed class SettingsEvent {
 
-        data class CreateCustomNotification(val asset: String) : SettingsEvent()
+        object CreateCustomNotification : SettingsEvent()
 
         data class SelectAsset(
             val selectedAsset: SelectableAsset
         ) : SettingsEvent()
 
         data class SelectIntervalPeriod(val period: Periodically) : SettingsEvent()
+        data class ChangeIntervalValue(val intervalValue : String) : SettingsEvent()
+        data class ChangeEventValue(val eventValue : String) : SettingsEvent()
+        data class ChangePriceEvent(val priceEvent : PriceEvent) : SettingsEvent()
+        object ToggleAnyValue : SettingsEvent()
 
     }
 

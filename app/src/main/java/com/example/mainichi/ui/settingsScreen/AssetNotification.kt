@@ -6,7 +6,7 @@ data class AssetNotification(
     val symbol: String,
     val event: String,
     val eventValue: String,
-    val intervalType: String,
+    val intervalType: SettingsContract.NotificationConfiguration.Periodically,
     val interval: String,
     val date: String
 )

@@ -46,6 +46,7 @@ class SettingsViewModel @Inject constructor(
         MutableStateFlow(
             UiState(
                 isLoading = true,
+                NotificationConfiguration()
             )
         )
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -73,17 +74,12 @@ class SettingsViewModel @Inject constructor(
 
             handleEvents()
         }
-
-        viewModelScope.launch {
-
-            observeNotifications()
-        }
     }
 
-    private suspend fun observeNotifications() {
-        withContext(Dispatchers.IO) {
-            database.notificationsDao().getAllNotifications().collect { dbNotificationList ->
-
+//    private suspend fun observeNotifications() {
+//        withContext(Dispatchers.IO) {
+//            database.notificationsDao().getAllNotifications().collect { dbNotificationList ->
+//
 //                _uiState.update { uiState ->
 //
 //                    uiState.copy(notifications = dbNotificationList.map { dbNotification ->
@@ -99,9 +95,9 @@ class SettingsViewModel @Inject constructor(
 //                        )
 //                    })
 //                }
-            }
-        }
-    }
+//            }
+//        }
+//    }
 
     private suspend fun loadData() {
         val assets = withContext(Dispatchers.IO) {
@@ -137,47 +133,17 @@ class SettingsViewModel @Inject constructor(
 
                     is SettingsEvent.CreateCustomNotification -> {
 
-//                        createCustomUserNotification(
-//                            asset = event.asset,
-//                            event = _uiState.value.categoryMap.getSelectedCategoryItem("Price Events"),
-//                            eventValue = _uiState.value.categoryMap.getSelectedCategoryItem("Event Value"),
-//                            repeatIntervalTimeUnit = _uiState.value.categoryMap.getSelectedCategoryItem(
-//                                "Interval Types"
-//                            ),
-//                            repeatInterval = _uiState.value.categoryMap.getSelectedCategoryItem("Interval Values")
-//                                .toLong()
-//                        )
+                        createCustomUserNotification(
+                            notification = uiState.value.notificationConfiguration
+                        )
                     }
 
-
-//                        _uiState.update { uiState ->
-//
-////                            uiState.copy(
-////                                categoryMap = uiState.categoryMap.mapValues { categoryList ->
-////
-////                                    if (categoryList.value.find { it.categoryType == event.categoryType } != null) {
-////                                        return@mapValues categoryList.value.toMutableList()
-////                                            .map { categoryItem ->
-////                                                if (categoryItem.categoryType == event.categoryType) {
-////                                                    categoryItem.copy(selected = true)
-////                                                } else {
-////                                                    if (categoryItem.selected) {
-////                                                        categoryItem.copy(selected = false)
-////                                                    } else {
-////                                                        categoryItem
-////                                                    }
-////                                                }
-////                                            }
-////                                    }
-////                                    categoryList.value
-////                                })
-//                        }
                     is SettingsEvent.SelectAsset -> {
 
                         _uiState.update { uiState ->
 
                             uiState.copy(
-                                notificationConfiguration = uiState.notificationConfiguration?.copy(
+                                notificationConfiguration = uiState.notificationConfiguration.copy(
                                     assets = uiState.notificationConfiguration.assets.map { selectableAsset ->
 
                                         if (selectableAsset == event.selectedAsset) {
@@ -198,11 +164,54 @@ class SettingsViewModel @Inject constructor(
                         _uiState.update { uiState ->
 
                             uiState.copy(
-                                notificationConfiguration = uiState.notificationConfiguration?.copy(
+                                notificationConfiguration = uiState.notificationConfiguration.copy(
                                     intervalPeriod = event.period
                                 )
                             )
                         }
+                    }
+                    is SettingsEvent.ChangeIntervalValue -> {
+
+                        _uiState.update { uiState ->
+
+                            uiState.copy(
+                                notificationConfiguration = uiState.notificationConfiguration.copy(
+                                    notificationInterval = event.intervalValue
+                                )
+                            )
+                        }
+                    }
+                    is SettingsEvent.ChangeEventValue -> {
+                        _uiState.update { uiState ->
+
+                            uiState.copy(
+                                notificationConfiguration = uiState.notificationConfiguration.copy(
+                                    eventValue = event.eventValue
+                                )
+                            )
+                        }
+                    }
+                    is SettingsEvent.ChangePriceEvent -> {
+
+                        _uiState.update { uiState ->
+
+                            uiState.copy(
+                                notificationConfiguration = uiState.notificationConfiguration.copy(
+                                    priceEvent = event.priceEvent
+                                )
+                            )
+                        }
+                    }
+                    is SettingsEvent.ToggleAnyValue -> {
+                        _uiState.update { uiState ->
+
+                            uiState.copy(
+                                notificationConfiguration = uiState.notificationConfiguration.copy(
+                                    anyEventValue = !uiState.notificationConfiguration.anyEventValue
+                                )
+                            )
+                        }
+
                     }
                 }
             }
@@ -210,74 +219,44 @@ class SettingsViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun createCustomUserNotification(
-        asset: String,
-        event: String,
-        eventValue: String,
-        repeatIntervalTimeUnit: String,
-        repeatInterval: Long
+        notification: NotificationConfiguration
     ) {
 
         val tag =
-            ("${asset}_${event}_${eventValue}_${repeatIntervalTimeUnit}_${repeatInterval}").filter { !it.isWhitespace() }
+            ("${notification.assets[0].name}_${notification.priceEvent}_${notification.eventValue}_${notification.intervalPeriod}_${notification.notificationInterval}")
+                .filter { !it.isWhitespace() }
 
         val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
 
-//        database.notificationsDao().insertNotification(
-//            DbNotification(
-//                tag = tag,
-//                name = asset,
-//                image = uiState.value.assets.find { it.name == asset }?.image ?: "",
-//                symbol = uiState.value.assets.find { it.name == asset }?.symbol ?: "",
-//                event = event,
-//                eventValue = if (eventValue == "Any change") {
-//                    "0"
-//                } else {
-//                    eventValue
-//                },
-//                interval = repeatInterval.toString(),
-//                intervalType = repeatIntervalTimeUnit,
-//                date = LocalDateTime.now().format(formatter)
-//            )
-//        )
+        database.notificationsDao().insertNotification(
+            DbNotification(
+                tag = tag,
+                name = notification.assets[0].name,
+                image = uiState.value.notificationConfiguration.assets[0].image,
+                symbol = uiState.value.notificationConfiguration.assets[0].symbol,
+                event = notification.priceEvent.toString(),
+                eventValue = notification.eventValue.ifEmpty {
+                    "0"
+                },
+                interval = notification.notificationInterval,
+                intervalType = notification.intervalPeriod.toString(),
+                date = LocalDateTime.now().format(formatter)
+            )
+        )
 
-//        val priceChangeWorker = initializeDelayedPeriodicWorker<PriceChangeWorker>(
-//            workerStartingDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK),
-//            workerStartingHour = LocalDateTime.now().hour.toLong(),
-//            workerStartingMinute = LocalDateTime.now().minute.toLong() + 1,
-//            tag = tag,
-//            repeatInterval = repeatInterval,
-//            repeatIntervalTimeUnit = when (repeatIntervalTimeUnit) {
-//                "Day" -> TimeUnit.DAYS
-//                "Hour" -> TimeUnit.HOURS
-//
-//                else -> throw IllegalStateException("This time Unit is not defined")
-//            },
-//            notification = AssetNotification(
-//                name = asset,
-//                image = uiState.value.assets.find { it.name == asset }?.image ?: "",
-//                symbol = uiState.value.assets.find { it.name == asset }?.symbol ?: "",
-//                event = event,
-//                eventValue = if (eventValue == "Any change") {
-//                    "0"
-//                } else {
-//                    eventValue
-//                },
-//                intervalType = repeatIntervalTimeUnit,
-//                interval = repeatInterval.toString(),
-//                date = LocalDateTime.now().toString()
-//            )
-//        )
-//
-//        workManager.enqueueUniquePeriodicWork(
-//            tag,
-//            ExistingPeriodicWorkPolicy.KEEP,
-//            priceChangeWorker
-//        )
-    }
+        val priceChangeWorker = initializeDelayedPeriodicWorker<PriceChangeWorker>(
+            workerStartingDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK),
+            workerStartingHour = LocalDateTime.now().hour.toLong(),
+            workerStartingMinute = LocalDateTime.now().minute.toLong() + 1,
+            tag = tag,
+            notification = notification
+        )
 
-    companion object {
-
-
+        workManager.enqueueUniquePeriodicWork(
+            tag,
+            ExistingPeriodicWorkPolicy.KEEP,
+            priceChangeWorker
+        )
     }
 }
 
@@ -287,9 +266,7 @@ private inline fun <reified T : CoroutineWorker> initializeDelayedPeriodicWorker
     workerStartingMinute: Long,
     workerStartingDay: Int,
     tag: String,
-    repeatInterval: Long,
-    repeatIntervalTimeUnit: TimeUnit,
-    notification: AssetNotification?
+    notification: NotificationConfiguration
 ): PeriodicWorkRequest {
     val workerDelay: Duration = calculateDurationUntilStart(
         workerStartingHour = workerStartingHour,
@@ -300,15 +277,18 @@ private inline fun <reified T : CoroutineWorker> initializeDelayedPeriodicWorker
     Log.d("Notification Test", workerDelay.toMillis().toString())
 
     return PeriodicWorkRequestBuilder<T>(
-        repeatInterval = repeatInterval,
-        repeatIntervalTimeUnit = repeatIntervalTimeUnit
+        repeatInterval = notification.notificationInterval.toLong(),
+        repeatIntervalTimeUnit = when (notification.intervalPeriod) {
+            Periodically.Daily -> TimeUnit.DAYS
+            Periodically.Hourly -> TimeUnit.HOURS
+        }
     )
         .setInitialDelay(workerDelay.toMillis(), TimeUnit.MILLISECONDS)
         .setInputData(
             Data.Builder()
-                .putString("asset", notification?.name)
-                .putString("event", notification?.event)
-                .putString("eventValue", notification?.eventValue)
+                .putString("asset", notification.assets[0].name)
+                .putString("event", notification.priceEvent.toString())
+                .putString("eventValue", notification.eventValue.ifEmpty { "0" })
                 .build()
         )
         .setBackoffCriteria(
