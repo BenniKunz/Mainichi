@@ -12,6 +12,7 @@ import com.example.mainichi.api.crypto.asAsset
 import com.example.mainichi.db.AppDatabase
 import com.example.mainichi.db.DbNotification
 import com.example.mainichi.ui.settingsScreen.SettingsContract.*
+import com.example.mainichi.ui.settingsScreen.SettingsContract.NotificationConfiguration.*
 import com.example.mainichi.worker.PriceChangeWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -45,7 +46,6 @@ class SettingsViewModel @Inject constructor(
         MutableStateFlow(
             UiState(
                 isLoading = true,
-                categoryMap = categoryMap
             )
         )
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -84,21 +84,21 @@ class SettingsViewModel @Inject constructor(
         withContext(Dispatchers.IO) {
             database.notificationsDao().getAllNotifications().collect { dbNotificationList ->
 
-                _uiState.update { uiState ->
-
-                    uiState.copy(notifications = dbNotificationList.map { dbNotification ->
-                        AssetNotification(
-                            name = dbNotification.name,
-                            image = dbNotification.image,
-                            symbol = dbNotification.symbol,
-                            event = dbNotification.event,
-                            eventValue = dbNotification.eventValue,
-                            intervalType = dbNotification.intervalType,
-                            interval = dbNotification.interval,
-                            date = dbNotification.date
-                        )
-                    })
-                }
+//                _uiState.update { uiState ->
+//
+//                    uiState.copy(notifications = dbNotificationList.map { dbNotification ->
+//                        AssetNotification(
+//                            name = dbNotification.name,
+//                            image = dbNotification.image,
+//                            symbol = dbNotification.symbol,
+//                            event = dbNotification.event,
+//                            eventValue = dbNotification.eventValue,
+//                            intervalType = dbNotification.intervalType,
+//                            interval = dbNotification.interval,
+//                            date = dbNotification.date
+//                        )
+//                    })
+//                }
             }
         }
     }
@@ -114,8 +114,15 @@ class SettingsViewModel @Inject constructor(
 
             uiState.copy(
                 isLoading = false,
-                assets = assets,
-                categoryMap = uiState.categoryMap
+                notificationConfiguration = NotificationConfiguration(
+                    assets = assets.map { asset ->
+                        SelectableAsset(
+                            name = asset.name,
+                            symbol = asset.symbol,
+                            image = asset.image
+                        )
+                    }
+                )
             )
         }
     }
@@ -130,40 +137,71 @@ class SettingsViewModel @Inject constructor(
 
                     is SettingsEvent.CreateCustomNotification -> {
 
-                        createCustomUserNotification(
-                            asset = event.asset,
-                            event = _uiState.value.categoryMap.getSelectedCategoryItem("Price Events"),
-                            eventValue = _uiState.value.categoryMap.getSelectedCategoryItem("Event Value"),
-                            repeatIntervalTimeUnit = _uiState.value.categoryMap.getSelectedCategoryItem(
-                                "Interval Types"
-                            ),
-                            repeatInterval = _uiState.value.categoryMap.getSelectedCategoryItem("Interval Values")
-                                .toLong()
-                        )
+//                        createCustomUserNotification(
+//                            asset = event.asset,
+//                            event = _uiState.value.categoryMap.getSelectedCategoryItem("Price Events"),
+//                            eventValue = _uiState.value.categoryMap.getSelectedCategoryItem("Event Value"),
+//                            repeatIntervalTimeUnit = _uiState.value.categoryMap.getSelectedCategoryItem(
+//                                "Interval Types"
+//                            ),
+//                            repeatInterval = _uiState.value.categoryMap.getSelectedCategoryItem("Interval Values")
+//                                .toLong()
+//                        )
                     }
-                    is SettingsEvent.SelectCategoryItem -> {
+
+
+//                        _uiState.update { uiState ->
+//
+////                            uiState.copy(
+////                                categoryMap = uiState.categoryMap.mapValues { categoryList ->
+////
+////                                    if (categoryList.value.find { it.categoryType == event.categoryType } != null) {
+////                                        return@mapValues categoryList.value.toMutableList()
+////                                            .map { categoryItem ->
+////                                                if (categoryItem.categoryType == event.categoryType) {
+////                                                    categoryItem.copy(selected = true)
+////                                                } else {
+////                                                    if (categoryItem.selected) {
+////                                                        categoryItem.copy(selected = false)
+////                                                    } else {
+////                                                        categoryItem
+////                                                    }
+////                                                }
+////                                            }
+////                                    }
+////                                    categoryList.value
+////                                })
+//                        }
+                    is SettingsEvent.SelectAsset -> {
 
                         _uiState.update { uiState ->
 
                             uiState.copy(
-                                categoryMap = uiState.categoryMap.mapValues { categoryList ->
+                                notificationConfiguration = uiState.notificationConfiguration?.copy(
+                                    assets = uiState.notificationConfiguration.assets.map { selectableAsset ->
 
-                                    if (categoryList.value.find { it.categoryType == event.categoryType } != null) {
-                                        return@mapValues categoryList.value.toMutableList()
-                                            .map { categoryItem ->
-                                                if (categoryItem.categoryType == event.categoryType) {
-                                                    categoryItem.copy(selected = true)
-                                                } else {
-                                                    if (categoryItem.selected) {
-                                                        categoryItem.copy(selected = false)
-                                                    } else {
-                                                        categoryItem
-                                                    }
-                                                }
+                                        if (selectableAsset == event.selectedAsset) {
+                                            selectableAsset.copy(selected = true)
+                                        } else {
+                                            if (selectableAsset.selected) {
+                                                selectableAsset.copy(selected = false)
+                                            } else {
+                                                selectableAsset
                                             }
-                                    }
-                                    categoryList.value
-                                })
+                                        }
+                                    }.sortedBy { !it.selected })
+
+                            )
+                        }
+                    }
+                    is SettingsEvent.SelectIntervalPeriod -> {
+                        _uiState.update { uiState ->
+
+                            uiState.copy(
+                                notificationConfiguration = uiState.notificationConfiguration?.copy(
+                                    intervalPeriod = event.period
+                                )
+                            )
                         }
                     }
                 }
@@ -184,148 +222,64 @@ class SettingsViewModel @Inject constructor(
 
         val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
 
-        database.notificationsDao().insertNotification(
-            DbNotification(
-                tag = tag,
-                name = asset,
-                image = uiState.value.assets.find { it.name == asset }?.image ?: "",
-                symbol = uiState.value.assets.find { it.name == asset }?.symbol ?: "",
-                event = event,
-                eventValue = if (eventValue == "Any change") {
-                    "0"
-                } else {
-                    eventValue
-                },
-                interval = repeatInterval.toString(),
-                intervalType = repeatIntervalTimeUnit,
-                date = LocalDateTime.now().format(formatter)
-            )
-        )
+//        database.notificationsDao().insertNotification(
+//            DbNotification(
+//                tag = tag,
+//                name = asset,
+//                image = uiState.value.assets.find { it.name == asset }?.image ?: "",
+//                symbol = uiState.value.assets.find { it.name == asset }?.symbol ?: "",
+//                event = event,
+//                eventValue = if (eventValue == "Any change") {
+//                    "0"
+//                } else {
+//                    eventValue
+//                },
+//                interval = repeatInterval.toString(),
+//                intervalType = repeatIntervalTimeUnit,
+//                date = LocalDateTime.now().format(formatter)
+//            )
+//        )
 
-        val priceChangeWorker = initializeDelayedPeriodicWorker<PriceChangeWorker>(
-            workerStartingDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK),
-            workerStartingHour = LocalDateTime.now().hour.toLong(),
-            workerStartingMinute = LocalDateTime.now().minute.toLong() + 1,
-            tag = tag,
-            repeatInterval = repeatInterval,
-            repeatIntervalTimeUnit = when (repeatIntervalTimeUnit) {
-                "Day" -> TimeUnit.DAYS
-                "Hour" -> TimeUnit.HOURS
-
-                else -> throw IllegalStateException("This time Unit is not defined")
-            },
-            notification = AssetNotification(
-                name = asset,
-                image = uiState.value.assets.find { it.name == asset }?.image ?: "",
-                symbol = uiState.value.assets.find { it.name == asset }?.symbol ?: "",
-                event = event,
-                eventValue = if (eventValue == "Any change") {
-                    "0"
-                } else {
-                    eventValue
-                },
-                intervalType = repeatIntervalTimeUnit,
-                interval = repeatInterval.toString(),
-                date = LocalDateTime.now().toString()
-            )
-        )
-
-        workManager.enqueueUniquePeriodicWork(
-            tag,
-            ExistingPeriodicWorkPolicy.KEEP,
-            priceChangeWorker
-        )
+//        val priceChangeWorker = initializeDelayedPeriodicWorker<PriceChangeWorker>(
+//            workerStartingDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK),
+//            workerStartingHour = LocalDateTime.now().hour.toLong(),
+//            workerStartingMinute = LocalDateTime.now().minute.toLong() + 1,
+//            tag = tag,
+//            repeatInterval = repeatInterval,
+//            repeatIntervalTimeUnit = when (repeatIntervalTimeUnit) {
+//                "Day" -> TimeUnit.DAYS
+//                "Hour" -> TimeUnit.HOURS
+//
+//                else -> throw IllegalStateException("This time Unit is not defined")
+//            },
+//            notification = AssetNotification(
+//                name = asset,
+//                image = uiState.value.assets.find { it.name == asset }?.image ?: "",
+//                symbol = uiState.value.assets.find { it.name == asset }?.symbol ?: "",
+//                event = event,
+//                eventValue = if (eventValue == "Any change") {
+//                    "0"
+//                } else {
+//                    eventValue
+//                },
+//                intervalType = repeatIntervalTimeUnit,
+//                interval = repeatInterval.toString(),
+//                date = LocalDateTime.now().toString()
+//            )
+//        )
+//
+//        workManager.enqueueUniquePeriodicWork(
+//            tag,
+//            ExistingPeriodicWorkPolicy.KEEP,
+//            priceChangeWorker
+//        )
     }
 
     companion object {
 
-        private val priceEvents = listOf(
-            CategoryItem(
-                categoryType = CategoryValues.PRICEUP
-            ),
-            CategoryItem(
-                categoryType = CategoryValues.PRICEDOWN
-            ),
-            CategoryItem(
-                categoryType = CategoryValues.PRICEUPORDOWN
-            )
-        )
 
-        private val eventValues = listOf(
-            CategoryItem(
-                categoryType = CategoryValues.ANYCHANGE
-            ),
-            CategoryItem(
-                categoryType = CategoryValues.FIVEPERCENT
-            ),
-            CategoryItem(
-                categoryType = CategoryValues.TENPERCENT
-            )
-        )
-
-        private val intervalTypes = listOf(
-            CategoryItem(
-                categoryType = CategoryValues.DAY
-            ),
-            CategoryItem(
-                categoryType = CategoryValues.HOUR
-            )
-        )
-
-        private val intervalValues = listOf(
-            CategoryItem(
-                categoryType = CategoryValues.ONE
-            ),
-            CategoryItem(
-                categoryType = CategoryValues.TWO
-            ),
-            CategoryItem(
-                categoryType = CategoryValues.THREE
-            )
-        )
-
-        val categoryMap = mapOf(
-            "Price Events" to priceEvents,
-            "Event Value" to eventValues,
-            "Interval Types" to intervalTypes,
-            "Interval Values" to intervalValues
-        )
     }
 }
-
-fun Map<String, List<CategoryItem>>.getSelectedCategoryItem(key: String): String {
-
-    this[key]?.forEach { categoryItem ->
-        if (categoryItem.selected) {
-            return categoryItem.categoryType.categoryName
-        }
-    }
-    return ""
-}
-
-data class CategoryItem(
-    val categoryType: CategoryValues,
-    val selected: Boolean = false
-)
-
-enum class CategoryValues(var categoryName: String) {
-
-    ONE("1"),
-    TWO("2"),
-    THREE("3"),
-
-    DAY("Day"),
-    HOUR("Hour"),
-
-    ANYCHANGE("Any change"),
-    FIVEPERCENT("5"),
-    TENPERCENT("10"),
-
-    PRICEUP("Price up"),
-    PRICEDOWN("Price down"),
-    PRICEUPORDOWN("Price up or down")
-}
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 private inline fun <reified T : CoroutineWorker> initializeDelayedPeriodicWorker(

@@ -1,28 +1,59 @@
 package com.example.mainichi.ui.settingsScreen
 
-import com.example.mainichi.ui.entities.Asset
-import java.util.concurrent.TimeUnit
+import com.example.mainichi.ui.settingsScreen.SettingsContract.NotificationConfiguration.*
 
 class SettingsContract {
 
     data class UiState(
         val isLoading: Boolean,
-        val assets: List<Asset> = emptyList(),
-        val notifications: List<AssetNotification> = emptyList(),
-        val categoryMap : Map<String,List<CategoryItem>>
+        val notificationConfiguration: NotificationConfiguration? = null,
+//        val notifications: List<AssetNotification> = emptyList(), // own screen
     )
 
-     sealed class SettingsEvent {
+    //reuse in different screens // edit, create, show
+    data class NotificationConfiguration(
+        val assets: List<SelectableAsset>,
+        val notifyIncrease: Boolean = false,
+        val notifyDecrease: Boolean = false,
 
-         data class CreateCustomNotification(val asset : String) : SettingsEvent()
+        val priceEvent: PriceEvent = PriceEvent.PriceUp,
+        val eventValue: Int = 5,
+        val anyEventValue: Boolean = true,
 
-         data class SelectCategoryItem(
-             val categoryType : CategoryValues,
-         ) : SettingsEvent()
-     }
+        val notificationInterval: Int = 1,
+        val intervalPeriod: Periodically = Periodically.Hourly
+    ) {
+        data class SelectableAsset(
+            val name: String,
+            val symbol: String,
+            val image: String,
+            val selected: Boolean = false,
+        )
 
-     sealed class SettingsEffect {
+        enum class Periodically {
+            Hourly, Daily
+        }
 
-     }
+        enum class PriceEvent {
+            PriceUp,
+            PriceDown
+        }
+    }
+
+    sealed class SettingsEvent {
+
+        data class CreateCustomNotification(val asset: String) : SettingsEvent()
+
+        data class SelectAsset(
+            val selectedAsset: SelectableAsset
+        ) : SettingsEvent()
+
+        data class SelectIntervalPeriod(val period: Periodically) : SettingsEvent()
+
+    }
+
+    sealed class SettingsEffect {
+
+    }
 }
 

@@ -1,23 +1,27 @@
 package com.example.mainichi.ui.settingsScreen
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.RadioButtonUnchecked
+import androidx.compose.material.icons.filled.ExpandCircleDown
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.mainichi.helper.ImageLoader
 import com.example.mainichi.helper.LoadingStateProgressIndicator
+import com.example.mainichi.ui.settingsScreen.SettingsContract.NotificationConfiguration
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -55,13 +59,9 @@ fun SettingsScreen(
             color = MaterialTheme.colors.onBackground,
             size = 50
         )
-        else -> {
+        state.notificationConfiguration != null -> {
 
-            val selectedAssetMap = remember { mutableStateMapOf<String, Boolean>() }
-
-            state.assets.forEach { asset ->
-                selectedAssetMap[asset.name] = false
-            }
+            var expanded by remember { mutableStateOf(false) }
 
             LazyColumn(
                 modifier = Modifier
@@ -72,34 +72,146 @@ fun SettingsScreen(
             ) {
 
                 item {
+
                     Text(
                         text = "Create new Notification",
-                        style = MaterialTheme.typography.h5
+                        style = MaterialTheme.typography.h5,
+                        modifier = Modifier.padding(end = 8.dp)
                     )
                 }
 
                 item {
-                    SelectableDropDown(
-                        title = "Asset",
-                        content = state.assets.map { asset ->
-                            asset.name
-                        },
-                        selectedMap = selectedAssetMap,
-                        onSelect = { name ->
-                            remapSelection(selectedAssetMap, name)
-                        }
-                    )
-                }
 
-                state.categoryMap.forEach { categoryList ->
-                    item {
-                        SelectableDropDown(
-                            title = categoryList.key,
-                            content = categoryList.value,
-                            onViewModelEvent = onViewModelEvent
-                        )
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = "Asset")
+
+                        IconButton(onClick = { expanded = !expanded }) {
+                            Icon(
+                                imageVector = Icons.Default.ExpandCircleDown,
+                                contentDescription = null
+                            )
+                        }
                     }
                 }
+
+                state.notificationConfiguration.assets.chunked(3)
+                    .forEachIndexed() { index, sublist ->
+
+                        if (expanded) {
+                            item {
+                                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    sublist.forEach { selectableAsset ->
+                                        item {
+                                            IconChip(
+                                                text = selectableAsset.name,
+                                                image = selectableAsset.image,
+                                                isSelected = selectableAsset.selected,
+                                                onSelected = {
+                                                    onViewModelEvent(
+                                                        SettingsContract.SettingsEvent.SelectAsset(
+                                                            selectedAsset = selectableAsset
+                                                        )
+                                                    )
+                                                },
+                                                color = MaterialTheme.colors.background
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (index == 0) {
+                            item {
+                                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    sublist.forEach { selectableAsset ->
+                                        item {
+                                            IconChip(
+                                                text = selectableAsset.name,
+                                                image = selectableAsset.image,
+                                                isSelected = selectableAsset.selected,
+                                                onSelected = {
+                                                    onViewModelEvent(
+                                                        SettingsContract.SettingsEvent.SelectAsset(
+                                                            selectedAsset = selectableAsset
+                                                        )
+                                                    )
+                                                },
+                                                color = MaterialTheme.colors.background
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                item {
+
+                    Text(text = "Interval")
+
+                    var expandedIntervalField by remember { mutableStateOf(false) }
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+
+
+                        Column(modifier = Modifier.fillMaxWidth(0.3f)) {
+                            OutlinedTextField(
+                                value = state.notificationConfiguration.notificationInterval.toString(),
+                                onValueChange = {},
+                                enabled = true
+                            )
+                        }
+
+                        Column(modifier = Modifier.fillMaxWidth(0.5f)) {
+                            OutlinedTextField(
+                                value = state.notificationConfiguration.intervalPeriod.toString(),
+                                onValueChange = {},
+                                trailingIcon = {
+
+                                    IconButton(onClick = {
+                                        expandedIntervalField = !expandedIntervalField
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Default.ExpandMore,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colors.primary
+                                        )
+                                    }
+                                },
+                                enabled = false
+                            )
+
+                            DropdownMenu(
+                                expanded = expandedIntervalField,
+                                onDismissRequest = { expandedIntervalField = false },
+                                modifier = Modifier.heightIn(max = 220.dp)
+                            ) {
+
+                                enumValues<NotificationConfiguration.Periodically>().forEach { priceEvent ->
+
+                                    DropdownMenuItem(onClick = {
+
+                                        onViewModelEvent(
+                                            SettingsContract.SettingsEvent.SelectIntervalPeriod(
+                                                period = priceEvent
+                                            )
+                                        )
+
+                                    }) {
+
+                                        Row(horizontalArrangement = Arrangement.Center) {
+                                            Text(text = priceEvent.toString())
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+
 
                 item {
                     Button(
@@ -108,12 +220,6 @@ fun SettingsScreen(
                         ),
                         enabled = true,
                         onClick = {
-                            onViewModelEvent(
-                                SettingsContract.SettingsEvent.CreateCustomNotification(
-                                    asset = selectedAssetMap.filter { it.value }.keys.first()
-                                )
-                            )
-                            selectedAssetMap.setFalse()
 
                         },
                         modifier = Modifier
@@ -126,26 +232,61 @@ fun SettingsScreen(
                         )
                     }
                 }
-
-                if (state.notifications.isNotEmpty()) {
-                    item {
-                        Text(
-                            text = "Created Notifications",
-                            style = MaterialTheme.typography.h5,
-                        )
-                    }
-                }
-
-                state.notifications.forEach {
-                    item {
-                        NotificationsCard(
-                            it
-                        )
-                    }
-                }
             }
         }
     }
+}
+
+@Composable
+fun IconChip(
+    text: String,
+    image: String,
+    isSelected: Boolean,
+    onSelected: () -> Unit,
+    color: Color
+) {
+
+    Surface(
+        elevation = 8.dp,
+        color = if (isSelected) {
+            MaterialTheme.colors.primary
+        } else {
+            color
+        },
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier
+            .clip(RoundedCornerShape(32.dp))
+            .border(
+                1.dp,
+                color = MaterialTheme.colors.onSurface,
+                shape = RoundedCornerShape(32.dp)
+            )
+    ) {
+
+        Row(
+            modifier = Modifier
+                .clickable {
+                    onSelected()
+                }
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            ImageLoader(
+                data = image, modifier = Modifier
+                    .size(20.dp)
+            )
+
+            Text(
+                text = text,
+                color = MaterialTheme.colors.onSurface,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+
+        }
+    }
+
 }
 
 fun MutableMap<String, Boolean>.setFalse() {
@@ -220,7 +361,10 @@ fun SelectableDropDown(
 
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("") }
-    Column() {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         TextField(
             value = selectedOption,
             onValueChange = { },
@@ -246,11 +390,6 @@ fun SelectableDropDown(
                 }) {
 
                     Row() {
-                        Icon(
-                            imageVector = Icons.Default.RadioButtonUnchecked,
-                            contentDescription = null
-                        )
-
                         Text(text = asset)
                     }
                 }
@@ -259,53 +398,50 @@ fun SelectableDropDown(
     }
 }
 
-@Composable
-fun SelectableDropDown(
-    title: String,
-    content: List<CategoryItem>,
-    onViewModelEvent: (SettingsContract.SettingsEvent) -> Unit
-) {
-
-    var expanded by remember { mutableStateOf(false) }
-
-    Column() {
-        TextField(
-            value = content.find { it.selected }?.categoryType?.categoryName ?: "",
-            onValueChange = { },
-            label = { Text(title) },
-            enabled = false,
-            modifier = Modifier.clickable {
-                expanded = !expanded
-            }
-        )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.heightIn(max = 220.dp)
-        ) {
-
-            content.forEach { item ->
-
-                DropdownMenuItem(onClick = {
-
-                    onViewModelEvent(
-                        SettingsContract.SettingsEvent.SelectCategoryItem(
-                            categoryType = item.categoryType
-                        )
-                    )
-
-                }) {
-
-                    Row() {
-                        Icon(
-                            imageVector = Icons.Default.RadioButtonUnchecked,
-                            contentDescription = null
-                        )
-
-                        Text(text = item.categoryType.categoryName)
-                    }
-                }
-            }
-        }
-    }
-}
+//@Composable
+//fun SelectableDropDown(
+//    title: String,
+//    content: List<CategoryItem>,
+//    onViewModelEvent: (SettingsContract.SettingsEvent) -> Unit
+//) {
+//
+//    var expanded by remember { mutableStateOf(false) }
+//
+//    Column(
+//        modifier = Modifier.fillMaxWidth(),
+//        horizontalAlignment = Alignment.CenterHorizontally) {
+//        TextField(
+//            value = content.find { it.selected }?.categoryType?.categoryName ?: "",
+//            onValueChange = { },
+//            label = { Text(title) },
+//            enabled = false,
+//            modifier = Modifier.clickable {
+//                expanded = !expanded
+//            }
+//        )
+//        DropdownMenu(
+//            expanded = expanded,
+//            onDismissRequest = { expanded = false },
+//            modifier = Modifier.heightIn(max = 220.dp)
+//        ) {
+//
+//            content.forEach { item ->
+//
+//                DropdownMenuItem(onClick = {
+//
+//                    onViewModelEvent(
+//                        SettingsContract.SettingsEvent.SelectCategoryItem(
+//                            categoryType = item.categoryType
+//                        )
+//                    )
+//
+//                }) {
+//
+//                    Row(horizontalArrangement = Arrangement.Center) {
+//                        Text(text = item.categoryType.categoryName)
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
