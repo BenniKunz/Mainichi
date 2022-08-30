@@ -18,10 +18,16 @@ sealed class CryptoEvent {
     data class CoinClicked(val coin: String) : CryptoEvent()
     data class FilterChanged(val text: String) : CryptoEvent()
     object UpdateRequested : CryptoEvent()
+    object NavigateToSettingsScreen : CryptoEvent()
+    object NavigateToMenu : CryptoEvent()
 
 }
 
 sealed class CryptoEffect {
 
-    data class NavigateToCoinScreen(val coin : String) : CryptoEffect()
+    sealed class Navigation() : CryptoEffect() {
+        data class NavigateToCoinScreen(val coin : String) : Navigation()
+        object NavigateToSettingsScreen : Navigation()
+        object NavigateToMenuScreen : Navigation()
+    }
 }

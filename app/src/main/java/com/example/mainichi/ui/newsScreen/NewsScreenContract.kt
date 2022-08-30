@@ -11,11 +11,15 @@ sealed class NewsUiState {
 
 sealed class NewsEvent {
 
-//    data class SpotClicked() : NewsEvent()
+    object NavigateToMenu : NewsEvent()
+    object NavigateToSettings : NewsEvent()
 
 }
 
 sealed class NewsEffect {
 
-    object NavigateToHomeScreen : NewsEffect()
+    sealed class Navigation : NewsEffect() {
+        object NavigateToMenu : Navigation()
+        object NavigateToSettings : Navigation()
+    }
 }

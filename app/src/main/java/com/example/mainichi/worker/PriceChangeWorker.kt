@@ -7,8 +7,9 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.mainichi.api.crypto.CryptoAPI
 import com.example.mainichi.notifications.PriceNotification
-import com.example.mainichi.ui.settingsScreen.SettingsContract
-import com.example.mainichi.ui.settingsScreen.SettingsContract.*
+import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract
+import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.*
+import com.example.mainichi.ui.showNotificationScreen.ShowNotificationContract.*
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 

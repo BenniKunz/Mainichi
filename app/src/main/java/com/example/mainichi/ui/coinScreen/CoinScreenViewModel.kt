@@ -83,6 +83,11 @@ class CoinScreenViewModel @Inject constructor(
                         )
                     }
                 }
+                is CoinEvent.NavigateUp -> {
+                    setEffect {
+                        CoinEffect.NavigateUp
+                    }
+                }
             }
         }
     }

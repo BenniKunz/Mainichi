@@ -8,23 +8,29 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mainichi.R
 import com.example.mainichi.helper.ImageLoader
 import com.example.mainichi.helper.LoadingStateProgressIndicator
+import com.example.mainichi.ui.cryptoScreen.CryptoEvent
 import com.example.mainichi.ui.theme.MainichiTheme
 import com.example.mainichi.ui.entities.Asset
 
 @Composable
 fun CoinScreen(
     viewModel: CoinScreenViewModel,
-    paddingValues: PaddingValues
+    onNavigateUp: () -> Unit
 ) {
 
     val state = viewModel.uiState.collectAsState().value
@@ -33,34 +39,63 @@ fun CoinScreen(
 
         viewModel.effect.collect {
             when (it) {
-                is CoinEffect.NavigateBack -> TODO()
+                is CoinEffect.NavigateUp -> {
+                    onNavigateUp()
+                }
             }
         }
     }
 
     CoinScreen(
         state = state,
-        paddingValues = paddingValues,
         onViewModelEvent = { event -> viewModel.setEvent(event) })
 }
 
 @Composable
 fun CoinScreen(
     state: CoinUiState.UiState,
-    paddingValues: PaddingValues,
     onViewModelEvent: (CoinEvent) -> Unit
 ) {
-    when {
-        state.isLoading -> LoadingStateProgressIndicator(
-            color = MaterialTheme.colors.onBackground,
-            size = 50
-        )
-        state.isError -> throw IllegalStateException("no such state")
-        state.asset != null ->
-            CoinContent(
-                coin = state.asset,
-                onViewModelEvent = onViewModelEvent
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.app_name),
+                        color = MaterialTheme.colors.primary
+                    )
+                },
+                backgroundColor = MaterialTheme.colors.background,
+                contentColor = MaterialTheme.colors.primary,
+                navigationIcon = {
+
+                    IconButton(onClick = {
+                        onViewModelEvent(CoinEvent.NavigateUp)
+                    }) {
+
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Open menu",
+                            tint = MaterialTheme.colors.onBackground
+                        )
+                    }
+                }
             )
+        },
+
+        ) {
+        when {
+            state.isLoading -> LoadingStateProgressIndicator(
+                color = MaterialTheme.colors.onBackground,
+                size = 50
+            )
+            state.isError -> throw IllegalStateException("no such state")
+            state.asset != null ->
+                CoinContent(
+                    coin = state.asset,
+                    onViewModelEvent = onViewModelEvent
+                )
+        }
     }
 }
 

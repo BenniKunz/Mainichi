@@ -3,14 +3,12 @@ package com.example.mainichi
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -27,7 +25,9 @@ import com.example.mainichi.navigationDrawer.*
 import com.example.mainichi.ui.appMenu.AppMenu
 import com.example.mainichi.ui.coinScreen.CoinScreen
 import com.example.mainichi.ui.cryptoScreen.CryptoEffect
-import com.example.mainichi.ui.settingsScreen.SettingsScreen
+import com.example.mainichi.ui.newsScreen.NewsEffect
+import com.example.mainichi.ui.createNotificationScreen.CreateNotificationScreen
+import com.example.mainichi.ui.createNotificationScreen.ShowNotificationScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -60,126 +60,98 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
 
-                    val scaffoldState = rememberScaffoldState()
-                    var isDetailScreen by remember { mutableStateOf(false) }
-                    val scope = rememberCoroutineScope()
                     val navController = rememberNavController()
 
-                    Scaffold(
-                        scaffoldState = scaffoldState,
-                        topBar = {
-                            MainichiAppBar(
-                                isDetailScreen = isDetailScreen,
-                                onToggleDrawer = {
-                                    navController.navigate(route = "AppMenu")
+                    NavHost(navController = navController, startDestination = "splash") {
+
+                        composable(route = "splash") {
+                            com.example.mainichi.ui.splashScreen.SplashScreen(navController = navController)
+                        }
+
+                        dialog(route = "appMenu") {
+                            AppMenu(
+                                onItemClick = { screenType ->
+
+                                    when (screenType) {
+                                        ScreenType.Crypto -> navController.navigate(route = "crypto")
+                                        ScreenType.News -> navController.navigate(route = "news")
+                                    }
                                 },
+                                onNavigateUpRequested = { navController.navigateUp() },
+                                onChangeTheme = { isDarkMode = !isDarkMode },
+                                isDarkMode = isDarkMode
+                            )
+                        }
+
+                        composable(route = "news") {
+                            NewsScreen(
+                                viewModel = hiltViewModel(),
+                                onNavigate = { effect ->
+                                    when (effect) {
+                                        is NewsEffect.Navigation.NavigateToSettings -> {
+                                            navController.navigate(route = "createNotification")
+                                        }
+                                        is NewsEffect.Navigation.NavigateToMenu -> {
+                                            navController.navigate(route = "appMenu")
+                                        }
+                                    }
+                                },
+                            )
+                        }
+
+                        composable(route = "crypto") {
+                            CryptoScreen(
+                                viewModel = hiltViewModel(),
+                                onNavigate = { effect ->
+                                    when (effect) {
+                                        is CryptoEffect.Navigation.NavigateToCoinScreen -> {
+                                            navController.navigate(route = "coin/${effect.coin}")
+                                        }
+                                        is CryptoEffect.Navigation.NavigateToSettingsScreen -> {
+                                            navController.navigate(route = "showNotifications")
+                                        }
+                                        is CryptoEffect.Navigation.NavigateToMenuScreen -> {
+                                            navController.navigate(route = "appMenu")
+                                        }
+                                    }
+                                }
+                            )
+                        }
+
+                        composable(
+                            route = "coin/{coinID}",
+                            arguments = listOf(
+                                navArgument(name = "coinID") {
+                                    type = NavType.StringType
+                                }
+                            )
+                        ) {
+                            CoinScreen(
                                 onNavigateUp = {
-                                    isDetailScreen = false
                                     navController.navigateUp()
                                 },
-                                onNavigateToSettings = { navController.navigate(route = "Settings") {
-                                    launchSingleTop = true
-                                } })
-                        },
-
-                        ) { paddingValues ->
-
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
+                                viewModel = hiltViewModel(),
+                            )
                         }
-//                        Box(modifier = Modifier
-//                            .size(200.dp, 150.dp)
-//                            .clickable {
-//                                scope.launch {
-//                                    val result = scaffoldState.snackbarHostState.showSnackbar(
-//                                        message = "Hello snackbar",
-//                                        actionLabel = "Action"
-//                                    )
-//
-//                                    when (result) {
-//                                        SnackbarResult.Dismissed -> Log.d("Test", "Test")
-//                                        SnackbarResult.ActionPerformed -> Log.d("Test", "Test")
-//                                    }
-//                                }
-//                            }
-//                            .graphicsLayer {
-//                                shadowElevation = 8.dp.toPx()
-//                                shape = CustomShape(24.dp.toPx())
-//                                clip = true
-//                            }
-//                            .background(Color.Red)) {
-//
-//                        }
 
-                        NavHost(navController = navController, startDestination = "Splash") {
+                        composable(
+                            route = "showNotifications"
+                        ) {
 
-                            composable(route = "Splash") {
-                                com.example.mainichi.ui.splashScreen.SplashScreen(navController = navController)
+                            ShowNotificationScreen(
+                                viewModel = hiltViewModel()) {
+
                             }
 
-                            dialog(route = "AppMenu") {
-                                AppMenu(
-                                    onItemClick = { screenType ->
+                        }
 
-                                        when (screenType) {
-                                            ScreenType.Crypto -> navController.navigate(route = "Crypto")
-                                            ScreenType.News -> navController.navigate(route = "News")
-                                        }
-                                    },
-                                    onNavigateUpRequested = { navController.navigateUp() },
-                                    onChangeTheme = { isDarkMode = !isDarkMode },
-                                    isDarkMode = isDarkMode
-                                )
-                            }
-
-                            composable(route = "News") {
-                                NewsScreen(
-                                    viewModel = hiltViewModel(),
-                                    onNavigate = {},
-                                    paddingValues = paddingValues
-                                )
-                            }
-
-                            composable(route = "Crypto") {
-                                CryptoScreen(
-                                    viewModel = hiltViewModel(),
-                                    onNavigate = { effect ->
-                                        when (effect) {
-                                            is CryptoEffect.NavigateToCoinScreen -> {
-                                                isDetailScreen = true
-                                                navController.navigate(route = "coin/${effect.coin}")
-                                            }
-                                        }
-                                    },
-                                    paddingValues = paddingValues
-                                )
-                            }
-
-                            composable(
-                                route = "coin/{coinID}",
-                                arguments = listOf(
-                                    navArgument(name = "coinID") {
-                                        type = NavType.StringType
-                                    }
-                                )
-                            ) {
-                                CoinScreen(
-                                    viewModel = hiltViewModel(),
-                                    paddingValues = paddingValues
-                                )
-                            }
-
-                            composable(
-                                route = "Settings"
-                            ) {
-                                SettingsScreen(
-                                    viewModel = hiltViewModel(),
-                                    onNavigateUpRequested = {navController.navigateUp()}
-                                )
-                            }
+                        composable(
+                            route = "createNotification"
+                        ) {
+                            CreateNotificationScreen(
+                                viewModel = hiltViewModel(),
+                                onNavigateUp = { navController.navigateUp() },
+                            )
                         }
                     }
                 }

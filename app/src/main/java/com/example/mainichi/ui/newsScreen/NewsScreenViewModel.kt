@@ -11,8 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NewsScreenViewModel @Inject constructor(
-    private val newsAPI : NewsAPI,
-    private val articleRepo : ArticleRepository
+    private val articleRepo: ArticleRepository
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<NewsUiState> = MutableStateFlow(NewsUiState.LoadingState)
@@ -43,6 +42,24 @@ class NewsScreenViewModel @Inject constructor(
                     NewsUiState.ContentState(
                         articles = articleList
                     )
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            handleEvents()
+        }
+    }
+
+    private suspend fun handleEvents() {
+        _event.collect { newsEvent ->
+
+            when(newsEvent) {
+                NewsEvent.NavigateToMenu -> {
+                    setEffect { NewsEffect.Navigation.NavigateToMenu }
+                }
+                NewsEvent.NavigateToSettings -> {
+                    setEffect { NewsEffect.Navigation.NavigateToSettings }
                 }
             }
         }

@@ -123,7 +123,7 @@ class CryptoScreenViewModel @Inject constructor(
 
                         setEffect {
 
-                            CryptoEffect.NavigateToCoinScreen(coin = event.coin)
+                            CryptoEffect.Navigation.NavigateToCoinScreen(coin = event.coin)
 
                         }
                     }
@@ -163,6 +163,21 @@ class CryptoScreenViewModel @Inject constructor(
                                     filteredAssets = emptyList()
                                 )
                             }
+                        }
+                    }
+                    CryptoEvent.NavigateToSettingsScreen -> {
+
+                        setEffect {
+
+                            CryptoEffect.Navigation.NavigateToSettingsScreen
+
+                        }
+                    }
+                    CryptoEvent.NavigateToMenu -> {
+                        setEffect {
+
+                            CryptoEffect.Navigation.NavigateToMenuScreen
+
                         }
                     }
                 }

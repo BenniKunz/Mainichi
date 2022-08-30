@@ -1,4 +1,4 @@
-package com.example.mainichi.ui.settingsScreen
+package com.example.mainichi.ui.createNotificationScreen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
@@ -11,7 +11,7 @@ import com.example.mainichi.helper.ImageLoader
 
 @Composable
 fun NotificationsCard(
-    notification: AssetNotification
+notificationConfiguration: CreateNotificationContract.NotificationConfiguration
 ) {
 
     Row(
@@ -23,25 +23,25 @@ fun NotificationsCard(
     ) {
 
         ImageLoader(
-            data = notification.image,
+            data = notificationConfiguration.assets.first().image,
             modifier = Modifier.size(32.dp)
         )
 
         Column() {
 
-            Text(notification.symbol.uppercase())
+            Text(notificationConfiguration.assets.first().symbol.uppercase())
 
             Text(
-                text = notification.date,
+                text = notificationConfiguration.date,
                 style = MaterialTheme.typography.caption
             )
         }
 
         Column() {
-            Text(notification.event)
+            Text(notificationConfiguration.eventType.toString())
 
             Text(
-                text = "every ${notification.interval} ${notification.intervalType}",
+                text = "every ${notificationConfiguration.intervalValue} ${notificationConfiguration.intervalType}",
                 style = MaterialTheme.typography.caption
             )
         }

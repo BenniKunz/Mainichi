@@ -2,6 +2,8 @@ package com.example.mainichi.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.*
+import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.NotificationConfiguration.*
 
 @Entity(tableName = "notification")
 data class DbNotification(
@@ -16,3 +18,20 @@ data class DbNotification(
     val interval: String,
     val date: String,
 )
+
+
+fun DbNotification.toNotificationConfiguration() = NotificationConfiguration(
+    assets = listOf(
+        NotificationAsset(
+            name = this.name,
+            symbol = this.symbol,
+            image = this.image
+        )
+    ),
+    eventType = PriceEvent.valueOf(this.event),
+    eventValue = this.eventValue,
+    intervalValue = this.interval,
+    intervalType = Periodically.valueOf(this.intervalType),
+    date = this.date
+    )
+

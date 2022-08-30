@@ -1,4 +1,4 @@
-package com.example.mainichi.ui.settingsScreen
+package com.example.mainichi.ui.createNotificationScreen
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -11,30 +11,33 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ExpandCircleDown
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.mainichi.R
 import com.example.mainichi.helper.ImageLoader
 import com.example.mainichi.helper.LoadingStateProgressIndicator
-import com.example.mainichi.ui.settingsScreen.SettingsContract.NotificationConfiguration.*
+import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.*
+import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.NotificationConfiguration.*
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SettingsScreen(
-    viewModel: SettingsViewModel,
-    onNavigateUpRequested: () -> Unit,
+fun CreateNotificationScreen(
+    viewModel: CreateNotificationViewModel,
+    onNavigateUp: () -> Unit,
 ) {
     val state = viewModel.uiState.collectAsState().value
 
-    LaunchedEffect(key1 = viewModel, key2 = onNavigateUpRequested) {
+    LaunchedEffect(key1 = viewModel, key2 = onNavigateUp) {
 
         viewModel.effect.collect {
             when (it) {
@@ -44,37 +47,69 @@ fun SettingsScreen(
         }
     }
 
-    SettingsScreen(
+    CreateNotificationScreen(
         state = state,
-        onViewModelEvent = { event -> viewModel.setEvent(event) })
+        onViewModelEvent = { event -> viewModel.setEvent(event) },
+        onNavigateUp = onNavigateUp
+    )
 
 }
 
 @Composable
-fun SettingsScreen(
-    state: SettingsContract.UiState,
-    onViewModelEvent: (SettingsContract.SettingsEvent) -> Unit
+fun CreateNotificationScreen(
+    state: UiState,
+    onViewModelEvent: (CreateNotificationEvent) -> Unit,
+    onNavigateUp: () -> Unit,
 ) {
 
-    when {
-        state.isLoading -> LoadingStateProgressIndicator(
-            color = MaterialTheme.colors.onBackground,
-            size = 50
-        )
-        else -> {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.app_name),
+                        color = MaterialTheme.colors.primary
+                    )
+                },
+                backgroundColor = MaterialTheme.colors.background,
+                contentColor = MaterialTheme.colors.primary,
+                navigationIcon = {
 
-            SettingsContent(
-                state = state,
-                onViewModelEvent = onViewModelEvent
+                    IconButton(onClick = {
+                        onNavigateUp()
+                    }) {
+
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Open menu",
+                            tint = MaterialTheme.colors.onBackground
+                        )
+                    }
+                }
             )
+        },
+
+        ) {
+        when {
+            state.isLoading -> LoadingStateProgressIndicator(
+                color = MaterialTheme.colors.onBackground,
+                size = 50
+            )
+            else -> {
+
+                SettingsContent(
+                    state = state,
+                    onViewModelEvent = onViewModelEvent
+                )
+            }
         }
     }
 }
 
 @Composable
 fun SettingsContent(
-    state: SettingsContract.UiState,
-    onViewModelEvent: (SettingsContract.SettingsEvent) -> Unit
+    state: UiState,
+    onViewModelEvent: (CreateNotificationEvent) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -132,17 +167,17 @@ fun SettingsContent(
 
                     when {
                         !checkedStateUp && !checkedStateDown -> onViewModelEvent(
-                            SettingsContract.SettingsEvent.ChangePriceEvent(
+                            CreateNotificationEvent.ChangePriceEvent(
                                 PriceEvent.None
                             )
                         )
                         checkedStateUp && checkedStateDown -> onViewModelEvent(
-                            SettingsContract.SettingsEvent.ChangePriceEvent(
+                            CreateNotificationEvent.ChangePriceEvent(
                                 PriceEvent.PriceUpDown
                             )
                         )
                         checkedStateUp -> onViewModelEvent(
-                            SettingsContract.SettingsEvent.ChangePriceEvent(
+                            CreateNotificationEvent.ChangePriceEvent(
                                 PriceEvent.PriceUp
                             )
                         )
@@ -156,17 +191,17 @@ fun SettingsContent(
 
                     when {
                         !checkedStateUp && !checkedStateDown -> onViewModelEvent(
-                            SettingsContract.SettingsEvent.ChangePriceEvent(
+                            CreateNotificationEvent.ChangePriceEvent(
                                 PriceEvent.None
                             )
                         )
                         checkedStateUp && checkedStateDown -> onViewModelEvent(
-                            SettingsContract.SettingsEvent.ChangePriceEvent(
+                            CreateNotificationEvent.ChangePriceEvent(
                                 PriceEvent.PriceUpDown
                             )
                         )
                         checkedStateDown -> onViewModelEvent(
-                            SettingsContract.SettingsEvent.ChangePriceEvent(
+                            CreateNotificationEvent.ChangePriceEvent(
                                 PriceEvent.PriceDown
                             )
                         )
@@ -196,7 +231,7 @@ fun SettingsContent(
                     label = { Text(text = "event value") },
                     onValueChange = {
                         onViewModelEvent(
-                            SettingsContract.SettingsEvent.ChangeEventValue(
+                            CreateNotificationEvent.ChangeEventValue(
                                 eventValue = it
                             )
                         )
@@ -213,7 +248,7 @@ fun SettingsContent(
                 Checkbox(checked = checkedState, onCheckedChange = {
                     checkedState = !checkedState
 
-                    onViewModelEvent(SettingsContract.SettingsEvent.ToggleAnyValue)
+                    onViewModelEvent(CreateNotificationEvent.ToggleAnyValue)
                 })
 
                 Text(text = "Any Value Change")
@@ -232,12 +267,12 @@ fun SettingsContent(
             ) {
 
                 OutlinedTextField(
-                    value = state.notificationConfiguration.notificationInterval,
+                    value = state.notificationConfiguration.intervalValue,
                     label = { Text(text = "interval value") },
                     onValueChange = {
 
                         onViewModelEvent(
-                            SettingsContract.SettingsEvent.ChangeIntervalValue(
+                            CreateNotificationEvent.ChangeIntervalValue(
                                 intervalValue = it
                             )
                         )
@@ -250,7 +285,7 @@ fun SettingsContent(
 
                 Box {
                     OutlinedTextField(
-                        value = state.notificationConfiguration.intervalPeriod.toString(),
+                        value = state.notificationConfiguration.intervalType.toString(),
                         label = { Text(text = "interval period") },
                         onValueChange = {},
                         trailingIcon = {
@@ -280,7 +315,7 @@ fun SettingsContent(
                             DropdownMenuItem(onClick = {
 
                                 onViewModelEvent(
-                                    SettingsContract.SettingsEvent.SelectIntervalPeriod(
+                                    CreateNotificationEvent.SelectIntervalPeriod(
                                         period = priceEvent
                                     )
                                 )
@@ -303,11 +338,11 @@ fun SettingsContent(
                     backgroundColor = MaterialTheme.colors.primaryVariant
                 ),
                 enabled = state.notificationConfiguration.assets[0].selected
-                        && state.notificationConfiguration.priceEvent != PriceEvent.None
-                        && state.notificationConfiguration.notificationInterval.isNotEmpty()
+                        && state.notificationConfiguration.eventType != PriceEvent.None
+                        && state.notificationConfiguration.intervalValue.isNotEmpty()
                         && (state.notificationConfiguration.eventValue.isNotEmpty() || state.notificationConfiguration.anyEventValue),
                 onClick = {
-                    onViewModelEvent(SettingsContract.SettingsEvent.CreateCustomNotification)
+                    onViewModelEvent(CreateNotificationEvent.CreateCustomNotification)
                 },
                 modifier = Modifier
                     .size(100.dp, 60.dp)
@@ -324,8 +359,8 @@ fun SettingsContent(
 
 @Composable
 private fun LazyChipRow(
-    sublist: List<SelectableAsset>,
-    onViewModelEvent: (SettingsContract.SettingsEvent) -> Unit
+    sublist: List<NotificationAsset>,
+    onViewModelEvent: (CreateNotificationEvent) -> Unit
 ) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         sublist.forEach { selectableAsset ->
@@ -336,7 +371,7 @@ private fun LazyChipRow(
                     isSelected = selectableAsset.selected,
                     onSelected = {
                         onViewModelEvent(
-                            SettingsContract.SettingsEvent.SelectAsset(
+                            CreateNotificationEvent.SelectAsset(
                                 selectedAsset = selectableAsset
                             )
                         )

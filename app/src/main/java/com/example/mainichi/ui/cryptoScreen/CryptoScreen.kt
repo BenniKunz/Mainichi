@@ -9,17 +9,17 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mainichi.R
 import com.example.mainichi.helper.ImageLoader
 import com.example.mainichi.helper.LoadingStateProgressIndicator
 import com.example.mainichi.helper.fakeAssets
@@ -31,7 +31,6 @@ import com.example.mainichi.ui.theme.MainichiTheme
 fun CryptoScreen(
     viewModel: CryptoScreenViewModel,
     onNavigate: (CryptoEffect) -> Unit,
-    paddingValues: PaddingValues
 ) {
 
     val state = viewModel.uiState.collectAsState().value
@@ -40,33 +39,72 @@ fun CryptoScreen(
 
         viewModel.effect.collect {
             when (it) {
-                is CryptoEffect.NavigateToCoinScreen -> onNavigate(it)
+                is CryptoEffect.Navigation -> onNavigate(it)
             }
         }
     }
 
     CryptoScreen(
         state = state,
-        paddingValues = paddingValues,
         onViewModelEvent = { event -> viewModel.setEvent(event) })
 }
 
 @Composable
 fun CryptoScreen(
     state: UiState,
-    paddingValues: PaddingValues,
     onViewModelEvent: (CryptoEvent) -> Unit
 ) {
-    when (state.isLoading) {
-         true -> LoadingStateProgressIndicator(
-            color = MaterialTheme.colors.onBackground,
-            size = 50
-        )
-        false -> CryptoContent(
-            assets = state.assets,
-            filteredAssets = state.filteredAssets,
-            onViewModelEvent = onViewModelEvent
-        )
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.app_name),
+                        color = MaterialTheme.colors.primary
+                    )
+                },
+                backgroundColor = MaterialTheme.colors.background,
+                contentColor = MaterialTheme.colors.primary,
+                navigationIcon = {
+
+                    IconButton(onClick = {
+                        onViewModelEvent(CryptoEvent.NavigateToMenu)
+                    }) {
+
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = "Open menu",
+                            tint = MaterialTheme.colors.onBackground
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        onViewModelEvent(CryptoEvent.NavigateToSettingsScreen)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "settings",
+                            tint = MaterialTheme.colors.onBackground
+                        )
+                    }
+                }
+            )
+        },
+
+        ) {
+
+        when (state.isLoading) {
+            true -> LoadingStateProgressIndicator(
+                color = MaterialTheme.colors.onBackground,
+                size = 50
+            )
+            false -> CryptoContent(
+                assets = state.assets,
+                filteredAssets = state.filteredAssets,
+                onViewModelEvent = onViewModelEvent
+            )
+        }
     }
 }
 
@@ -79,15 +117,17 @@ fun CryptoContent(
 
     Column(modifier = Modifier.fillMaxWidth()) {
 
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
 
             var text by rememberSaveable { mutableStateOf("") }
 
             SearchBar(
                 text = text,
                 onFilterChanged = onViewModelEvent,
-                onTextChanged = { newText -> text = newText}
+                onTextChanged = { newText -> text = newText }
             )
         }
 
@@ -97,7 +137,7 @@ fun CryptoContent(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
 
-            if(filteredAssets.isEmpty()) {
+            if (filteredAssets.isEmpty()) {
                 item {
                     CryptoNews(
                         assets = assets
@@ -162,7 +202,7 @@ fun AllAssets(
     onViewModelEvent: (CryptoEvent) -> Unit
 ) {
 
-    if(filteredAssets.isNotEmpty()) {
+    if (filteredAssets.isNotEmpty()) {
         filteredAssets.forEachIndexed { index, coin ->
 
             AssetRow(onViewModelEvent, coin, index)
@@ -344,7 +384,7 @@ fun FavoritesRow(
             color = MaterialTheme.colors.onBackground
         )
 
-        IconButton(onClick = { onViewModelEvent(CryptoEvent.UpdateRequested)}) {
+        IconButton(onClick = { onViewModelEvent(CryptoEvent.UpdateRequested) }) {
             Icon(
                 Icons.Filled.Favorite,
                 contentDescription = "Favorite",
@@ -470,10 +510,10 @@ fun PreviewCryptoMain() {
 fun PreviewSearchBar() {
     MainichiTheme(
     ) {
-       SearchBar(
-           text = "Bitfgc",
-           onFilterChanged = { /*TODO*/ },
-           onTextChanged = {}
-       )
+        SearchBar(
+            text = "Bitfgc",
+            onFilterChanged = { /*TODO*/ },
+            onTextChanged = {}
+        )
     }
 }
