@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,6 +29,7 @@ import com.example.mainichi.ui.cryptoScreen.CryptoEffect
 import com.example.mainichi.ui.newsScreen.NewsEffect
 import com.example.mainichi.ui.createNotificationScreen.CreateNotificationScreen
 import com.example.mainichi.ui.createNotificationScreen.ShowNotificationScreen
+import com.example.mainichi.ui.settingsScreen.SettingsScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -89,7 +91,7 @@ class MainActivity : ComponentActivity() {
                                 onNavigate = { effect ->
                                     when (effect) {
                                         is NewsEffect.Navigation.NavigateToSettings -> {
-                                            navController.navigate(route = "createNotification")
+                                            navController.navigate(route = "settings")
                                         }
                                         is NewsEffect.Navigation.NavigateToMenu -> {
                                             navController.navigate(route = "appMenu")
@@ -108,7 +110,7 @@ class MainActivity : ComponentActivity() {
                                             navController.navigate(route = "coin/${effect.coin}")
                                         }
                                         is CryptoEffect.Navigation.NavigateToSettingsScreen -> {
-                                            navController.navigate(route = "showNotifications")
+                                            navController.navigate(route = "settings")
                                         }
                                         is CryptoEffect.Navigation.NavigateToMenuScreen -> {
                                             navController.navigate(route = "appMenu")
@@ -139,18 +141,32 @@ class MainActivity : ComponentActivity() {
                         ) {
 
                             ShowNotificationScreen(
-                                viewModel = hiltViewModel()) {
+                                viewModel = hiltViewModel(),
+                                onNavigate = {
+//                                    navController.navigate(route = "createNotification")
 
-                            }
-
+                                },
+                                onNavigateUp = {
+                                    navController.navigateUp()
+                                })
                         }
 
+//                        dialog(
+//                            route = "createNotification"
+//                        ) {
+//                            CreateNotificationScreen(
+//                                viewModel = hiltViewModel(),
+//                                onNavigateUp = { navController.navigateUp() },
+//                            )
+//                        }
+
                         composable(
-                            route = "createNotification"
+                            route = "settings"
                         ) {
-                            CreateNotificationScreen(
+                            SettingsScreen(
                                 viewModel = hiltViewModel(),
-                                onNavigateUp = { navController.navigateUp() },
+                                onNavigate = { navController.navigate("showNotifications") },
+                                onNavigateUp = { navController.navigateUp() }
                             )
                         }
                     }

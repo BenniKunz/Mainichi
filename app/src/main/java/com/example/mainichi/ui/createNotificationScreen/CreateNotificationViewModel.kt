@@ -111,13 +111,8 @@ class CreateNotificationViewModel @Inject constructor(
             uiState.copy(
                 isLoading = false,
                 notificationConfiguration = NotificationConfiguration(
-                    assets = assets.map { asset ->
-                        NotificationAsset(
-                            name = asset.name,
-                            symbol = asset.symbol,
-                            image = asset.image
-                        )
-                    }
+                    assets = assets
+
                 )
             )
         }
@@ -160,15 +155,15 @@ class CreateNotificationViewModel @Inject constructor(
                                     assets = uiState.notificationConfiguration.assets.map { selectableAsset ->
 
                                         if (selectableAsset == event.selectedAsset) {
-                                            selectableAsset.copy(selected = true)
+                                            selectableAsset.copy(isSelected = true)
                                         } else {
-                                            if (selectableAsset.selected) {
-                                                selectableAsset.copy(selected = false)
+                                            if (selectableAsset.isSelected) {
+                                                selectableAsset.copy(isSelected = false)
                                             } else {
                                                 selectableAsset
                                             }
                                         }
-                                    }.sortedBy { !it.selected })
+                                    }.sortedBy { !it.isSelected })
 
                             )
                         }

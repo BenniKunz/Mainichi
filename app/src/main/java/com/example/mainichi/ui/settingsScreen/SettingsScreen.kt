@@ -1,59 +1,60 @@
-package com.example.mainichi.ui.createNotificationScreen
+package com.example.mainichi.ui.settingsScreen
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mainichi.R
 import com.example.mainichi.helper.LoadingStateProgressIndicator
-import com.example.mainichi.ui.showNotificationScreen.ShowNotificationContract
-import com.example.mainichi.ui.showNotificationScreen.ShowNotificationContract.*
-import com.example.mainichi.ui.showNotificationScreen.ShowNotificationContract.ShowNotificationEvent.*
-import com.example.mainichi.ui.showNotificationScreen.ShowNotificationViewModel
+import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState
+import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState.*
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ShowNotificationScreen(
-    viewModel: ShowNotificationViewModel,
-    onNavigateUp: () -> Unit,
+fun SettingsScreen(
+    viewModel: SettingsViewModel,
     onNavigate: () -> Unit,
+    onNavigateUp: () -> Unit
 ) {
     val state = viewModel.uiState.collectAsState().value
 
-    LaunchedEffect(key1 = viewModel, key2 = onNavigateUp) {
+    LaunchedEffect(key1 = viewModel) {
 
         viewModel.effect.collect {
             when (it) {
-                ShowNotificationEffect.NavigateToCreateNotificationScreen -> {
+
+                is SettingsContract.SettingsEffect.NavigateToShowNotificationsScreen -> {
                     onNavigate()
                 }
             }
         }
     }
 
-    ShowNotificationScreen(
+
+    SettingsScreen(
         state = state,
         onViewModelEvent = { event -> viewModel.setEvent(event) },
         onNavigateUp = onNavigateUp
     )
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @Composable
-fun ShowNotificationScreen(
+fun SettingsScreen(
     state: UiState,
-    onViewModelEvent: (ShowNotificationEvent) -> Unit,
+    onViewModelEvent: (SettingsContract.SettingsEvent) -> Unit,
     onNavigateUp: () -> Unit,
 ) {
 
@@ -92,7 +93,7 @@ fun ShowNotificationScreen(
             )
             else -> {
 
-                ShowNotificationScreen(
+                ShowSettingsScreen(
                     state = state,
                     onViewModelEvent = onViewModelEvent
                 )
@@ -101,52 +102,44 @@ fun ShowNotificationScreen(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ShowNotificationScreen(
+fun ShowSettingsScreen(
     state: UiState,
-    onViewModelEvent: (ShowNotificationEvent) -> Unit
+    onViewModelEvent: (SettingsContract.SettingsEvent) -> Unit
 ) {
 
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)) {
-        Row() {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalAlignment = Alignment.Start
-            ) {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
-                state.notificationConfigurations.forEach { notificationConfiguration ->
-                    item {
-                        NotificationsCard(notificationConfiguration = notificationConfiguration)
-                    }
-                }
-            }
-        }
-
-        var showCreationDialog by remember { mutableStateOf(false) }
-
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp)) {
-            Button(onClick = {
-
-//                onViewModelEvent(NavigateToCreateNotificationScreen)
-                showCreationDialog = !showCreationDialog
-
-
-            }) {
-                Text("New Notification")
-            }
-        }
-
-        if(showCreationDialog) {
-
-            CreateNotificationScreen(
-                viewModel = hiltViewModel(),
-                onDismissDialog = { showCreationDialog = false },
+        items(state.settings) { setting ->
+            SettingsRow(
+                setting = setting,
+                onViewModelEvent = onViewModelEvent
             )
         }
+    }
+}
+
+@Composable
+fun SettingsRow(
+    setting: Setting,
+    onViewModelEvent: (SettingsContract.SettingsEvent) -> Unit
+) {
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp)
+            .clickable { onViewModelEvent(setting.target) },
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        Text(setting.title)
+
+        Icon(Icons.Default.ExpandMore, contentDescription = null)
+
     }
 }

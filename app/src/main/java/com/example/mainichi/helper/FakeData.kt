@@ -17,7 +17,8 @@ val fakeAssets = listOf(
         low24h = 19000.0,
         marketCap = 3000000,
         ath = 60000.0,
-        atl = 0.5
+        atl = 0.5,
+        isSelected = false
     ),
     Asset(
         name = "Ethereum",
@@ -29,7 +30,8 @@ val fakeAssets = listOf(
         low24h = 1840.0,
         marketCap = 3000000,
         ath = 4800.4,
-        atl = 0.5
+        atl = 0.5,
+        isSelected = false
     )
 
 )

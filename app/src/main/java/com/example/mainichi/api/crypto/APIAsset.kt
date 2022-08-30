@@ -43,5 +43,6 @@ fun APIAsset.asAsset() = Asset(
     low24h = this.low_24h,
     marketCap = this.market_cap,
     ath = this.ath,
-    atl = this.atl
+    atl = this.atl,
+    isSelected = false
 )

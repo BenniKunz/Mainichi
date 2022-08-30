@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.*
 import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.NotificationConfiguration.*
+import com.example.mainichi.ui.entities.Asset
 
 @Entity(tableName = "notification")
 data class DbNotification(
@@ -22,7 +23,7 @@ data class DbNotification(
 
 fun DbNotification.toNotificationConfiguration() = NotificationConfiguration(
     assets = listOf(
-        NotificationAsset(
+        Asset(
             name = this.name,
             symbol = this.symbol,
             image = this.image

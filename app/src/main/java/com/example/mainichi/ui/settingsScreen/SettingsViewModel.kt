@@ -1,4 +1,4 @@
-package com.example.mainichi.ui.showNotificationScreen
+package com.example.mainichi.ui.settingsScreen
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -6,7 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mainichi.db.AppDatabase
 import com.example.mainichi.db.toNotificationConfiguration
+import com.example.mainichi.ui.settingsScreen.SettingsContract.*
+import com.example.mainichi.ui.settingsScreen.SettingsContract.SettingsEvent.*
 import com.example.mainichi.ui.showNotificationScreen.ShowNotificationContract.*
+import com.example.mainichi.ui.showNotificationScreen.ShowNotificationContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -15,29 +18,29 @@ import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
-class ShowNotificationViewModel @Inject constructor(
+class SettingsViewModel @Inject constructor(
     val database: AppDatabase
 
 ) : ViewModel() {
 
-    private val _uiState: MutableStateFlow<UiState> =
+    private val _uiState: MutableStateFlow<SettingsContract.UiState> =
         MutableStateFlow(
-            UiState(
+            SettingsContract.UiState(
                 isLoading = true
             )
         )
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<SettingsContract.UiState> = _uiState.asStateFlow()
 
-    private val _event: MutableSharedFlow<ShowNotificationEvent> = MutableSharedFlow()
+    private val _event: MutableSharedFlow<SettingsEvent> = MutableSharedFlow()
 
-    fun setEvent(event: ShowNotificationEvent) {
+    fun setEvent(event: SettingsEvent) {
         viewModelScope.launch { _event.emit(event) }
     }
 
-    private val _effect: Channel<ShowNotificationEffect> = Channel()
+    private val _effect: Channel<SettingsEffect> = Channel()
     val effect = _effect.receiveAsFlow()
 
-    private fun setEffect(builder: () -> ShowNotificationEffect) {
+    private fun setEffect(builder: () -> SettingsEffect) {
         val effectValue = builder()
         viewModelScope.launch { _effect.send(effectValue) }
     }
@@ -58,18 +61,22 @@ class ShowNotificationViewModel @Inject constructor(
 
     private suspend fun loadData() {
 
-        database.notificationsDao().getAllNotifications().collect { dbNotifications ->
-
-            _uiState.update { uiState ->
-
-                uiState.copy(
-                    isLoading = false,
-                    notificationConfigurations = dbNotifications.map { dbNotification ->
-                        dbNotification.toNotificationConfiguration()
-                    }
+        val settings = mutableListOf<SettingsContract.UiState.Setting>()
+        enumValues<SettingsContract.UiState.Settings>().forEach { setting ->
+            settings.add(
+                SettingsContract.UiState.Setting(
+                    title = setting.toString(),
+                    target = NavigateToShowNotificationsScreen
                 )
-            }
+            )
         }
+
+        _uiState.update { uiState ->
+            uiState.copy(
+                settings = settings,
+                isLoading = false)
+        }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -79,9 +86,9 @@ class ShowNotificationViewModel @Inject constructor(
             .collect { event ->
 
                 when (event) {
-                    ShowNotificationEvent.NavigateToCreateNotificationScreen -> {
+                    NavigateToShowNotificationsScreen -> {
                         setEffect {
-                            ShowNotificationEffect.NavigateToCreateNotificationScreen
+                            SettingsEffect.NavigateToShowNotificationsScreen
                         }
                     }
                 }

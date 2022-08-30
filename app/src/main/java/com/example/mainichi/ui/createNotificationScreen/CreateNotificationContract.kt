@@ -1,6 +1,7 @@
 package com.example.mainichi.ui.createNotificationScreen
 
 import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.NotificationConfiguration.*
+import com.example.mainichi.ui.entities.Asset
 
 class CreateNotificationContract {
 
@@ -12,7 +13,7 @@ class CreateNotificationContract {
 
     //reuse in different screens // edit, create, show
     data class NotificationConfiguration(
-        val assets: List<NotificationAsset> = emptyList(),
+        val assets: List<Asset> = emptyList(),
 //        val notifyIncrease: Boolean = false,
 //        val notifyDecrease: Boolean = false,
 
@@ -25,12 +26,12 @@ class CreateNotificationContract {
 
         val date: String = ""
     ) {
-        data class NotificationAsset(
-            val name: String,
-            val symbol: String,
-            val image: String,
-            val selected: Boolean = false,
-        )
+//        data class NotificationAsset(
+//            val name: String,
+//            val symbol: String,
+//            val image: String,
+//            val selected: Boolean = false,
+//        )
 
         enum class Periodically {
             Hourly, Daily
@@ -49,7 +50,7 @@ class CreateNotificationContract {
         object CreateCustomNotification : CreateNotificationEvent()
 
         data class SelectAsset(
-            val selectedAsset: NotificationAsset
+            val selectedAsset: Asset
         ) : CreateNotificationEvent()
 
         data class SelectIntervalPeriod(val period: Periodically) : CreateNotificationEvent()

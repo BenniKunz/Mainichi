@@ -11,11 +11,13 @@ class ShowNotificationContract {
 
     sealed class ShowNotificationEvent {
 
+        object NavigateToCreateNotificationScreen : ShowNotificationEvent()
 
     }
 
     sealed class ShowNotificationEffect {
 
+        object NavigateToCreateNotificationScreen : ShowNotificationEffect()
     }
 }
 

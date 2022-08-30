@@ -295,7 +295,8 @@ fun PreviewCoinContent() {
                 low24h = 19000.0,
                 marketCap = 3000000,
                 ath = 60000.0,
-                atl = 0.5
+                atl = 0.5,
+                isSelected = false
             ),
             {}
         )

@@ -2,13 +2,14 @@ package com.example.mainichi.ui.entities
 
 data class Asset(
     val name : String,
-    val currentPrice: Double,
+    val currentPrice: Double = 0.0,
     val image : String,
     val symbol: String,
-    val isFavorite: Boolean,
-    val high24h: Double,
-    val low24h: Double,
-    val marketCap: Long,
-    val ath: Double,
-    val atl: Double
+    val isFavorite: Boolean = false,
+    val high24h: Double = 0.0,
+    val low24h: Double = 0.0,
+    val marketCap: Long = 0,
+    val ath: Double = 0.0,
+    val atl: Double = 0.0,
+    val isSelected : Boolean = false
 )
