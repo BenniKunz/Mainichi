@@ -187,6 +187,10 @@ class CryptoScreenViewModel @Inject constructor(
     private suspend fun updateData() {
 
         _uiState.update { uiState ->
+            uiState.copy(isRefreshing = true)
+        }
+
+        _uiState.update { uiState ->
 
             val favorites = uiState.assets.filter { asset -> asset.isFavorite }
 
@@ -199,6 +203,10 @@ class CryptoScreenViewModel @Inject constructor(
                     }
                 }
             )
+        }
+
+        _uiState.update { uiState ->
+            uiState.copy(isRefreshing = false)
         }
     }
 }

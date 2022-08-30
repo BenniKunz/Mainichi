@@ -1,5 +1,6 @@
 package com.example.mainichi.ui.cryptoScreen
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +27,8 @@ import com.example.mainichi.helper.fakeAssets
 import com.example.mainichi.ui.cryptoScreen.CryptoUiState.*
 import com.example.mainichi.ui.entities.Asset
 import com.example.mainichi.ui.theme.MainichiTheme
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
 fun CryptoScreen(
@@ -49,6 +52,7 @@ fun CryptoScreen(
         onViewModelEvent = { event -> viewModel.setEvent(event) })
 }
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun CryptoScreen(
     state: UiState,
@@ -101,6 +105,7 @@ fun CryptoScreen(
             )
             false -> CryptoContent(
                 assets = state.assets,
+                isRefreshing = state.isRefreshing,
                 filteredAssets = state.filteredAssets,
                 onViewModelEvent = onViewModelEvent
             )
@@ -111,6 +116,7 @@ fun CryptoScreen(
 @Composable
 fun CryptoContent(
     assets: List<Asset>,
+    isRefreshing: Boolean,
     filteredAssets: List<Asset>,
     onViewModelEvent: (CryptoEvent) -> Unit,
 ) {
@@ -131,35 +137,40 @@ fun CryptoContent(
             )
         }
 
-        LazyColumn(
-            modifier = Modifier
-                .background(MaterialTheme.colors.background),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(isRefreshing),
+            onRefresh = { onViewModelEvent(CryptoEvent.UpdateRequested) },
         ) {
+            LazyColumn(
+                modifier = Modifier
+                    .background(MaterialTheme.colors.background),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
 
-            if (filteredAssets.isEmpty()) {
-                item {
-                    CryptoNews(
-                        assets = assets
-                    )
+                if (filteredAssets.isEmpty()) {
+                    item {
+                        CryptoNews(
+                            assets = assets
+                        )
+                    }
+
+                    item {
+
+                        FavoritesRow(
+                            topic = "Your favorites",
+                            assets = assets,
+                            onViewModelEvent = onViewModelEvent
+                        )
+                    }
                 }
 
                 item {
-
-                    FavoritesRow(
-                        topic = "Your favorites",
+                    AllAssets(
                         assets = assets,
+                        filteredAssets = filteredAssets,
                         onViewModelEvent = onViewModelEvent
                     )
                 }
-            }
-
-            item {
-                AllAssets(
-                    assets = assets,
-                    filteredAssets = filteredAssets,
-                    onViewModelEvent = onViewModelEvent
-                )
             }
         }
     }

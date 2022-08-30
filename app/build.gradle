@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace 'com.example.mainichi'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.example.mainichi"
@@ -114,6 +114,10 @@ dependencies {
     //Kotlin Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
+
+    //Swipe Refresh
+    def swipe_version = "0.26.2-beta"
+    implementation "com.google.accompanist:accompanist-swiperefresh:$swipe_version"
 
 }
 
