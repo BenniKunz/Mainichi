@@ -1,6 +1,7 @@
 package com.example.mainichi.ui.createNotificationScreen
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -222,6 +223,7 @@ fun SettingsContent(
 
             item {
                 var checkedState by remember { mutableStateOf(false) }
+                var text by remember { mutableStateOf("") }
 
                 SectionHeader(
                     text = "Event Threshold",
@@ -238,10 +240,11 @@ fun SettingsContent(
                     OutlinedTextField(
                         value = when {
                             checkedState -> ""
-                            else -> state.notificationConfiguration.eventValue
+                            else -> text
                         },
                         label = { Text(text = "event value") },
                         onValueChange = {
+                            text = it
                             onViewModelEvent(
                                 CreateNotificationEvent.ChangeEventValue(
                                     eventValue = it
@@ -287,13 +290,27 @@ fun SettingsContent(
                 ) {
 
                     OutlinedTextField(
-                        value = state.notificationConfiguration.intervalValue,
+                        value = text,
                         label = { Text(text = "interval value") },
                         onValueChange = {
+                            var newText = ""
 
+                            when {
+                                it.isNotEmpty() && it[it.length -1] == '.' -> {
+                                    newText = it.removeRange(it.length -1, it.length)
+                                }
+                                it.length > 2 -> {
+                                    newText = it.substring(0, 2)
+                                }
+                                else -> {
+                                    newText = it
+                                }
+                            }
+
+                            text = newText
                             onViewModelEvent(
                                 CreateNotificationEvent.ChangeIntervalValue(
-                                    intervalValue = it
+                                    intervalValue = newText
                                 )
                             )
                         },
