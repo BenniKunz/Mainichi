@@ -2,8 +2,13 @@ package com.example.mainichi.ui.settingsScreen
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.PreferenceKeys
+import com.example.StartUpViewModel
 import com.example.mainichi.db.AppDatabase
 import com.example.mainichi.db.toNotificationConfiguration
 import com.example.mainichi.ui.settingsScreen.SettingsContract.*
@@ -19,7 +24,8 @@ import javax.inject.Inject
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    val database: AppDatabase
+    val database: AppDatabase,
+    private val dataStore: DataStore<Preferences>
 
 ) : ViewModel() {
 
@@ -61,22 +67,12 @@ class SettingsViewModel @Inject constructor(
 
     private suspend fun loadData() {
 
-        val settings = mutableListOf<SettingsContract.UiState.Setting>()
-        enumValues<SettingsContract.UiState.Settings>().forEach { setting ->
-            settings.add(
-                SettingsContract.UiState.Setting(
-                    title = setting.toString(),
-                    target = NavigateToShowNotificationsScreen
-                )
-            )
-        }
-
         _uiState.update { uiState ->
             uiState.copy(
-                settings = settings,
-                isLoading = false)
+                isLoading = false,
+                isDarkMode = dataStore.data.map { preferences -> preferences[PreferenceKeys.isDarkMode] }
+                    .first() ?: false)
         }
-
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -89,6 +85,32 @@ class SettingsViewModel @Inject constructor(
                     NavigateToShowNotificationsScreen -> {
                         setEffect {
                             SettingsEffect.NavigateToShowNotificationsScreen
+                        }
+                    }
+                    ToggleDarkMode -> {
+
+                        val isDarkMode =
+                            dataStore.data.map { preferences -> preferences[PreferenceKeys.isDarkMode] }
+                                .first() ?: false
+
+                        dataStore.edit { settings ->
+                            settings[PreferenceKeys.isDarkMode] = !isDarkMode
+                        }
+
+                        _uiState.update { uiState ->
+                            uiState.copy(isDarkMode = !isDarkMode)
+                        }
+                    }
+                    ChangeLaunchScreen -> {
+
+                        dataStore.edit { settings ->
+                            settings[PreferenceKeys.launchScreen] =
+                                if (dataStore.data.map { preferences -> preferences[PreferenceKeys.launchScreen] }
+                                        .first() == 0) {
+                                    1
+                                } else {
+                                    0
+                                }
                         }
                     }
                 }

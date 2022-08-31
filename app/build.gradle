@@ -119,6 +119,9 @@ dependencies {
     def swipe_version = "0.26.2-beta"
     implementation "com.google.accompanist:accompanist-swiperefresh:$swipe_version"
 
+    //Preferences Datastore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
 }
 
 kapt {

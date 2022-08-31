@@ -26,12 +26,6 @@ class CreateNotificationContract {
 
         val date: String = ""
     ) {
-//        data class NotificationAsset(
-//            val name: String,
-//            val symbol: String,
-//            val image: String,
-//            val selected: Boolean = false,
-//        )
 
         enum class Periodically {
             Hourly, Daily

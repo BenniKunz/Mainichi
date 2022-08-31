@@ -12,24 +12,42 @@ import androidx.compose.foundation.background
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
+import com.example.mainichi.ui.settingsScreen.SettingsContract
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(navController: NavController) {
+fun SplashScreen(
+    navController: NavController,
+    launchScreen: Int
+) {
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(color = MaterialTheme.colors.primary),
-        contentAlignment = Alignment.Center){
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colors.primary),
+        contentAlignment = Alignment.Center
+    ) {
 
         LaunchedEffect(Unit) {
 
             delay(2000)
-            navController.navigate(route = "Crypto")
+            navController.navigate(route = when (launchScreen) {
+                0 -> {
+                    "crypto"
+                }
+                1 -> {
+                    "news"
+                }
+                else -> {
+                    "crypto"
+                }
+            }
+            )
         }
 
         Image(
             painterResource(id = R.drawable.splash),
-            contentDescription = "Icon")
+            contentDescription = "Icon"
+        )
     }
 }

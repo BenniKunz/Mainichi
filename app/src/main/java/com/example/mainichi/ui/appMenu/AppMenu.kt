@@ -23,9 +23,7 @@ import com.example.mainichi.navigationDrawer.appMenuData
 @Composable
 fun AppMenu(
     onItemClick: (ScreenType) -> Unit,
-    onNavigateUpRequested: () -> Unit,
-    onChangeTheme: () -> Unit,
-    isDarkMode: Boolean
+    onNavigateUpRequested: () -> Unit
 ) {
 
     Box(
@@ -71,54 +69,6 @@ fun AppMenu(
                 .size(80.dp, 120.dp),
             data = null
         )
-
-        MainMenuSettingsBox(
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .background(Color.White.copy(alpha = 0.0f))
-                .size(160.dp, 200.dp),
-            isDarkMode = isDarkMode,
-            onChangeTheme = onChangeTheme
-        )
-    }
-}
-
-
-@Composable
-fun MainMenuSettingsBox(
-    modifier: Modifier,
-    isDarkMode: Boolean,
-    onChangeTheme: () -> Unit,
-) {
-
-    val checkedState = remember { mutableStateOf(isDarkMode) }
-
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()) {
-
-            Row(verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()) {
-                Text(text = "Dark Mode", modifier = Modifier.padding(end = 8.dp))
-
-                Switch(
-                    checked = checkedState.value,
-                    onCheckedChange = {
-                        checkedState.value = it
-                        onChangeTheme()
-                    },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = MaterialTheme.colors.primary,
-                        uncheckedThumbColor = MaterialTheme.colors.primaryVariant,
-                        checkedTrackColor = MaterialTheme.colors.onBackground,
-                        uncheckedTrackColor = MaterialTheme.colors.onBackground
-                    )
-                )
-            }
-        }
     }
 }
 

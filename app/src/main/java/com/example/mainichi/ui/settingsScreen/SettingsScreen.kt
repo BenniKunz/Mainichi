@@ -1,22 +1,23 @@
 package com.example.mainichi.ui.settingsScreen
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mainichi.R
 import com.example.mainichi.helper.LoadingStateProgressIndicator
+import com.example.mainichi.ui.createNotificationScreen.SectionHeader
 import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState
 import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState.*
 
@@ -51,6 +52,7 @@ fun SettingsScreen(
 }
 
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun SettingsScreen(
     state: UiState,
@@ -109,37 +111,49 @@ fun ShowSettingsScreen(
 ) {
 
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        verticalArrangement = Arrangement.spacedBy(32.dp),
+        horizontalAlignment = Alignment.Start,
+        contentPadding = PaddingValues(16.dp)
     ) {
 
-        items(state.settings) { setting ->
-            SettingsRow(
-                setting = setting,
-                onViewModelEvent = onViewModelEvent
-            )
+        item {
+            SectionHeader(text = "Settings", style = MaterialTheme.typography.h4)
+        }
+
+        enumValues<Setting>().forEach { setting ->
+
+            item {
+                SettingsRow(
+                    title = setting.asString(),
+                    imageVector = setting.getImageVector(state.isDarkMode),
+                    onViewModelEvent = onViewModelEvent,
+                    event = setting.getEvent()
+                )
+            }
         }
     }
 }
 
 @Composable
 fun SettingsRow(
-    setting: Setting,
-    onViewModelEvent: (SettingsContract.SettingsEvent) -> Unit
+    title: String,
+    imageVector: ImageVector,
+    onViewModelEvent: (SettingsContract.SettingsEvent) -> Unit,
+    event: SettingsContract.SettingsEvent
 ) {
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
-            .clickable { onViewModelEvent(setting.target) },
+            .clickable { onViewModelEvent(event) },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        Text(setting.title)
+        Text(title)
 
-        Icon(Icons.Default.ExpandMore, contentDescription = null)
+        Icon(imageVector, contentDescription = null)
 
     }
 }

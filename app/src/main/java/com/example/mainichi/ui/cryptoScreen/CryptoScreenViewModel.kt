@@ -6,6 +6,7 @@ import com.example.mainichi.ui.entities.Asset
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
@@ -189,6 +190,8 @@ class CryptoScreenViewModel @Inject constructor(
         _uiState.update { uiState ->
             uiState.copy(isRefreshing = true)
         }
+
+        delay(2000)
 
         _uiState.update { uiState ->
 

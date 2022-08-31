@@ -155,7 +155,10 @@ fun SettingsContent(
                     modifier = Modifier.padding(start = 16.dp, top = 16.dp)
                 )
 
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
 
                     var checkedStateUp by remember { mutableStateOf(false) }
                     var checkedStateDown by remember { mutableStateOf(false) }
@@ -406,10 +409,14 @@ private fun LazyChipRow(
 }
 
 @Composable
-fun SectionHeader(text: String, modifier: Modifier = Modifier.padding(end = 8.dp)) {
+fun SectionHeader(
+    text: String,
+    modifier: Modifier = Modifier,
+    style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.h5,
+) {
     Text(
         text = text,
-        style = MaterialTheme.typography.h5,
+        style = style,
         modifier = modifier
     )
 }
