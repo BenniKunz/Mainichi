@@ -150,14 +150,18 @@ fun SettingsContent(
                 }
 
             item {
-
                 SectionHeader(
                     text = "Event",
                     modifier = Modifier.padding(start = 16.dp, top = 16.dp)
                 )
+            }
+
+
+            item {
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
                     modifier = Modifier.fillMaxWidth()
                 ) {
 
@@ -188,7 +192,7 @@ fun SettingsContent(
 
                     SectionHeader(
                         text = "Price Up",
-                        modifier = Modifier.padding(start = 16.dp)
+                        modifier = Modifier.padding(end = 32.dp)
                     )
 
                     Checkbox(checked = checkedStateDown, onCheckedChange = {
@@ -214,8 +218,7 @@ fun SettingsContent(
                     })
 
                     SectionHeader(
-                        text = "Price Down",
-                        modifier = Modifier.padding(start = 16.dp)
+                        text = "Price Down"
                     )
                 }
 
@@ -226,8 +229,8 @@ fun SettingsContent(
                 var text by remember { mutableStateOf("") }
 
                 SectionHeader(
-                    text = "Event Threshold",
-                    modifier = Modifier.padding(start = 16.dp)
+                    text = "Event Threshold in %",
+                    modifier = Modifier.padding(start = 16.dp, top = 16.dp)
                 )
 
                 Row(
@@ -237,28 +240,34 @@ fun SettingsContent(
                         .padding(start = 16.dp, bottom = 16.dp)
                 ) {
 
-                    OutlinedTextField(
-                        value = when {
-                            checkedState -> ""
-                            else -> text
-                        },
-                        label = { Text(text = "event value") },
-                        onValueChange = {
-                            text = it
-                            onViewModelEvent(
-                                CreateNotificationEvent.ChangeEventValue(
-                                    eventValue = it
+                    Column(modifier = Modifier.fillMaxWidth(0.4f)) {
+                        OutlinedTextField(
+                            value = when {
+                                checkedState -> ""
+                                else -> text
+                            },
+                            label = {
+                                Text(
+                                    text = "percentage"
                                 )
-                            )
-                        },
-                        enabled = when {
-                            checkedState -> false
-                            else -> true
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        maxLines = 1,
-                        modifier = Modifier.width(120.dp)
-                    )
+                            },
+                            onValueChange = {
+                                text = it
+                                onViewModelEvent(
+                                    CreateNotificationEvent.ChangeEventValue(
+                                        eventValue = it
+                                    )
+                                )
+                            },
+                            enabled = when {
+                                checkedState -> false
+                                else -> true
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            maxLines = 1,
+                        )
+                    }
+
 
                     Checkbox(checked = checkedState, onCheckedChange = {
                         checkedState = !checkedState
@@ -267,8 +276,8 @@ fun SettingsContent(
                     })
 
                     Text(
-                        text = "Any Value Change",
-                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                        text = "any  change",
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
             }
@@ -289,41 +298,44 @@ fun SettingsContent(
                         .padding(start = 16.dp, bottom = 16.dp)
                 ) {
 
-                    OutlinedTextField(
-                        value = text,
-                        label = { Text(text = "interval value") },
-                        onValueChange = {
-                            var newText = ""
+                    Column(modifier = Modifier.fillMaxWidth(0.4f)) {
+                        OutlinedTextField(
+                            value = text,
+                            label = { Text(text = "value") },
+                            onValueChange = {
+                                var newText = ""
 
-                            when {
-                                it.isNotEmpty() && it[it.length -1] == '.' -> {
-                                    newText = it.removeRange(it.length -1, it.length)
+                                when {
+                                    it.isNotEmpty() && it[it.length - 1] == '.' -> {
+                                        newText = it.removeRange(it.length - 1, it.length)
+                                    }
+                                    it.length > 2 -> {
+                                        newText = it.substring(0, 2)
+                                    }
+                                    else -> {
+                                        newText = it
+                                    }
                                 }
-                                it.length > 2 -> {
-                                    newText = it.substring(0, 2)
-                                }
-                                else -> {
-                                    newText = it
-                                }
-                            }
 
-                            text = newText
-                            onViewModelEvent(
-                                CreateNotificationEvent.ChangeIntervalValue(
-                                    intervalValue = newText
+                                text = newText
+                                onViewModelEvent(
+                                    CreateNotificationEvent.ChangeIntervalValue(
+                                        intervalValue = newText
+                                    )
                                 )
-                            )
-                        },
-                        enabled = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        maxLines = 1,
-                        modifier = Modifier.width(120.dp)
-                    )
+                            },
+                            enabled = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            maxLines = 1,
+                            modifier = Modifier.width(120.dp)
+                        )
+                    }
+
 
                     Box {
                         OutlinedTextField(
                             value = state.notificationConfiguration.intervalType.toString(),
-                            label = { Text(text = "interval period") },
+                            label = { Text(text = "period") },
                             onValueChange = {},
                             trailingIcon = {
 
@@ -481,6 +493,7 @@ fun IconChip(
 
             Text(
                 text = text,
+                style = MaterialTheme.typography.caption,
                 color = MaterialTheme.colors.onSurface,
                 modifier = Modifier.padding(start = 8.dp)
             )

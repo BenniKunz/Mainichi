@@ -7,14 +7,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.PreferenceKeys
-import com.example.StartUpViewModel
+import com.example.mainichi.PreferenceKeys
 import com.example.mainichi.db.AppDatabase
-import com.example.mainichi.db.toNotificationConfiguration
 import com.example.mainichi.ui.settingsScreen.SettingsContract.*
 import com.example.mainichi.ui.settingsScreen.SettingsContract.SettingsEvent.*
-import com.example.mainichi.ui.showNotificationScreen.ShowNotificationContract.*
-import com.example.mainichi.ui.showNotificationScreen.ShowNotificationContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -29,13 +25,13 @@ class SettingsViewModel @Inject constructor(
 
 ) : ViewModel() {
 
-    private val _uiState: MutableStateFlow<SettingsContract.UiState> =
+    private val _uiState: MutableStateFlow<UiState> =
         MutableStateFlow(
-            SettingsContract.UiState(
+            UiState(
                 isLoading = true
             )
         )
-    val uiState: StateFlow<SettingsContract.UiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     private val _event: MutableSharedFlow<SettingsEvent> = MutableSharedFlow()
 
@@ -103,14 +99,9 @@ class SettingsViewModel @Inject constructor(
                     }
                     ChangeLaunchScreen -> {
 
-                        dataStore.edit { settings ->
-                            settings[PreferenceKeys.launchScreen] =
-                                if (dataStore.data.map { preferences -> preferences[PreferenceKeys.launchScreen] }
-                                        .first() == 0) {
-                                    1
-                                } else {
-                                    0
-                                }
+                        _uiState.update { uiState ->
+
+                            uiState.copy(setLaunchScreen = !uiState.setLaunchScreen)
                         }
                     }
                 }

@@ -1,6 +1,5 @@
 package com.example.mainichi
 
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -12,15 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,24 +21,15 @@ import com.example.mainichi.ui.cryptoScreen.CryptoScreen
 import com.example.mainichi.ui.theme.MainichiTheme
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.StartUpViewModel
 import com.example.mainichi.navigationDrawer.*
 import com.example.mainichi.ui.appMenu.AppMenu
 import com.example.mainichi.ui.coinScreen.CoinScreen
 import com.example.mainichi.ui.cryptoScreen.CryptoEffect
 import com.example.mainichi.ui.newsScreen.NewsEffect
 import com.example.mainichi.ui.createNotificationScreen.ShowNotificationScreen
-import com.example.mainichi.ui.settingsScreen.SettingsContract
-import com.example.mainichi.ui.settingsScreen.SettingsContract.*
 import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState.*
 import com.example.mainichi.ui.settingsScreen.SettingsScreen
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

@@ -15,11 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mainichi.R
 import com.example.mainichi.helper.LoadingStateProgressIndicator
 import com.example.mainichi.ui.createNotificationScreen.SectionHeader
 import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState
 import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState.*
+import com.example.mainichi.ui.settingsScreen.launchScreenDialog.LaunchScreenDialog
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -52,6 +54,7 @@ fun SettingsScreen(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun SettingsScreen(
@@ -104,6 +107,7 @@ fun SettingsScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ShowSettingsScreen(
     state: UiState,
@@ -129,8 +133,17 @@ fun ShowSettingsScreen(
                     onViewModelEvent = onViewModelEvent,
                     event = setting.getEvent()
                 )
+
+                Divider()
             }
         }
+    }
+
+    if(state.setLaunchScreen) {
+        LaunchScreenDialog(
+            viewModel = hiltViewModel(),
+            onDismissDialog = { onViewModelEvent(SettingsContract.SettingsEvent.ChangeLaunchScreen)}
+        )
     }
 }
 

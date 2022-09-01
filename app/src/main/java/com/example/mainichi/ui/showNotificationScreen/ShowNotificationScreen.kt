@@ -1,5 +1,6 @@
 package com.example.mainichi.ui.createNotificationScreen
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -8,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,6 +51,7 @@ fun ShowNotificationScreen(
     )
 }
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ShowNotificationScreen(
@@ -108,18 +111,40 @@ fun ShowNotificationScreen(
     onViewModelEvent: (ShowNotificationEvent) -> Unit
 ) {
 
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
         Row() {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.Start
             ) {
 
-                state.notificationConfigurations.forEach { notificationConfiguration ->
+
+                if (state.notificationConfigurations.isEmpty()) {
+
                     item {
-                        NotificationsCard(notificationConfiguration = notificationConfiguration)
+                        Row() {
+
+                            Text(
+                                text = "No notifications",
+                                modifier = Modifier.padding(end = 16.dp)
+                            )
+
+                            Icon(
+                                Icons.Default.Info,
+                                contentDescription = null,
+                            )
+                        }
+
+                    }
+                } else {
+                    state.notificationConfigurations.forEach { notificationConfiguration ->
+                        item {
+                            NotificationsCard(notificationConfiguration = notificationConfiguration)
+                        }
                     }
                 }
             }
@@ -127,12 +152,13 @@ fun ShowNotificationScreen(
 
         var showCreationDialog by remember { mutableStateOf(false) }
 
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 32.dp)
+        ) {
             Button(onClick = {
 
-//                onViewModelEvent(NavigateToCreateNotificationScreen)
                 showCreationDialog = !showCreationDialog
 
 
@@ -141,7 +167,7 @@ fun ShowNotificationScreen(
             }
         }
 
-        if(showCreationDialog) {
+        if (showCreationDialog) {
 
             CreateNotificationScreen(
                 viewModel = hiltViewModel(),
