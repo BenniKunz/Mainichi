@@ -90,317 +90,331 @@ fun SettingsContent(
 
     Dialog(
         onDismissRequest = { onDismissDialog() }) {
-        LazyColumn(
+
+
+        Column(
             modifier = Modifier
                 .clip(shape = RoundedCornerShape(32.dp))
-                .background(color = MaterialTheme.colors.background.copy(alpha = 0.9f)),
-            horizontalAlignment = Alignment.Start
+                .background(color = MaterialTheme.colors.background.copy(alpha = 0.9f))
         ) {
 
-            item {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    IconButton(
-                        onClick = { onDismissDialog() },
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
+            LazyColumn(
+                horizontalAlignment = Alignment.Start
+            ) {
+
+                item {
+
+                    SectionHeader(
+                        text = "Create new Notification",
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
+
+                item {
+
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(start = 16.dp)
                     ) {
-                        Icon(Icons.Default.Cancel, contentDescription = "cancel")
+                        SectionHeader(text = "Asset")
+
+                        IconButton(onClick = { expanded = !expanded }) {
+                            Icon(
+                                imageVector = Icons.Default.ExpandCircleDown,
+                                contentDescription = null
+                            )
+                        }
                     }
                 }
-            }
 
-            item {
+                state.notificationConfiguration.assets.chunked(3)
+                    .forEachIndexed() { index, sublist ->
 
-                SectionHeader(
-                    text = "Create new Notification",
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-            }
+                        if (expanded || index == 0) {
+                            item {
+                                LazyChipRow(
+                                    sublist = sublist,
+                                    onViewModelEvent = onViewModelEvent,
+                                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                                )
+                            }
+                        }
+                    }
 
-            item {
+                item {
+                    SectionHeader(
+                        text = "Event",
+                        modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+                    )
+                }
 
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(start = 16.dp)
-                ) {
-                    SectionHeader(text = "Asset")
 
-                    IconButton(onClick = { expanded = !expanded }) {
-                        Icon(
-                            imageVector = Icons.Default.ExpandCircleDown,
-                            contentDescription = null
+                item {
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+
+                        var checkedStateUp by remember { mutableStateOf(false) }
+                        var checkedStateDown by remember { mutableStateOf(false) }
+
+                        Checkbox(checked = checkedStateUp, onCheckedChange = {
+                            checkedStateUp = !checkedStateUp
+
+                            when {
+                                !checkedStateUp && !checkedStateDown -> onViewModelEvent(
+                                    CreateNotificationEvent.ChangePriceEvent(
+                                        PriceEvent.None
+                                    )
+                                )
+                                checkedStateUp && checkedStateDown -> onViewModelEvent(
+                                    CreateNotificationEvent.ChangePriceEvent(
+                                        PriceEvent.PriceUpDown
+                                    )
+                                )
+                                checkedStateUp -> onViewModelEvent(
+                                    CreateNotificationEvent.ChangePriceEvent(
+                                        PriceEvent.PriceUp
+                                    )
+                                )
+                            }
+                        })
+
+                        SectionHeader(
+                            text = "Price Up",
+                            modifier = Modifier.padding(end = 32.dp)
+                        )
+
+                        Checkbox(checked = checkedStateDown, onCheckedChange = {
+                            checkedStateDown = !checkedStateDown
+
+                            when {
+                                !checkedStateUp && !checkedStateDown -> onViewModelEvent(
+                                    CreateNotificationEvent.ChangePriceEvent(
+                                        PriceEvent.None
+                                    )
+                                )
+                                checkedStateUp && checkedStateDown -> onViewModelEvent(
+                                    CreateNotificationEvent.ChangePriceEvent(
+                                        PriceEvent.PriceUpDown
+                                    )
+                                )
+                                checkedStateDown -> onViewModelEvent(
+                                    CreateNotificationEvent.ChangePriceEvent(
+                                        PriceEvent.PriceDown
+                                    )
+                                )
+                            }
+                        })
+
+                        SectionHeader(
+                            text = "Price Down"
                         )
                     }
-                }
-            }
 
-            state.notificationConfiguration.assets.chunked(3)
-                .forEachIndexed() { index, sublist ->
-
-                    if (expanded || index == 0) {
-                        item {
-                            LazyChipRow(
-                                sublist = sublist,
-                                onViewModelEvent = onViewModelEvent,
-                                modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-                            )
-                        }
-                    }
                 }
 
-            item {
-                SectionHeader(
-                    text = "Event",
-                    modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-                )
-            }
-
-
-            item {
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-
-                    var checkedStateUp by remember { mutableStateOf(false) }
-                    var checkedStateDown by remember { mutableStateOf(false) }
-
-                    Checkbox(checked = checkedStateUp, onCheckedChange = {
-                        checkedStateUp = !checkedStateUp
-
-                        when {
-                            !checkedStateUp && !checkedStateDown -> onViewModelEvent(
-                                CreateNotificationEvent.ChangePriceEvent(
-                                    PriceEvent.None
-                                )
-                            )
-                            checkedStateUp && checkedStateDown -> onViewModelEvent(
-                                CreateNotificationEvent.ChangePriceEvent(
-                                    PriceEvent.PriceUpDown
-                                )
-                            )
-                            checkedStateUp -> onViewModelEvent(
-                                CreateNotificationEvent.ChangePriceEvent(
-                                    PriceEvent.PriceUp
-                                )
-                            )
-                        }
-                    })
+                item {
+                    var checkedState by remember { mutableStateOf(false) }
+                    var text by remember { mutableStateOf("") }
 
                     SectionHeader(
-                        text = "Price Up",
-                        modifier = Modifier.padding(end = 32.dp)
+                        text = "Event Threshold in %",
+                        modifier = Modifier.padding(start = 16.dp, top = 16.dp)
                     )
 
-                    Checkbox(checked = checkedStateDown, onCheckedChange = {
-                        checkedStateDown = !checkedStateDown
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, bottom = 16.dp)
+                    ) {
 
-                        when {
-                            !checkedStateUp && !checkedStateDown -> onViewModelEvent(
-                                CreateNotificationEvent.ChangePriceEvent(
-                                    PriceEvent.None
-                                )
-                            )
-                            checkedStateUp && checkedStateDown -> onViewModelEvent(
-                                CreateNotificationEvent.ChangePriceEvent(
-                                    PriceEvent.PriceUpDown
-                                )
-                            )
-                            checkedStateDown -> onViewModelEvent(
-                                CreateNotificationEvent.ChangePriceEvent(
-                                    PriceEvent.PriceDown
-                                )
-                            )
-                        }
-                    })
-
-                    SectionHeader(
-                        text = "Price Down"
-                    )
-                }
-
-            }
-
-            item {
-                var checkedState by remember { mutableStateOf(false) }
-                var text by remember { mutableStateOf("") }
-
-                SectionHeader(
-                    text = "Event Threshold in %",
-                    modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-                )
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, bottom = 16.dp)
-                ) {
-
-                    Column(modifier = Modifier.fillMaxWidth(0.4f)) {
-                        OutlinedTextField(
-                            value = when {
-                                checkedState -> ""
-                                else -> text
-                            },
-                            label = {
-                                Text(
-                                    text = "percentage"
-                                )
-                            },
-                            onValueChange = {
-                                text = it
-                                onViewModelEvent(
-                                    CreateNotificationEvent.ChangeEventValue(
-                                        eventValue = it
+                        Column(modifier = Modifier.fillMaxWidth(0.4f)) {
+                            OutlinedTextField(
+                                value = when {
+                                    checkedState -> ""
+                                    else -> text
+                                },
+                                label = {
+                                    Text(
+                                        text = "Percentage",
+                                        style = MaterialTheme.typography.caption
                                     )
-                                )
-                            },
-                            enabled = when {
-                                checkedState -> false
-                                else -> true
-                            },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            maxLines = 1,
-                        )
-                    }
+                                },
+                                onValueChange = {
+                                    var newText = ""
 
-
-                    Checkbox(checked = checkedState, onCheckedChange = {
-                        checkedState = !checkedState
-
-                        onViewModelEvent(CreateNotificationEvent.ToggleAnyValue)
-                    })
-
-                    Text(
-                        text = "any  change",
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                }
-            }
-
-            item {
-
-                SectionHeader(
-                    text = "Interval",
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-
-                var expandedIntervalField by remember { mutableStateOf(false) }
-                var text by remember { mutableStateOf("") }
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, bottom = 16.dp)
-                ) {
-
-                    Column(modifier = Modifier.fillMaxWidth(0.4f)) {
-                        OutlinedTextField(
-                            value = text,
-                            label = { Text(text = "value") },
-                            onValueChange = {
-                                var newText = ""
-
-                                when {
-                                    it.isNotEmpty() && it[it.length - 1] == '.' -> {
-                                        newText = it.removeRange(it.length - 1, it.length)
+                                    when {
+                                        it.isNotEmpty() && it[it.length - 1] == '.' -> {
+                                            newText = it.removeRange(it.length - 1, it.length)
+                                        }
+                                        it.length > 2 -> {
+                                            newText = it.substring(0, 2)
+                                        }
+                                        else -> {
+                                            newText = it
+                                        }
                                     }
-                                    it.length > 2 -> {
-                                        newText = it.substring(0, 2)
-                                    }
-                                    else -> {
-                                        newText = it
-                                    }
-                                }
 
-                                text = newText
-                                onViewModelEvent(
-                                    CreateNotificationEvent.ChangeIntervalValue(
-                                        intervalValue = newText
-                                    )
-                                )
-                            },
-                            enabled = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            maxLines = 1,
-                            modifier = Modifier.width(120.dp)
-                        )
-                    }
-
-
-                    Box {
-                        OutlinedTextField(
-                            value = state.notificationConfiguration.intervalType.toString(),
-                            label = { Text(text = "period") },
-                            onValueChange = {},
-                            trailingIcon = {
-
-                                IconButton(onClick = {
-                                    expandedIntervalField = !expandedIntervalField
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Default.ExpandMore,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colors.primary
-                                    )
-                                }
-                            },
-                            enabled = false,
-                            modifier = Modifier.width(140.dp)
-                        )
-
-                        DropdownMenu(
-                            expanded = expandedIntervalField,
-                            onDismissRequest = { expandedIntervalField = false },
-                            modifier = Modifier.heightIn(max = 220.dp)
-                        ) {
-
-                            enumValues<Periodically>().forEach { priceEvent ->
-
-                                DropdownMenuItem(onClick = {
-
+                                    text = newText
                                     onViewModelEvent(
-                                        CreateNotificationEvent.SelectIntervalPeriod(
-                                            period = priceEvent
+                                        CreateNotificationEvent.ChangeEventValue(
+                                            eventValue = newText
                                         )
                                     )
+                                },
+                                enabled = when {
+                                    checkedState -> false
+                                    else -> true
+                                },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                maxLines = 1,
+                            )
+                        }
 
-                                }) {
 
-                                    Row(horizontalArrangement = Arrangement.Center) {
-                                        Text(text = priceEvent.toString())
+                        Checkbox(checked = checkedState, onCheckedChange = {
+                            checkedState = !checkedState
+
+                            onViewModelEvent(CreateNotificationEvent.ToggleAnyValue)
+                        })
+
+                        Text(
+                            text = "Any  Change",
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                    }
+                }
+
+                item {
+
+                    SectionHeader(
+                        text = "Interval",
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+
+                    var expandedIntervalField by remember { mutableStateOf(false) }
+                    var text by remember { mutableStateOf("") }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, bottom = 16.dp)
+                    ) {
+
+                        Column(modifier = Modifier.fillMaxWidth(0.4f)) {
+                            OutlinedTextField(
+                                value = text,
+                                label = {
+                                    Text(
+                                        text = "Value",
+                                        style = MaterialTheme.typography.caption
+                                    )
+                                },
+                                onValueChange = {
+                                    var newText = ""
+
+                                    when {
+                                        it.isNotEmpty() && it[it.length - 1] == '.' -> {
+                                            newText = it.removeRange(it.length - 1, it.length)
+                                        }
+                                        it.length > 2 -> {
+                                            newText = it.substring(0, 2)
+                                        }
+                                        else -> {
+                                            newText = it
+                                        }
+                                    }
+
+                                    text = newText
+                                    onViewModelEvent(
+                                        CreateNotificationEvent.ChangeIntervalValue(
+                                            intervalValue = newText
+                                        )
+                                    )
+                                },
+                                enabled = true,
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                maxLines = 1,
+                                modifier = Modifier.width(120.dp)
+                            )
+                        }
+
+
+                        Box {
+                            OutlinedTextField(
+                                value = state.notificationConfiguration.intervalType.toString(),
+                                label = { Text(text = "Period") },
+                                onValueChange = {},
+                                trailingIcon = {
+
+                                    IconButton(onClick = {
+                                        expandedIntervalField = !expandedIntervalField
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Default.ExpandMore,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colors.primary
+                                        )
+                                    }
+                                },
+                                enabled = false,
+                                modifier = Modifier.width(140.dp)
+                            )
+
+                            DropdownMenu(
+                                expanded = expandedIntervalField,
+                                onDismissRequest = { expandedIntervalField = false },
+                                modifier = Modifier.heightIn(max = 220.dp)
+                            ) {
+
+                                enumValues<Periodically>().forEach { priceEvent ->
+
+                                    DropdownMenuItem(onClick = {
+
+                                        onViewModelEvent(
+                                            CreateNotificationEvent.SelectIntervalPeriod(
+                                                period = priceEvent
+                                            )
+                                        )
+
+                                    }) {
+
+                                        Row(horizontalArrangement = Arrangement.Center) {
+                                            Text(text = priceEvent.toString())
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            item {
-                Button(
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = MaterialTheme.colors.primaryVariant
-                    ),
-                    enabled = state.notificationConfiguration.assets[0].isSelected
-                            && state.notificationConfiguration.eventType != PriceEvent.None
-                            && state.notificationConfiguration.intervalValue.isNotEmpty()
-                            && (state.notificationConfiguration.eventValue.isNotEmpty() || state.notificationConfiguration.anyEventValue),
-                    onClick = {
-                        onViewModelEvent(CreateNotificationEvent.CreateCustomNotification)
-                    },
-                    modifier = Modifier
-                        .size(100.dp, 60.dp)
-                        .padding(start = 16.dp, bottom = 16.dp)
-                ) {
-                    Text(
-                        text = "Save",
-                        color = MaterialTheme.colors.secondaryVariant
-                    )
+                item {
+                    Button(
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = MaterialTheme.colors.primaryVariant
+                        ),
+                        enabled = state.notificationConfiguration.assets[0].isSelected
+                                && state.notificationConfiguration.eventType != PriceEvent.None
+                                && state.notificationConfiguration.intervalValue.isNotEmpty()
+                                && (state.notificationConfiguration.eventValue.isNotEmpty() || state.notificationConfiguration.anyEventValue),
+                        onClick = {
+                            onViewModelEvent(CreateNotificationEvent.CreateCustomNotification)
+                        },
+                        modifier = Modifier
+                            .size(100.dp, 60.dp)
+                            .padding(start = 16.dp, bottom = 16.dp)
+                    ) {
+                        Text(
+                            text = "Save",
+                            color = MaterialTheme.colors.secondaryVariant
+                        )
+                    }
                 }
             }
         }

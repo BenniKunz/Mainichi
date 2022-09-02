@@ -4,13 +4,14 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mainichi.PreferenceKeys
+import com.example.mainichi.Settings
 import com.example.mainichi.db.AppDatabase
 import com.example.mainichi.ui.settingsScreen.SettingsContract.*
 import com.example.mainichi.ui.settingsScreen.SettingsContract.SettingsEvent.*
+import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogContract
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -21,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     val database: AppDatabase,
-    private val dataStore: DataStore<Preferences>
+    private val settings: Settings
 
 ) : ViewModel() {
 
@@ -52,8 +53,16 @@ class SettingsViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            loadData()
+            settings.settingsState.collect { settingsState ->
 
+                _uiState.update { uiState ->
+                    uiState.copy(
+                        isLoading = false,
+                        currentTheme = settingsState.theme,
+                        currentLaunchScreen = settingsState.launchScreen
+                    )
+                }
+            }
         }
 
         viewModelScope.launch {
@@ -61,15 +70,22 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadData() {
-
-        _uiState.update { uiState ->
-            uiState.copy(
-                isLoading = false,
-                isDarkMode = dataStore.data.map { preferences -> preferences[PreferenceKeys.isDarkMode] }
-                    .first() ?: false)
-        }
-    }
+//    private suspend fun loadData() {
+//
+//        val theme = ThemeDialogContract.UiState.Theme.values()[dataStore.data.map { preferences -> preferences[PreferenceKeys.theme] }
+//            .first() ?: ThemeDialogContract.UiState.Theme.SystemSetting.ordinal]
+//
+//        val launchScreen = UiState.LaunchScreen.values()[dataStore.data.map { preferences -> preferences[PreferenceKeys.launchScreen] }
+//            .first() ?: 0]
+//
+//        _uiState.update { uiState ->
+//            uiState.copy(
+//                isLoading = false,
+//                currentTheme = theme,
+//                currentLaunchScreen = launchScreen
+//            )
+//        }
+//    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun handleEvents() {
@@ -83,18 +99,12 @@ class SettingsViewModel @Inject constructor(
                             SettingsEffect.NavigateToShowNotificationsScreen
                         }
                     }
-                    ToggleDarkMode -> {
-
-                        val isDarkMode =
-                            dataStore.data.map { preferences -> preferences[PreferenceKeys.isDarkMode] }
-                                .first() ?: false
-
-                        dataStore.edit { settings ->
-                            settings[PreferenceKeys.isDarkMode] = !isDarkMode
-                        }
+                    is SetTheme -> {
 
                         _uiState.update { uiState ->
-                            uiState.copy(isDarkMode = !isDarkMode)
+                            uiState.copy(
+                                setTheme = !uiState.setTheme
+                            )
                         }
                     }
                     ChangeLaunchScreen -> {

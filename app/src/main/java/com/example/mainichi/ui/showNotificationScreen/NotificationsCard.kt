@@ -11,7 +11,7 @@ import com.example.mainichi.helper.ImageLoader
 
 @Composable
 fun NotificationsCard(
-notificationConfiguration: CreateNotificationContract.NotificationConfiguration
+    notificationConfiguration: CreateNotificationContract.NotificationConfiguration
 ) {
 
     Row(
@@ -22,12 +22,21 @@ notificationConfiguration: CreateNotificationContract.NotificationConfiguration
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        ImageLoader(
-            data = notificationConfiguration.assets.first().image,
-            modifier = Modifier.size(32.dp)
-        )
+        Column(
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth(0.2f)
+        ) {
+            ImageLoader(
+                data = notificationConfiguration.assets.first().image,
+                modifier = Modifier.size(32.dp)
+            )
+        }
 
-        Column() {
+        Column(
+            modifier = Modifier.fillMaxWidth(0.6f),
+            verticalArrangement = Arrangement.Center
+        ) {
 
             Text(notificationConfiguration.assets.first().symbol.uppercase())
 
@@ -37,11 +46,15 @@ notificationConfiguration: CreateNotificationContract.NotificationConfiguration
             )
         }
 
-        Column() {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Center
+        ) {
+
             Text(notificationConfiguration.eventType.toString())
 
             Text(
-                text = "every ${notificationConfiguration.intervalValue} ${notificationConfiguration.intervalType}",
+                text = "every ${notificationConfiguration.intervalValue} ${notificationConfiguration.intervalType.asString()}",
                 style = MaterialTheme.typography.caption
             )
         }

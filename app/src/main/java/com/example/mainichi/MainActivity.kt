@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -29,6 +30,7 @@ import com.example.mainichi.ui.newsScreen.NewsEffect
 import com.example.mainichi.ui.createNotificationScreen.ShowNotificationScreen
 import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState.*
 import com.example.mainichi.ui.settingsScreen.SettingsScreen
+import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogContract.UiState.*
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -43,10 +45,14 @@ class MainActivity : ComponentActivity() {
             val startUpViewModel: StartUpViewModel = hiltViewModel()
 
             val state = startUpViewModel.settingsState.collectAsState().value
-
-            Log.d("DataStore", state.isDarkMode.toString() + " " + state.launchScreen.toString())
-
-            MainichiTheme(state.isDarkMode) {
+            Log.d("Theme Setting", state.theme.toString())
+            MainichiTheme(
+                darkTheme = when (state.theme) {
+                    Theme.DarkMode -> true
+                    Theme.LightMode -> false
+                    Theme.SystemSetting -> isSystemInDarkTheme()
+                }
+            ) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -64,7 +70,9 @@ class MainActivity : ComponentActivity() {
                             LaunchScreen.News -> {
                                 "news"
                             }
-
+                            else -> {
+                                "crypto"
+                            }
                         }
                     ) {
 

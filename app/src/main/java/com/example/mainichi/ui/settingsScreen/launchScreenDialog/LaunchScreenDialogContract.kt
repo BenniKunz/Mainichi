@@ -6,8 +6,7 @@ class LaunchScreenDialogContract {
 
     data class UiState(
         val isLoading: Boolean,
-        val isCrypto: Boolean = false,
-        val isNews: Boolean = false
+        val currentScreen: SettingsContract.UiState.LaunchScreen? = null
 
     )
 

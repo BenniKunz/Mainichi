@@ -1,5 +1,6 @@
-package com.example.mainichi.ui.settingsScreen.launchScreenDialog
+package com.example.mainichi.ui.settingsScreen.themeDialog
 
+import com.example.mainichi.ui.settingsScreen.launchScreenDialog.SelectableButton
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -15,18 +16,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.mainichi.helper.LoadingStateProgressIndicator
-import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState.*
+import com.example.mainichi.ui.settingsScreen.asText
+import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogContract.*
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun LaunchScreenDialog(
-    viewModel: LaunchScreenDialogViewModel,
+fun ThemeDialogScreen(
+    viewModel: ThemeDialogViewModel,
     onDismissDialog: () -> Unit,
 ) {
     val state = viewModel.uiState.collectAsState().value
@@ -41,8 +41,7 @@ fun LaunchScreenDialog(
         }
     }
 
-
-    LaunchScreenDialog(
+    ThemeDialogScreen(
         state = state,
         onViewModelEvent = { event -> viewModel.setEvent(event) },
         onDismissDialog = onDismissDialog
@@ -52,9 +51,9 @@ fun LaunchScreenDialog(
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun LaunchScreenDialog(
-    state: LaunchScreenDialogContract.UiState,
-    onViewModelEvent: (LaunchScreenDialogContract.LaunchScreenDialogEvent) -> Unit,
+fun ThemeDialogScreen(
+    state: UiState,
+    onViewModelEvent: (ThemeDialogEvent) -> Unit,
     onDismissDialog: () -> Unit,
 ) {
     when {
@@ -64,7 +63,7 @@ fun LaunchScreenDialog(
         )
         else -> {
 
-            LaunchScreenContent(
+            ThemeDialogContent(
                 state = state,
                 onViewModelEvent = onViewModelEvent,
                 onDismissDialog = onDismissDialog
@@ -74,9 +73,9 @@ fun LaunchScreenDialog(
 }
 
 @Composable
-fun LaunchScreenContent(
-    state: LaunchScreenDialogContract.UiState,
-    onViewModelEvent: (LaunchScreenDialogContract.LaunchScreenDialogEvent) -> Unit,
+fun ThemeDialogContent(
+    state: UiState,
+    onViewModelEvent: (ThemeDialogEvent) -> Unit,
     onDismissDialog: () -> Unit,
 ) {
 
@@ -91,67 +90,32 @@ fun LaunchScreenContent(
                 .fillMaxWidth()
         ) {
 
-            enumValues<LaunchScreen>().forEach { launchScreen ->
+            enumValues<UiState.Theme>().forEach { theme ->
 
                 item {
                     SelectableButton(
                         onClick = {
                             onViewModelEvent(
-                                LaunchScreenDialogContract.LaunchScreenDialogEvent.SetLaunchScreen(
-                                    launchScreen
+                                ThemeDialogEvent.SetTheme(
+                                    theme
                                 )
                             )
                         },
                         imageVector = when {
-                            launchScreen == LaunchScreen.Crypto && launchScreen == state.currentScreen -> Icons.Default.RadioButtonChecked
-                            launchScreen == LaunchScreen.News && launchScreen == state.currentScreen -> Icons.Default.RadioButtonChecked
+                            theme == UiState.Theme.DarkMode && theme == state.currentTheme -> Icons.Default.RadioButtonChecked
+                            theme == UiState.Theme.LightMode && theme == state.currentTheme -> Icons.Default.RadioButtonChecked
+                            theme == UiState.Theme.SystemSetting && theme == state.currentTheme -> Icons.Default.RadioButtonChecked
                             else -> Icons.Default.RadioButtonUnchecked
                         },
-                        text = launchScreen.toString(),
+                        text = theme.toString().asText(),
                         tint = when {
-                            launchScreen == LaunchScreen.Crypto && launchScreen == state.currentScreen -> MaterialTheme.colors.primary
-                            launchScreen == LaunchScreen.News && launchScreen == state.currentScreen -> MaterialTheme.colors.primary
+                            theme == UiState.Theme.DarkMode && theme == state.currentTheme -> MaterialTheme.colors.primary
+                            theme == UiState.Theme.LightMode && theme == state.currentTheme -> MaterialTheme.colors.primary
+                            theme == UiState.Theme.SystemSetting && theme == state.currentTheme -> MaterialTheme.colors.primary
                             else -> MaterialTheme.colors.onPrimary
                         }
                     )
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun SelectableButton(
-    onClick: () -> Unit,
-    imageVector: ImageVector,
-    text: String,
-    tint: Color = MaterialTheme.colors.onPrimary,
-    textColor: Color = MaterialTheme.colors.onPrimary
-) {
-
-    IconButton(onClick = { onClick() }
-    ) {
-        Row(modifier = Modifier.fillMaxWidth()) {
-
-            Column(
-                modifier = Modifier.fillMaxWidth(0.8f),
-                horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center
-            ) {
-                Text(text = text, color = textColor)
-            }
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    imageVector = imageVector,
-                    contentDescription = null,
-                    tint = tint,
-                    modifier = Modifier
-                        .padding(end = 16.dp)
-                        .size(32.dp)
-                )
             }
         }
     }

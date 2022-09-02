@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -22,6 +23,9 @@ import com.example.mainichi.ui.createNotificationScreen.SectionHeader
 import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState
 import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState.*
 import com.example.mainichi.ui.settingsScreen.launchScreenDialog.LaunchScreenDialog
+import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogContract
+import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogContract.UiState.*
+import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogScreen
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -115,7 +119,7 @@ fun ShowSettingsScreen(
 ) {
 
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(32.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.Start,
         contentPadding = PaddingValues(16.dp)
     ) {
@@ -128,21 +132,31 @@ fun ShowSettingsScreen(
 
             item {
                 SettingsRow(
-                    title = setting.asString(),
-                    imageVector = setting.getImageVector(state.isDarkMode),
+                    title = setting.toString().asText(),
+                    currentSetting = when (setting) {
+                        Setting.Notifications -> "Create, delete, edit"
+                        Setting.LaunchScreen -> state.currentLaunchScreen.toString().asText()
+                        Setting.Theme -> state.currentTheme.toString().asText()
+                    },
+                    imageVector = setting.getImageVector(state.currentTheme),
                     onViewModelEvent = onViewModelEvent,
                     event = setting.getEvent()
                 )
-
-                Divider()
             }
         }
     }
 
-    if(state.setLaunchScreen) {
+    if (state.setTheme) {
+        ThemeDialogScreen(
+            viewModel = hiltViewModel(),
+            onDismissDialog = { onViewModelEvent(SettingsContract.SettingsEvent.SetTheme) }
+        )
+    }
+
+    if (state.setLaunchScreen) {
         LaunchScreenDialog(
             viewModel = hiltViewModel(),
-            onDismissDialog = { onViewModelEvent(SettingsContract.SettingsEvent.ChangeLaunchScreen)}
+            onDismissDialog = { onViewModelEvent(SettingsContract.SettingsEvent.ChangeLaunchScreen) }
         )
     }
 }
@@ -150,23 +164,28 @@ fun ShowSettingsScreen(
 @Composable
 fun SettingsRow(
     title: String,
+    currentSetting: String,
     imageVector: ImageVector,
     onViewModelEvent: (SettingsContract.SettingsEvent) -> Unit,
     event: SettingsContract.SettingsEvent
 ) {
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp)
-            .clickable { onViewModelEvent(event) },
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    TextButton(onClick = { onViewModelEvent(event) }, modifier = Modifier.fillMaxWidth()) {
 
-        Text(title)
+        Row(horizontalArrangement = Arrangement.Start, modifier = Modifier.fillMaxWidth()) {
+            Icon(imageVector, contentDescription = null)
 
-        Icon(imageVector, contentDescription = null)
+            Spacer(modifier = Modifier.size(24.dp))
 
+            Column() {
+                Text(text = title, color = MaterialTheme.colors.onBackground)
+
+                Text(
+                    text = currentSetting,
+                    color = MaterialTheme.colors.onSecondary,
+                    style = MaterialTheme.typography.caption
+                )
+            }
+        }
     }
 }

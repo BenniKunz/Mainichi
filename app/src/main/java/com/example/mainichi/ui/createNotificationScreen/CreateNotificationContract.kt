@@ -60,3 +60,9 @@ class CreateNotificationContract {
     }
 }
 
+fun Periodically.asString() : String {
+    return when(this) {
+        Periodically.Hourly -> "hours"
+        Periodically.Daily -> "days"
+    }
+}

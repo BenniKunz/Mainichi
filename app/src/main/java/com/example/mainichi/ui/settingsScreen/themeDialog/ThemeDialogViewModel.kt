@@ -1,17 +1,13 @@
-package com.example.mainichi.ui.settingsScreen.launchScreenDialog
+package com.example.mainichi.ui.settingsScreen.themeDialog
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mainichi.PreferenceKeys
 import com.example.mainichi.Settings
-import com.example.mainichi.ui.settingsScreen.SettingsContract
-import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState.LaunchScreen
-import com.example.mainichi.ui.settingsScreen.launchScreenDialog.LaunchScreenDialogContract.*
+import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogContract.*
+import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogContract.ThemeDialogEvent.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -20,7 +16,8 @@ import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
-class LaunchScreenDialogViewModel @Inject constructor(
+class ThemeDialogViewModel @Inject constructor(
+//    private val dataStore: DataStore<Preferences>
     private val settings: Settings
 ) : ViewModel() {
 
@@ -33,16 +30,16 @@ class LaunchScreenDialogViewModel @Inject constructor(
 
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    private val _event: MutableSharedFlow<LaunchScreenDialogEvent> = MutableSharedFlow()
+    private val _event: MutableSharedFlow<ThemeDialogEvent> = MutableSharedFlow()
 
-    fun setEvent(event: LaunchScreenDialogEvent) {
+    fun setEvent(event: ThemeDialogEvent) {
         viewModelScope.launch { _event.emit(event) }
     }
 
-    private val _effect: Channel<LaunchScreenDialogEffect> = Channel()
+    private val _effect: Channel<ThemeDialogEffect> = Channel()
     val effect = _effect.receiveAsFlow()
 
-    private fun setEffect(builder: () -> LaunchScreenDialogEffect) {
+    private fun setEffect(builder: () -> ThemeDialogEffect) {
         val effectValue = builder()
         viewModelScope.launch { _effect.send(effectValue) }
     }
@@ -56,7 +53,7 @@ class LaunchScreenDialogViewModel @Inject constructor(
                 _uiState.update { uiState ->
                     uiState.copy(
                         isLoading = false,
-                        currentScreen = settingsState.launchScreen
+                        currentTheme = settingsState.theme
                     )
                 }
             }
@@ -67,7 +64,6 @@ class LaunchScreenDialogViewModel @Inject constructor(
         }
     }
 
-
     @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun handleEvents() {
         _event
@@ -75,12 +71,9 @@ class LaunchScreenDialogViewModel @Inject constructor(
             .collect { event ->
 
                 when (event) {
-                    is LaunchScreenDialogEvent.SetLaunchScreen -> {
 
-                        settings.updateDataStore(
-                            PreferenceKeys.launchScreen,
-                            event.launchScreen.ordinal
-                        )
+                    is SetTheme -> {
+                        settings.updateDataStore(PreferenceKeys.theme, event.theme.ordinal)
                     }
                 }
             }

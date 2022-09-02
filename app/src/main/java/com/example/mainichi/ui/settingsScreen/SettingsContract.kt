@@ -4,20 +4,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.mainichi.ui.settingsScreen.SettingsContract.*
-import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState.*
+import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState.Setting
+import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogContract.UiState.Theme
 
 class SettingsContract {
 
     data class UiState(
         val isLoading: Boolean,
-        val isDarkMode: Boolean = false,
-        val setLaunchScreen: Boolean = false
+        val setLaunchScreen: Boolean = false,
+        val setTheme: Boolean = false,
+        val currentTheme: Theme = Theme.SystemSetting,
+        val currentLaunchScreen: LaunchScreen = LaunchScreen.Crypto
     ) {
 
         enum class Setting {
             Notifications,
             LaunchScreen,
-            ToggleDarkMode
+            Theme
         }
 
         enum class LaunchScreen {
@@ -29,7 +32,7 @@ class SettingsContract {
     sealed class SettingsEvent {
 
         object NavigateToShowNotificationsScreen : SettingsEvent()
-        object ToggleDarkMode : SettingsEvent()
+        object SetTheme : SettingsEvent()
         object ChangeLaunchScreen : SettingsEvent()
 
     }
@@ -40,16 +43,17 @@ class SettingsContract {
     }
 }
 
-fun Setting.getImageVector(isDarkMode: Boolean = false): ImageVector {
+fun Setting.getImageVector(theme: Theme = Theme.SystemSetting): ImageVector {
 
     return when (this) {
         Setting.Notifications -> Icons.Default.Notifications
         Setting.LaunchScreen -> Icons.Default.Home
-        Setting.ToggleDarkMode -> if (isDarkMode) {
-            Icons.Default.DarkMode
-        } else {
-            Icons.Default.LightMode
+        Setting.Theme -> when (theme) {
+            Theme.DarkMode -> Icons.Default.DarkMode
+            Theme.LightMode -> Icons.Default.LightMode
+            Theme.SystemSetting -> Icons.Default.SettingsSuggest
         }
+
     }
 }
 
@@ -57,12 +61,12 @@ fun Setting.getEvent(): SettingsEvent {
     return when (this) {
         Setting.Notifications -> SettingsEvent.NavigateToShowNotificationsScreen
         Setting.LaunchScreen -> SettingsEvent.ChangeLaunchScreen
-        Setting.ToggleDarkMode -> SettingsEvent.ToggleDarkMode
+        Setting.Theme -> SettingsEvent.SetTheme
     }
 }
 
-fun Setting.asString(): String {
-    val string = this.toString()
+fun String.asText(): String {
+    val string = this
 
     val indexList = mutableListOf<Int>()
     string.forEachIndexed() { index, char ->

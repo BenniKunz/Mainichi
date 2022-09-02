@@ -3,12 +3,11 @@ package com.example.mainichi
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState.*
+import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState.LaunchScreen
+import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogContract.UiState.Theme
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -25,91 +24,80 @@ class StartUpViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            setInitialSettings()
-        }
-
-        viewModelScope.launch {
-
             updateState()
         }
 
         Log.d(
-            "DataStore", "I am initialized"
+            "Theme setting", "I am initialized"
         )
 
         viewModelScope.launch {
 
             collectThemeChanges()
         }
-
-        viewModelScope.launch {
-            collectLaunchScreenChanges()
-        }
-    }
-
-    private suspend fun collectLaunchScreenChanges() {
-        dataStore.data.map { preferences -> preferences[PreferenceKeys.launchScreen] }
-            .collect { dataStoreValue ->
-
-                settingsState.update { state ->
-                    state.copy(launchScreen = LaunchScreen.values()[dataStoreValue ?: 0])
-
-                }
-            }
     }
 
     private suspend fun collectThemeChanges() {
-        dataStore.data.map { preferences -> preferences[PreferenceKeys.isDarkMode] }
+        dataStore.data.map { preferences -> preferences[PreferenceKeys.theme] }
             .collect { dataStoreValue ->
 
+                if (dataStoreValue == null || dataStoreValue == settingsState.value.theme.ordinal) {
+                    return@collect
+                }
                 settingsState.update { state ->
-                    state.copy(isDarkMode = dataStoreValue ?: false)
+                    state.copy(theme = Theme.values()[dataStoreValue])
 
                 }
             }
     }
 
     private suspend fun updateState() {
-        settingsState.update {
-            SettingsState(
-                isDarkMode = dataStore.data.map { preferences -> preferences[PreferenceKeys.isDarkMode] }
-                    .first() ?: true,
-                launchScreen = LaunchScreen.values()[dataStore.data.map { preferences -> preferences[PreferenceKeys.launchScreen] }
-                    .first() ?: 0]
+        settingsState.update { settingsState ->
+
+            settingsState.copy(
+                theme =
+                when {
+                    dataStore.data.map { preferences -> preferences[PreferenceKeys.theme] }
+                        .firstOrNull() != null -> {
+
+                        Theme.values()[dataStore.data.map { preferences -> preferences[PreferenceKeys.theme] }
+                            .first() ?: 2]
+                    }
+                    else -> {
+                        settingsState.theme
+                    }
+                },
+                launchScreen = when {
+                    dataStore.data.map { preferences -> preferences[PreferenceKeys.launchScreen] }
+                        .firstOrNull() != null -> {
+
+                        LaunchScreen.values()[dataStore.data.map { preferences -> preferences[PreferenceKeys.launchScreen] }
+                            .first() ?: 0]
+                    }
+                    else -> {
+                        settingsState.launchScreen
+                    }
+                }
+
+//                LaunchScreen.values()[dataStore.data.map { preferences -> preferences[PreferenceKeys.launchScreen] }
+//                    .first() ?: 0]
             )
         }
     }
 
-    private suspend fun setInitialSettings() {
-        if (dataStore.data.map { preferences -> preferences[PreferenceKeys.isDarkMode] }
-                .firstOrNull() == null) {
-            dataStore.edit { settings ->
-                settings[PreferenceKeys.isDarkMode] = true
-            }
-        }
-
-        if (dataStore.data.map { preferences -> preferences[PreferenceKeys.launchScreen] }
-                .firstOrNull() == null) {
-            dataStore.edit { settings ->
-                settings[PreferenceKeys.launchScreen] = 0
-            }
-        }
-    }
-
-
     data class SettingsState(
-        val isDarkMode: Boolean = true,
+        val theme: Theme = Theme.SystemSetting,
         val launchScreen: LaunchScreen = LaunchScreen.Crypto
     )
 }
 
 object PreferenceKeys {
-    val isDarkMode = booleanPreferencesKey(UserSettings.ISDARKMODE.toString())
+    val theme = intPreferencesKey(UserSettings.THEME.toString())
     val launchScreen = intPreferencesKey(UserSettings.LAUNCHSCREEN.toString())
 }
 
 enum class UserSettings {
-    ISDARKMODE,
+    THEME,
     LAUNCHSCREEN
 }
 

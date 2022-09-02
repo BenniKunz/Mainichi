@@ -10,7 +10,7 @@ import androidx.room.RoomDatabase
         DbFavoriteAsset::class,
         DbNotification::class],
     exportSchema = true,
-    version = 2
+    version = 1
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun articleDao(): ArticleDao

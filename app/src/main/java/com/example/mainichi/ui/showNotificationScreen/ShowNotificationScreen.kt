@@ -8,11 +8,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -155,16 +157,29 @@ fun ShowNotificationScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 32.dp)
+                .padding(top = 32.dp),
+            horizontalArrangement = Arrangement.End
         ) {
-            Button(onClick = {
 
-                showCreationDialog = !showCreationDialog
+            ExtendedFloatingActionButton(
 
+                text = {
+                    Text(
+                        text = "New Notification",
+                        color = MaterialTheme.colors.secondaryVariant
+                    )
+                },
 
-            }) {
-                Text("New Notification")
-            }
+                onClick = {
+                    showCreationDialog = !showCreationDialog
+                },
+
+                backgroundColor = MaterialTheme.colors.primaryVariant,
+
+                contentColor = Color.White,
+
+                icon = { Icon(Icons.Filled.Add, "") }
+            )
         }
 
         if (showCreationDialog) {
