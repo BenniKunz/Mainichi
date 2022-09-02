@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
 @Singleton
 class Settings @Inject constructor(
     private val dataStore: DataStore<Preferences>
@@ -30,10 +29,6 @@ class Settings @Inject constructor(
 
             updateState()
         }
-
-        Log.d(
-            "Theme setting", "I am initialized"
-        )
 
         scope.launch {
 
@@ -109,6 +104,12 @@ class Settings @Inject constructor(
         dataStore.edit { settings ->
             settings[preferenceKey] = value
         }
+    }
+
+    suspend fun getDataStoreValue(preferenceKey: Preferences.Key<Int>): Int {
+
+        return dataStore.data.map { preferences -> preferences[preferenceKey] }
+            .first() ?: 0
     }
 
     data class SettingsState(

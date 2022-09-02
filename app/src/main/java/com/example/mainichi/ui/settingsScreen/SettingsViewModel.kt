@@ -70,23 +70,6 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-//    private suspend fun loadData() {
-//
-//        val theme = ThemeDialogContract.UiState.Theme.values()[dataStore.data.map { preferences -> preferences[PreferenceKeys.theme] }
-//            .first() ?: ThemeDialogContract.UiState.Theme.SystemSetting.ordinal]
-//
-//        val launchScreen = UiState.LaunchScreen.values()[dataStore.data.map { preferences -> preferences[PreferenceKeys.launchScreen] }
-//            .first() ?: 0]
-//
-//        _uiState.update { uiState ->
-//            uiState.copy(
-//                isLoading = false,
-//                currentTheme = theme,
-//                currentLaunchScreen = launchScreen
-//            )
-//        }
-//    }
-
     @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun handleEvents() {
         _event

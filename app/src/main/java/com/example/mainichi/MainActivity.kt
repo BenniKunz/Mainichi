@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
             val startUpViewModel: StartUpViewModel = hiltViewModel()
 
             val state = startUpViewModel.settingsState.collectAsState().value
-            Log.d("Theme Setting", state.theme.toString())
+
             MainichiTheme(
                 darkTheme = when (state.theme) {
                     Theme.DarkMode -> true
