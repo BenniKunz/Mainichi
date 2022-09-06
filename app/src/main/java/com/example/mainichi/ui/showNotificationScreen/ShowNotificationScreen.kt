@@ -4,16 +4,18 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -49,7 +51,7 @@ fun ShowNotificationScreen(
     ShowNotificationScreen(
         state = state,
         onViewModelEvent = { event -> viewModel.setEvent(event) },
-        onNavigateUp = onNavigateUp
+        onNavigateUp = onNavigateUp,
     )
 }
 
@@ -59,7 +61,7 @@ fun ShowNotificationScreen(
 fun ShowNotificationScreen(
     state: UiState,
     onViewModelEvent: (ShowNotificationEvent) -> Unit,
-    onNavigateUp: () -> Unit,
+    onNavigateUp: () -> Unit
 ) {
 
     Scaffold(
@@ -106,6 +108,7 @@ fun ShowNotificationScreen(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ShowNotificationScreen(
@@ -145,14 +148,86 @@ fun ShowNotificationScreen(
                 } else {
                     state.notificationConfigurations.forEach { notificationConfiguration ->
                         item {
-                            NotificationsCard(notificationConfiguration = notificationConfiguration)
+
+                            val dismissState = rememberDismissState(
+                                confirmStateChange = { dismissValue ->
+                                    when (dismissValue) {
+                                        DismissValue.Default -> {
+                                            false
+                                        }
+                                        DismissValue.DismissedToEnd -> {
+                                            true
+                                        }
+                                        DismissValue.DismissedToStart -> {
+                                            true
+                                        }
+                                    }
+                                }
+                            )
+                            SwipeToDismiss(
+                                state = dismissState,
+                                directions = setOf(
+                                    DismissDirection.EndToStart,
+                                    DismissDirection.StartToEnd
+                                ),
+                                background = {
+
+                                    val direction =
+                                        dismissState.dismissDirection ?: return@SwipeToDismiss
+
+                                    val color by animateColorAsState(
+                                        targetValue =
+                                        when (dismissState.targetValue) {
+                                            DismissValue.Default -> Color.Gray
+                                            DismissValue.DismissedToEnd -> Color.Yellow
+                                            DismissValue.DismissedToStart -> Color.Red
+                                        }
+                                    )
+
+                                    val scale by animateFloatAsState(
+                                        targetValue = if (dismissState.targetValue == DismissValue.Default) {
+                                            0.7f
+                                        } else {
+                                            1.2f
+                                        }
+                                    )
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(color = color)
+                                            .padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = when (direction) {
+                                            DismissDirection.StartToEnd -> Arrangement.Start
+                                            DismissDirection.EndToStart -> Arrangement.End
+                                        }
+                                    ) {
+                                        Icon(
+                                            when (direction) {
+                                                DismissDirection.StartToEnd -> Icons.Default.Edit
+                                                DismissDirection.EndToStart -> Icons.Default.Delete
+                                            },
+                                            contentDescription = null,
+                                            modifier = Modifier.scale(scale = scale)
+                                        )
+
+                                        Text(
+                                            text = when (direction) {
+                                                DismissDirection.StartToEnd -> "Edit"
+                                                DismissDirection.EndToStart -> "Delete"
+                                            }
+                                        )
+                                    }
+                                },
+                                dismissContent = {
+                                    NotificationsCard(notificationConfiguration = notificationConfiguration)
+                                })
                         }
                     }
                 }
             }
         }
-
-        var showCreationDialog by remember { mutableStateOf(false) }
 
         Row(
             modifier = Modifier
@@ -171,7 +246,7 @@ fun ShowNotificationScreen(
                 },
 
                 onClick = {
-                    showCreationDialog = !showCreationDialog
+                    onViewModelEvent(NavigateToCreateNotificationScreen)
                 },
 
                 backgroundColor = MaterialTheme.colors.primaryVariant,
@@ -179,14 +254,6 @@ fun ShowNotificationScreen(
                 contentColor = Color.White,
 
                 icon = { Icon(Icons.Filled.Add, "") }
-            )
-        }
-
-        if (showCreationDialog) {
-
-            CreateNotificationScreen(
-                viewModel = hiltViewModel(),
-                onDismissDialog = { showCreationDialog = false },
             )
         }
     }

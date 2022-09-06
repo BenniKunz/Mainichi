@@ -1,5 +1,6 @@
 package com.example.mainichi.ui.createNotificationScreen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -16,7 +17,8 @@ fun NotificationsCard(
 
     Row(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
+            .background(color = MaterialTheme.colors.background)
             .padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically

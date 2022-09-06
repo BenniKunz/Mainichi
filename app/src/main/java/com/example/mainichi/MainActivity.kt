@@ -25,6 +25,7 @@ import androidx.navigation.navArgument
 import com.example.mainichi.navigationDrawer.*
 import com.example.mainichi.ui.appMenu.AppMenu
 import com.example.mainichi.ui.coinScreen.CoinScreen
+import com.example.mainichi.ui.createNotificationScreen.CreateNotificationScreen
 import com.example.mainichi.ui.cryptoScreen.CryptoEffect
 import com.example.mainichi.ui.newsScreen.NewsEffect
 import com.example.mainichi.ui.createNotificationScreen.ShowNotificationScreen
@@ -154,11 +155,23 @@ class MainActivity : ComponentActivity() {
                             ShowNotificationScreen(
                                 viewModel = hiltViewModel(),
                                 onNavigate = {
-//                                    navController.navigate(route = "createNotification")
+                                    navController.navigate(route = "createNotification")
 
                                 },
                                 onNavigateUp = {
                                     navController.navigateUp()
+                                })
+                        }
+
+                        composable(
+                            route = "createNotification"
+                        ) {
+
+                            CreateNotificationScreen(
+                                viewModel = hiltViewModel(),
+                                onDismissDialog = {
+                                    navController.navigateUp()
+
                                 })
                         }
 
