@@ -1,10 +1,11 @@
-package com.example.mainichi.db
+package com.example.mainichi.data.database
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.example.mainichi.data.database.DbArticle
 import kotlinx.coroutines.flow.Flow
 
 @Dao

@@ -13,4 +13,7 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Mainichi"
+
 include ':app'
+include (":feature:crypto")
+include (":core:data")

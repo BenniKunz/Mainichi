@@ -9,8 +9,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.*
 import com.example.mainichi.api.crypto.CryptoAPI
 import com.example.mainichi.api.crypto.asAsset
-import com.example.mainichi.db.AppDatabase
-import com.example.mainichi.db.DbNotification
+import com.example.mainichi.data.database.AppDatabase
+import com.example.mainichi.data.database.DbNotification
 import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.*
 import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.NotificationConfiguration.*
 import com.example.mainichi.worker.PriceChangeWorker

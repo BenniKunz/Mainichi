@@ -36,14 +36,14 @@ class NewsScreenViewModel @Inject constructor(
 
 //            val headLines = newsAPI.getTopHeadlines()
 
-            articleRepo.getAllArticles().collect { articleList ->
-
-                _uiState.update {
-                    NewsUiState.ContentState(
-                        articles = articleList
-                    )
-                }
-            }
+//            articleRepo.getAllArticles().collect { articleList ->
+//
+//                _uiState.update {
+//                    NewsUiState.ContentState(
+//                        articles = articleList
+//                    )
+//                }
+//            }
         }
 
         viewModelScope.launch {

@@ -2,16 +2,11 @@ package com.example.mainichi.ui.settingsScreen
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mainichi.PreferenceKeys
 import com.example.mainichi.Settings
-import com.example.mainichi.db.AppDatabase
 import com.example.mainichi.ui.settingsScreen.SettingsContract.*
 import com.example.mainichi.ui.settingsScreen.SettingsContract.SettingsEvent.*
-import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogContract
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -21,7 +16,7 @@ import javax.inject.Inject
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    val database: AppDatabase,
+//    val database: AppDatabase,
     private val settings: Settings
 
 ) : ViewModel() {

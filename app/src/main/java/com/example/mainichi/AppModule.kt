@@ -15,7 +15,7 @@ import androidx.work.WorkManager
 import com.example.mainichi.api.APIConstants
 import com.example.mainichi.api.crypto.CryptoAPI
 import com.example.mainichi.api.news.NewsAPI
-import com.example.mainichi.db.AppDatabase
+import com.example.mainichi.data.database.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

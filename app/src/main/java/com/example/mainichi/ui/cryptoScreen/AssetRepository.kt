@@ -1,10 +1,9 @@
 package com.example.mainichi.ui.cryptoScreen
 
-import android.util.Log
 import com.example.mainichi.api.crypto.CryptoAPI
 import com.example.mainichi.api.crypto.asAsset
-import com.example.mainichi.db.AppDatabase
-import com.example.mainichi.db.DbFavoriteAsset
+import com.example.mainichi.data.database.AppDatabase
+import com.example.mainichi.data.database.DbFavoriteAsset
 import com.example.mainichi.ui.entities.Asset
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow

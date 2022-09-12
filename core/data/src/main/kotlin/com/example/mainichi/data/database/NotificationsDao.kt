@@ -1,9 +1,10 @@
-package com.example.mainichi.db
+package com.example.mainichi.data.database
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.example.mainichi.data.database.DbNotification
 import kotlinx.coroutines.flow.Flow
 
 @Dao

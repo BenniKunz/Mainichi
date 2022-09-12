@@ -1,6 +1,7 @@
-package com.example.mainichi.db
+package com.example.mainichi.data.database
 
 import androidx.room.*
+import com.example.mainichi.data.database.DbFavoriteAsset
 import kotlinx.coroutines.flow.Flow
 
 @Dao

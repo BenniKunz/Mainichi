@@ -1,5 +1,5 @@
 plugins {
-    id 'com.android.application'
+    id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id("dagger.hilt.android.plugin")
@@ -7,21 +7,21 @@ plugins {
 }
 
 android {
-    namespace 'com.example.mainichi'
+//    namespace 'com.example.mainichi'
     compileSdk 33
 
-    defaultConfig {
-        applicationId "com.example.mainichi"
-        minSdk 24
-        targetSdk 32
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary true
-        }
-    }
+//    defaultConfig {
+//        applicationId "com.example.mainichi"
+//        minSdk 24
+//        targetSdk 32
+//        versionCode 1
+//        versionName "1.0"
+//
+//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+//        vectorDrawables {
+//            useSupportLibrary true
+//        }
+//    }
 
     buildTypes {
         release {
@@ -31,7 +31,7 @@ android {
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+                targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = '1.8'
@@ -50,9 +50,6 @@ android {
 }
 
 dependencies {
-
-    implementation(project(":feature:crypto"))
-    implementation(project(":core:data"))
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'

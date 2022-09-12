@@ -1,9 +1,9 @@
-package com.example.mainichi.db
+package com.example.mainichi.data.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.mainichi.api.crypto.APIAsset
-import com.example.mainichi.api.crypto.ROI
+//import com.example.mainichi.api.crypto.APIAsset
+//import com.example.mainichi.api.crypto.ROI
 
 //@Entity(tableName = "favoriteAssets")
 //data class DbFavoriteAsset(

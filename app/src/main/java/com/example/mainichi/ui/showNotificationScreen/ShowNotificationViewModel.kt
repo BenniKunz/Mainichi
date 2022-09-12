@@ -4,8 +4,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mainichi.db.AppDatabase
-import com.example.mainichi.db.toNotificationConfiguration
+import com.example.mainichi.data.database.AppDatabase
+//import com.example.mainichi.data.database.toNotificationConfiguration
 import com.example.mainichi.ui.showNotificationScreen.ShowNotificationContract.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -60,15 +60,15 @@ class ShowNotificationViewModel @Inject constructor(
 
         database.notificationsDao().getAllNotifications().collect { dbNotifications ->
 
-            _uiState.update { uiState ->
-
-                uiState.copy(
-                    isLoading = false,
-                    notificationConfigurations = dbNotifications.map { dbNotification ->
-                        dbNotification.toNotificationConfiguration()
-                    }
-                )
-            }
+//            _uiState.update { uiState ->
+//
+//                uiState.copy(
+//                    isLoading = false,
+//                    notificationConfigurations = dbNotifications.map { dbNotification ->
+//                        dbNotification.toNotificationConfiguration()
+//                    }
+//                )
+//            }
         }
     }
 

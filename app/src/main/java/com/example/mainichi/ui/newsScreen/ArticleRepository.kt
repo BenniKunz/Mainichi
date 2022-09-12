@@ -4,8 +4,8 @@ import android.util.Log
 import com.example.mainichi.api.news.Article
 import com.example.mainichi.api.news.NewsAPI
 import com.example.mainichi.api.news.toDbArticle
-import com.example.mainichi.db.AppDatabase
-import com.example.mainichi.db.toArticle
+import com.example.mainichi.data.database.AppDatabase
+//import com.example.mainichi.data.database.toArticle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -21,16 +21,16 @@ class ArticleRepository @Inject constructor(
 
     private val repositoryScope = CoroutineScope(context = Dispatchers.IO)
 
-    fun getAllArticles(): Flow<List<Article>> {
-
-        //Check for updates asynchronously
-        repositoryScope.launch {
-            refresh()
-        }
-
-        //Immediately return the latest database snapshot
-        return database.articleDao().observeLatestArticles().map { articles -> articles.map { it.toArticle() } }
-    }
+//    fun getAllArticles(): Flow<List<Article>> {
+//
+//        //Check for updates asynchronously
+//        repositoryScope.launch {
+//            refresh()
+//        }
+//
+//        //Immediately return the latest database snapshot
+////        return database.articleDao().observeLatestArticles().map { articles -> articles.map { it.toArticle() } }
+//    }
 //        return db.observeLatestArticles().distinctUntilChanged().filterNotNull().map { it.toArticle() } }
 
     private suspend fun refresh() {
