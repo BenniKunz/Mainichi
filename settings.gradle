@@ -15,5 +15,10 @@ dependencyResolutionManagement {
 rootProject.name = "Mainichi"
 
 include ':app'
+
+include(":api:crypto-api-client-android")
 include (":feature:crypto")
+
 include (":core:data")
+include (":core:model")
+include (":core:designsystem")

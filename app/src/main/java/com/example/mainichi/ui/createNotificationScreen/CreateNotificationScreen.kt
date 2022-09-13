@@ -2,9 +2,7 @@ package com.example.mainichi.ui.createNotificationScreen
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,14 +21,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import com.example.mainichi.R
-import com.example.mainichi.helper.ImageLoader
-import com.example.mainichi.helper.LoadingStateProgressIndicator
+import com.example.mainichi.core.model.Asset
+import com.example.mainichi.feature.crypto.ImageLoader
+import com.example.mainichi.feature.crypto.LoadingStateProgressIndicator
 import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.*
 import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.NotificationConfiguration.*
-import com.example.mainichi.ui.entities.Asset
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

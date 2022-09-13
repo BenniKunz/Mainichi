@@ -3,7 +3,7 @@ package com.example.mainichi.ui.newsScreen
 import android.util.Log
 import com.example.mainichi.api.news.Article
 import com.example.mainichi.api.news.NewsAPI
-import com.example.mainichi.api.news.toDbArticle
+//import com.example.mainichi.api.news.toDbArticle
 import com.example.mainichi.data.database.AppDatabase
 //import com.example.mainichi.data.database.toArticle
 import kotlinx.coroutines.CoroutineScope
@@ -44,7 +44,7 @@ class ArticleRepository @Inject constructor(
 
         //Persist the newly fetched articles in the database
 
-        database.articleDao().insertArticles(headlines.articles.map { it.toDbArticle() })
+//        database.articleDao().insertArticles(headlines.articles.map { it.toDbArticle() })
 
         //If no article is existent in the database or the newest article is not from today fetch a new one
 //        if (persistedArticle == null)  || persistedArticle.publishedAt.withTimeAtStartOfDay().isBefore(today)) {

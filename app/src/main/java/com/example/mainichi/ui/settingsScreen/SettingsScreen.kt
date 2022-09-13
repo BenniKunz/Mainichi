@@ -3,7 +3,6 @@ package com.example.mainichi.ui.settingsScreen
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
@@ -13,18 +12,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mainichi.R
-import com.example.mainichi.helper.LoadingStateProgressIndicator
+import com.example.mainichi.feature.crypto.LoadingStateProgressIndicator
 import com.example.mainichi.ui.createNotificationScreen.SectionHeader
 import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState
 import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState.*
 import com.example.mainichi.ui.settingsScreen.launchScreenDialog.LaunchScreenDialog
-import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogContract
-import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogContract.UiState.*
 import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogScreen
 
 

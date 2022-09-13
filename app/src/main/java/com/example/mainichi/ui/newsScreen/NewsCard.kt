@@ -15,10 +15,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mainichi.helper.ImageLoader
+import com.example.mainichi.feature.crypto.ImageLoader
 import com.example.mainichi.api.news.Article
 import com.example.mainichi.api.news.Source
-import com.example.mainichi.ui.theme.MainichiTheme
+import com.example.mainichi.core.designsystem.MainichiTheme
 
 @Composable
 fun NewsCard(
@@ -115,7 +115,7 @@ fun NewsCard(
                                     Text("No content")
                                 } else {
                                     Text(
-                                        text = article.content,
+                                        text = article.content ?: "",
                                         color = MaterialTheme.colors.secondaryVariant,
                                         maxLines = 10,
                                         overflow = TextOverflow.Ellipsis
@@ -159,10 +159,10 @@ fun NewsCard(
                         .padding(start = 10.dp, end = 10.dp),
                     textAlign = TextAlign.End,
                     text = when (article.author) {
-                        null -> article.source.name
+                        null -> article.source.name ?: ""
 
                         else -> {
-                            article.author
+                            article.author ?: ""
                         }
                     },
                     color = MaterialTheme.colors.primary,

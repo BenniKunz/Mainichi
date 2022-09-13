@@ -9,7 +9,6 @@ import javax.inject.Inject
 @HiltAndroidApp
 class MainichiApplication : Application(), Configuration.Provider {
 
-
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 

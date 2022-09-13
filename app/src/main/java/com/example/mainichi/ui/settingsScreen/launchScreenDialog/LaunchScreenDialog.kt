@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.mainichi.helper.LoadingStateProgressIndicator
+import com.example.mainichi.feature.crypto.LoadingStateProgressIndicator
 import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState.*
 
 

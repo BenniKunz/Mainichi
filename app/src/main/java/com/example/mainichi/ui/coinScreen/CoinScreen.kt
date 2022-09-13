@@ -10,8 +10,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,11 +19,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mainichi.R
-import com.example.mainichi.helper.ImageLoader
-import com.example.mainichi.helper.LoadingStateProgressIndicator
-import com.example.mainichi.ui.cryptoScreen.CryptoEvent
-import com.example.mainichi.ui.theme.MainichiTheme
-import com.example.mainichi.ui.entities.Asset
+import com.example.mainichi.core.model.Asset
+import com.example.mainichi.feature.crypto.ImageLoader
+import com.example.mainichi.feature.crypto.LoadingStateProgressIndicator
+import com.example.mainichi.core.designsystem.MainichiTheme
 
 @Composable
 fun CoinScreen(

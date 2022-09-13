@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.mainichi.helper.LoadingStateProgressIndicator
+import com.example.mainichi.feature.crypto.LoadingStateProgressIndicator
 import com.example.mainichi.ui.settingsScreen.asText
 import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogContract.*
 

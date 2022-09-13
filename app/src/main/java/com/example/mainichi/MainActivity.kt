@@ -17,21 +17,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import com.example.mainichi.ui.newsScreen.NewsScreen
-import com.example.mainichi.ui.theme.MainichiTheme
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.mainichi.feature.crypto.TestScreen
 import com.example.mainichi.navigationDrawer.*
 import com.example.mainichi.ui.appMenu.AppMenu
 import com.example.mainichi.ui.coinScreen.CoinScreen
 import com.example.mainichi.ui.createNotificationScreen.CreateNotificationScreen
 import com.example.mainichi.ui.newsScreen.NewsEffect
 import com.example.mainichi.ui.createNotificationScreen.ShowNotificationScreen
-import com.example.mainichi.ui.cryptoScreen.CryptoEffect
-import com.example.mainichi.ui.cryptoScreen.CryptoScreen
+import com.example.mainichi.feature.crypto.overview.CryptoEffect
+import com.example.mainichi.feature.crypto.overview.CryptoScreen
 import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState.*
 import com.example.mainichi.ui.settingsScreen.SettingsScreen
 import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogContract.UiState.*
+import com.example.mainichi.core.designsystem.MainichiTheme
+
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -7,21 +7,8 @@ plugins {
 }
 
 android {
-//    namespace 'com.example.mainichi'
-    compileSdk 33
 
-//    defaultConfig {
-//        applicationId "com.example.mainichi"
-//        minSdk 24
-//        targetSdk 32
-//        versionCode 1
-//        versionName "1.0"
-//
-//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-//        vectorDrawables {
-//            useSupportLibrary true
-//        }
-//    }
+    compileSdk 33
 
     buildTypes {
         release {
@@ -50,6 +37,9 @@ android {
 }
 
 dependencies {
+
+    implementation(project(":api:crypto-api-client-android"))
+    implementation(project(":core:model"))
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'

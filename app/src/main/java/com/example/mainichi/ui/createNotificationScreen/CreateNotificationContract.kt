@@ -1,7 +1,7 @@
 package com.example.mainichi.ui.createNotificationScreen
 
+import com.example.mainichi.core.model.Asset
 import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.NotificationConfiguration.*
-import com.example.mainichi.ui.entities.Asset
 
 class CreateNotificationContract {
 

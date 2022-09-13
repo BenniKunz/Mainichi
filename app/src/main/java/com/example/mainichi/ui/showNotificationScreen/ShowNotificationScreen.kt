@@ -2,7 +2,6 @@ package com.example.mainichi.ui.createNotificationScreen
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -19,10 +18,8 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mainichi.R
-import com.example.mainichi.helper.LoadingStateProgressIndicator
-import com.example.mainichi.ui.showNotificationScreen.ShowNotificationContract
+import com.example.mainichi.feature.crypto.LoadingStateProgressIndicator
 import com.example.mainichi.ui.showNotificationScreen.ShowNotificationContract.*
 import com.example.mainichi.ui.showNotificationScreen.ShowNotificationContract.ShowNotificationEvent.*
 import com.example.mainichi.ui.showNotificationScreen.ShowNotificationViewModel
