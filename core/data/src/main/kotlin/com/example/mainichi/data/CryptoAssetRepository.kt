@@ -3,9 +3,13 @@ package com.example.mainichi.data
 import com.example.mainichi.api.crypto.CryptoAPI
 import com.example.mainichi.api.crypto.asAsset
 import com.example.mainichi.core.model.Asset
-import com.example.mainichi.data.database.AppDatabase
 import com.example.mainichi.data.database.DbFavoriteAsset
-import kotlinx.coroutines.*
+import com.example.mainichi.data.database.FavoriteAssetDao
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -15,7 +19,7 @@ import kotlin.time.Duration.Companion.seconds
 @Singleton
 internal class CryptoAssetRepository @Inject constructor(
     private val cryptoAPI: CryptoAPI,
-    private val database: AppDatabase
+    private val favoriteAssetDao: FavoriteAssetDao
 ) : AssetRepository {
     private val repositoryScope = CoroutineScope(context = Dispatchers.IO)
 
@@ -71,7 +75,7 @@ internal class CryptoAssetRepository @Inject constructor(
 
     override fun observeFavoriteAssets(): Flow<List<DbFavoriteAsset>> {
 
-        return database.favoriteAssetDao().observeFavoriteAssets()
+        return favoriteAssetDao.observeFavoriteAssets()
     }
 
     override suspend fun changeFavorites(coin: String, clicked: Boolean) {
@@ -80,10 +84,10 @@ internal class CryptoAssetRepository @Inject constructor(
 
             withContext(Dispatchers.IO) {
                 if (clicked) {
-                    database.favoriteAssetDao().insertFavoriteAsset(DbFavoriteAsset(name = coin))
+                    favoriteAssetDao.insertFavoriteAsset(DbFavoriteAsset(name = coin))
 
                 } else {
-                    database.favoriteAssetDao().deleteFavoriteAsset(coin)
+                    favoriteAssetDao.deleteFavoriteAsset(coin)
                 }
             }
         }

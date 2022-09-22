@@ -4,7 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mainichi.data.database.AppDatabase
+import com.example.mainichi.data.database.NotificationsDao
 //import com.example.mainichi.data.database.toNotificationConfiguration
 import com.example.mainichi.ui.showNotificationScreen.ShowNotificationContract.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +16,7 @@ import javax.inject.Inject
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class ShowNotificationViewModel @Inject constructor(
-    val database: AppDatabase
+    val notificationsDao: NotificationsDao
 
 ) : ViewModel() {
 
@@ -58,7 +58,7 @@ class ShowNotificationViewModel @Inject constructor(
 
     private suspend fun loadData() {
 
-        database.notificationsDao().getAllNotifications().collect { dbNotifications ->
+        notificationsDao.getAllNotifications().collect { dbNotifications ->
 
 //            _uiState.update { uiState ->
 //

@@ -4,7 +4,6 @@ import android.util.Log
 import com.example.mainichi.api.news.Article
 import com.example.mainichi.api.news.NewsAPI
 //import com.example.mainichi.api.news.toDbArticle
-import com.example.mainichi.data.database.AppDatabase
 //import com.example.mainichi.data.database.toArticle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,8 +14,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ArticleRepository @Inject constructor(
-    private val api: NewsAPI,
-    private val database: AppDatabase
+    private val api: NewsAPI
 ) {
 
     private val repositoryScope = CoroutineScope(context = Dispatchers.IO)

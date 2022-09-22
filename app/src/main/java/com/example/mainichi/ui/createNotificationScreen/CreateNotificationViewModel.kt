@@ -9,8 +9,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.*
 import com.example.mainichi.api.crypto.CryptoAPI
 import com.example.mainichi.api.crypto.asAsset
-import com.example.mainichi.data.database.AppDatabase
 import com.example.mainichi.data.database.DbNotification
+import com.example.mainichi.data.database.NotificationsDao
 import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.*
 import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.NotificationConfiguration.*
 import com.example.mainichi.worker.PriceChangeWorker
@@ -37,7 +37,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateNotificationViewModel @Inject constructor(
     val api: CryptoAPI,
-    val database: AppDatabase,
+    val notificationsDao: NotificationsDao,
     private val workManager: WorkManager
 
 ) : ViewModel() {
@@ -236,7 +236,7 @@ class CreateNotificationViewModel @Inject constructor(
 
         val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
 
-        database.notificationsDao().insertNotification(
+        notificationsDao.insertNotification(
             DbNotification(
                 tag = tag,
                 name = notification.assets[0].name,

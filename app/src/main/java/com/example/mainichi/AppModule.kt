@@ -8,9 +8,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
-import androidx.room.Room
 import androidx.work.WorkManager
-import com.example.mainichi.data.database.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,16 +24,6 @@ private const val USER_SETTINGS = "user_settings"
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
-    @Provides
-    @Singleton
-    fun provideAppDataBase(@ApplicationContext appContext: Context): AppDatabase =
-        Room.databaseBuilder(
-            appContext, AppDatabase::class.java,
-            "database.db"
-        )
-            .fallbackToDestructiveMigration()
-            .build()
 
     @Singleton
     @Provides

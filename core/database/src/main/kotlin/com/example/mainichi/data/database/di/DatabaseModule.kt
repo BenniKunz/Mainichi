@@ -1,4 +1,3 @@
-/*
 package com.example.mainichi.data.database.di
 
 import android.content.Context
@@ -23,4 +22,4 @@ internal object DatabaseModule {
         )
             .fallbackToDestructiveMigration()
             .build()
-}*/
+}

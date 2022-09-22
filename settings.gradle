@@ -20,5 +20,6 @@ include(":api:crypto-api-client-android")
 include (":feature:crypto")
 
 include (":core:data")
+include (":core:database")
 include (":core:model")
 include (":core:designsystem")
