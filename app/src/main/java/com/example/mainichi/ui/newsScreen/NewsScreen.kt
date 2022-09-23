@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mainichi.R
-import com.example.mainichi.feature.crypto.LoadingStateProgressIndicator
+import com.example.mainichi.ui.LoadingStateProgressIndicator
 import com.example.mainichi.api.news.Article
 
 @Composable

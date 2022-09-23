@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mainichi.R
-import com.example.mainichi.feature.crypto.LoadingStateProgressIndicator
+import com.example.mainichi.ui.LoadingStateProgressIndicator
 import com.example.mainichi.ui.showNotificationScreen.ShowNotificationContract.*
 import com.example.mainichi.ui.showNotificationScreen.ShowNotificationContract.ShowNotificationEvent.*
 import com.example.mainichi.ui.showNotificationScreen.ShowNotificationViewModel

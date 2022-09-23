@@ -18,8 +18,13 @@ include ':app'
 
 include(":api:crypto-api-client-android")
 include (":feature:crypto")
+include (":feature:coin")
+include (":feature:settings")
+include (":feature:notification")
 
 include (":core:data")
 include (":core:database")
 include (":core:model")
 include (":core:designsystem")
+include (":core:navigation")
+include (":core:ui")

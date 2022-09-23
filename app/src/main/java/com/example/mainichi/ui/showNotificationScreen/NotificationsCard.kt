@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.mainichi.feature.crypto.ImageLoader
+import com.example.mainichi.ui.ImageLoader
 
 @Composable
 fun NotificationsCard(

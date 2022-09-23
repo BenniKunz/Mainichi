@@ -1,5 +1,6 @@
 package com.example.mainichi.ui.createNotificationScreen
 
+import SectionHeader
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -23,8 +24,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.mainichi.R
 import com.example.mainichi.core.model.Asset
-import com.example.mainichi.feature.crypto.ImageLoader
-import com.example.mainichi.feature.crypto.LoadingStateProgressIndicator
+import com.example.mainichi.ui.ImageLoader
+import com.example.mainichi.ui.LoadingStateProgressIndicator
 import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.*
 import com.example.mainichi.ui.createNotificationScreen.CreateNotificationContract.NotificationConfiguration.*
 
@@ -468,19 +469,6 @@ private fun LazyChipRow(
             }
         }
     }
-}
-
-@Composable
-fun SectionHeader(
-    text: String,
-    modifier: Modifier = Modifier,
-    style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.h5,
-) {
-    Text(
-        text = text,
-        style = style,
-        modifier = modifier
-    )
 }
 
 @Composable

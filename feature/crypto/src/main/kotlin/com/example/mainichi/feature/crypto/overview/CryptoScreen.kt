@@ -19,18 +19,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-//import com.example.mainichi.R
 import com.example.mainichi.core.model.Asset
-import com.example.mainichi.feature.crypto.ImageLoader
-import com.example.mainichi.feature.crypto.LoadingStateProgressIndicator
 import com.example.mainichi.feature.crypto.fakeAssets
 import com.example.mainichi.feature.crypto.overview.CryptoUiState.*
 import com.example.mainichi.core.designsystem.MainichiTheme
+import com.example.mainichi.ui.ImageLoader
+import com.example.mainichi.ui.LoadingStateProgressIndicator
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
-fun CryptoScreen(
+internal fun CryptoScreen(
     viewModel: CryptoScreenViewModel,
     onNavigate: (CryptoEffect) -> Unit,
 ) {
@@ -53,7 +52,7 @@ fun CryptoScreen(
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun CryptoScreen(
+internal fun CryptoScreen(
     state: UiState,
     onViewModelEvent: (CryptoEvent) -> Unit
 ) {
@@ -113,7 +112,7 @@ fun CryptoScreen(
 }
 
 @Composable
-fun CryptoContent(
+internal fun CryptoContent(
     assets: List<Asset>,
     isRefreshing: Boolean,
     filteredAssets: List<Asset>,
@@ -176,7 +175,7 @@ fun CryptoContent(
 }
 
 @Composable
-fun SearchBar(
+internal fun SearchBar(
     text: String,
     onFilterChanged: (CryptoEvent.FilterChanged) -> Unit,
     onTextChanged: (String) -> Unit
@@ -206,7 +205,7 @@ fun SearchBar(
 }
 
 @Composable
-fun AllAssets(
+internal fun AllAssets(
     assets: List<Asset>,
     filteredAssets: List<Asset>,
     onViewModelEvent: (CryptoEvent) -> Unit
@@ -342,7 +341,7 @@ private fun AssetRow(
 }
 
 @Composable
-fun CryptoNews(assets: List<Asset>) {
+private fun CryptoNews(assets: List<Asset>) {
 
     LazyRow(
         modifier = Modifier
@@ -377,7 +376,7 @@ private fun NewsCard(coin: Asset) {
 }
 
 @Composable
-fun FavoritesRow(
+private fun FavoritesRow(
     topic: String,
     assets: List<Asset>,
     onViewModelEvent: (CryptoEvent) -> Unit
@@ -428,7 +427,7 @@ fun FavoritesRow(
 }
 
 @Composable
-fun CryptoItem(
+private fun CryptoItem(
     coin: Asset,
     url: String?,
     onViewModelEvent: (CryptoEvent) -> Unit
@@ -493,7 +492,7 @@ fun CryptoItem(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun PreviewCryptoRow() {
+private fun PreviewCryptoRow() {
     MainichiTheme() {
         CryptoItem(coin = fakeAssets.first(), url = "", onViewModelEvent = {})
     }
@@ -502,7 +501,7 @@ fun PreviewCryptoRow() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun PreviewCryptoMain() {
+private fun PreviewCryptoMain() {
     MainichiTheme(
     ) {
 
@@ -517,7 +516,7 @@ fun PreviewCryptoMain() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun PreviewSearchBar() {
+private fun PreviewSearchBar() {
     MainichiTheme(
     ) {
         SearchBar(

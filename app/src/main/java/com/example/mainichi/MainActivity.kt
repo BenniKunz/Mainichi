@@ -12,25 +12,24 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import com.example.mainichi.ui.newsScreen.NewsScreen
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.mainichi.navigationDrawer.*
 import com.example.mainichi.ui.appMenu.AppMenu
-import com.example.mainichi.ui.coinScreen.CoinScreen
 import com.example.mainichi.ui.createNotificationScreen.CreateNotificationScreen
 import com.example.mainichi.ui.newsScreen.NewsEffect
 import com.example.mainichi.ui.createNotificationScreen.ShowNotificationScreen
-import com.example.mainichi.feature.crypto.overview.CryptoEffect
-import com.example.mainichi.feature.crypto.overview.CryptoScreen
-import com.example.mainichi.ui.settingsScreen.SettingsContract.UiState.*
-import com.example.mainichi.ui.settingsScreen.SettingsScreen
-import com.example.mainichi.ui.settingsScreen.themeDialog.ThemeDialogContract.UiState.*
+import com.example.mainichi.feature.settings.settingsScreen.SettingsContract.UiState.*
+import com.example.mainichi.feature.settings.settingsScreen.themeDialog.ThemeDialogContract.UiState.*
 import com.example.mainichi.core.designsystem.MainichiTheme
+import com.example.mainichi.feature.notification.navigation.notificationGraph
+import com.example.mainichi.feature.crypto.navigation.CryptoDestination
+import com.example.mainichi.feature.crypto.navigation.cryptoGraph
+import com.example.mainichi.feature.settings.navigation.settingsGraph
+import com.example.mainichi.feature.settings.settingsScreen.StartUpViewModel
 
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -66,7 +65,7 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                         startDestination = when (state.launchScreen) {
                             LaunchScreen.Crypto -> {
-                                "crypto"
+                                CryptoDestination.route
                             }
                             LaunchScreen.News -> {
                                 "news"
@@ -113,41 +112,26 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        composable(route = "crypto") {
+                        cryptoGraph(
+                            onNavigate = { route ->
+                                navController.navigate(route)
+                            }
+                        )
 
-                            CryptoScreen(
-                                viewModel = hiltViewModel(),
-                                onNavigate = { effect ->
-                                    when (effect) {
-                                        is CryptoEffect.Navigation.NavigateToCoinScreen -> {
-                                            navController.navigate(route = "coin/${effect.coin}")
-                                        }
-                                        is CryptoEffect.Navigation.NavigateToSettingsScreen -> {
-                                            navController.navigate(route = "settings")
-                                        }
-                                        is CryptoEffect.Navigation.NavigateToMenuScreen -> {
-                                            navController.navigate(route = "appMenu")
-                                        }
-                                    }
-                                }
-                            )
-                        }
+                        notificationGraph(
+                            onBackClick = {
+                                navController.navigateUp()
+                            }
+                        )
 
-                        composable(
-                            route = "coin/{coinID}",
-                            arguments = listOf(
-                                navArgument(name = "coinID") {
-                                    type = NavType.StringType
-                                }
-                            )
-                        ) {
-                            CoinScreen(
-                                onNavigateUp = {
-                                    navController.navigateUp()
-                                },
-                                viewModel = hiltViewModel(),
-                            )
-                        }
+                        settingsGraph(
+                            onNavigate = { route ->
+                                navController.navigate(route)
+                            },
+                            onBackClick = {
+                                navController.navigateUp()
+                            }
+                        )
 
                         composable(
                             route = "showNotifications"
@@ -163,7 +147,7 @@ class MainActivity : ComponentActivity() {
                                     navController.navigateUp()
                                 })
                         }
-
+3
                         composable(
                             route = "createNotification"
                         ) {
@@ -176,15 +160,15 @@ class MainActivity : ComponentActivity() {
                                 })
                         }
 
-                        composable(
-                            route = "settings"
-                        ) {
-                            SettingsScreen(
-                                viewModel = hiltViewModel(),
-                                onNavigate = { navController.navigate("showNotifications") },
-                                onNavigateUp = { navController.navigateUp() }
-                            )
-                        }
+//                        composable(
+//                            route = "settings"
+//                        ) {
+//                            SettingsScreen(
+//                                viewModel = hiltViewModel(),
+//                                onNavigate = { navController.navigate("showNotifications") },
+//                                onNavigateUp = { navController.navigateUp() }
+//                            )
+//                        }
                     }
                 }
             }

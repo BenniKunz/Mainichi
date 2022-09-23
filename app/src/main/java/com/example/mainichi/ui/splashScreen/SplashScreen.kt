@@ -12,7 +12,6 @@ import androidx.compose.foundation.background
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
-import com.example.mainichi.ui.settingsScreen.SettingsContract
 import kotlinx.coroutines.delay
 
 @Composable
