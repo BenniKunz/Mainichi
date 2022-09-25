@@ -22,8 +22,10 @@
             <option value="$PROJECT_DIR$/core/navigation" />
             <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/appMenu" />
             <option value="$PROJECT_DIR$/feature/coin" />
             <option value="$PROJECT_DIR$/feature/crypto" />
+            <option value="$PROJECT_DIR$/feature/news" />
             <option value="$PROJECT_DIR$/feature/notification" />
             <option value="$PROJECT_DIR$/feature/settings" />
           </set>

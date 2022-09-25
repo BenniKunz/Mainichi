@@ -13,23 +13,21 @@ object CryptoDestination : MainichiDestinationNavigation {
 }
 
 fun NavGraphBuilder.cryptoGraph(
-    onNavigate : (String) -> Unit
+    onNavigate: (String) -> Unit
 ) {
     composable(route = CryptoDestination.route) {
         CryptoScreen(
             viewModel = hiltViewModel(),
-            onNavigate = {
-                    effect ->
+            onNavigate = { effect ->
                 when (effect) {
                     is CryptoEffect.Navigation.NavigateToCoinScreen -> {
                         onNavigate("coin/${effect.coin}")
-//                        navController.navigate(route = "coin/${effect.coin}")
                     }
                     is CryptoEffect.Navigation.NavigateToSettingsScreen -> {
                         onNavigate("settings")
                     }
                     is CryptoEffect.Navigation.NavigateToMenuScreen -> {
-//                        navController.navigate(route = "appMenu")
+                        onNavigate("appMenu")
                     }
                 }
             }

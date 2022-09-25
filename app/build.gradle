@@ -53,8 +53,10 @@ dependencies {
 
     implementation(project(":feature:crypto"))
     implementation(project(":feature:coin"))
+    implementation(project(":feature:news"))
     implementation(project(":feature:settings"))
     implementation(project(":feature:notification"))
+    implementation(project(":feature:appMenu"))
     implementation(project(":api:crypto-api-client-android"))
 
     implementation(project(":core:data"))

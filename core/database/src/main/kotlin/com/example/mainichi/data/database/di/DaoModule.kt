@@ -4,7 +4,7 @@ import com.example.mainichi.data.database.ArticleDao
 import com.example.mainichi.data.database.AppDatabase
 import com.example.mainichi.data.database.AssetDao
 import com.example.mainichi.data.database.FavoriteAssetDao
-import com.example.mainichi.data.database.NotificationsDao
+import com.example.mainichi.data.database.dao.NotificationsDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

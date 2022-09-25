@@ -1,27 +1,52 @@
 package com.example.mainichi.feature.notification.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
+import androidx.navigation.navigation
+import com.example.mainichi.feature.notification.createNotificationScreen.CreateNotificationScreen
+import com.example.mainichi.feature.notification.showNotificationScreen.ShowNotificationScreen
 import com.example.mainichi.navigation.MainichiDestinationNavigation
 
-object NotificationDestination : MainichiDestinationNavigation {
-    override val destination = "coin/{coinID}"
-    override val route = "coin/{coinID}"
+object ShowNotificationDestination : MainichiDestinationNavigation {
+    override val destination = "showNotification"
+    override val route = "notification"
 }
 
-fun NavGraphBuilder.notificationGraph(
-    onBackClick: () -> Unit
-) {
-    composable(
-        route = NotificationDestination.route,
-        arguments = listOf(
-            navArgument(name = "coinID") {
-                type = NavType.StringType
-            }
-        )
-    ) {
+object CreateNotificationDestination : MainichiDestinationNavigation {
+    override val destination = "createNotification"
+    override val route = "createNotification"
+}
 
+@RequiresApi(Build.VERSION_CODES.O)
+fun NavGraphBuilder.notificationGraph(
+    onBackClick: () -> Unit,
+    onNavigate: (String) -> Unit
+) {
+
+    navigation(
+        startDestination = ShowNotificationDestination.destination,
+        route = ShowNotificationDestination.route
+    ) {
+        composable(
+            route = ShowNotificationDestination.destination
+        ) {
+            ShowNotificationScreen(
+                viewModel = hiltViewModel(),
+                onNavigateUp = { onBackClick() },
+                onNavigate = { onNavigate("createNotification") })
+        }
+
+        composable(
+            route = CreateNotificationDestination.route
+        ) {
+            CreateNotificationScreen(
+                viewModel = hiltViewModel(),
+                onDismissDialog = {
+                    onBackClick()
+                })
+        }
     }
 }

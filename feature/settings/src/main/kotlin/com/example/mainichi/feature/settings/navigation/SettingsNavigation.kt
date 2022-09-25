@@ -23,7 +23,7 @@ fun NavGraphBuilder.settingsGraph(
         SettingsScreen(
             viewModel = hiltViewModel(),
             onNavigate = {
-                onNavigate("showNotifications")
+                onNavigate("showNotification")
             },
             onBackClick = {
                 onBackClick()

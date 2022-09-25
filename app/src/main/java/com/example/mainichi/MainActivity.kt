@@ -14,20 +14,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.dialog
-import com.example.mainichi.ui.newsScreen.NewsScreen
 import androidx.navigation.compose.rememberNavController
-import com.example.mainichi.navigationDrawer.*
-import com.example.mainichi.ui.appMenu.AppMenu
-import com.example.mainichi.ui.createNotificationScreen.CreateNotificationScreen
-import com.example.mainichi.ui.newsScreen.NewsEffect
-import com.example.mainichi.ui.createNotificationScreen.ShowNotificationScreen
 import com.example.mainichi.feature.settings.settingsScreen.SettingsContract.UiState.*
 import com.example.mainichi.feature.settings.settingsScreen.themeDialog.ThemeDialogContract.UiState.*
 import com.example.mainichi.core.designsystem.MainichiTheme
-import com.example.mainichi.feature.notification.navigation.notificationGraph
+import com.example.mainichi.feature.coin.navigation.coinGraph
 import com.example.mainichi.feature.crypto.navigation.CryptoDestination
 import com.example.mainichi.feature.crypto.navigation.cryptoGraph
+import com.example.mainichi.feature.navigation.menuGraph
+import com.example.mainichi.feature.news.navigation.newsGraph
+import com.example.mainichi.feature.notification.navigation.notificationGraph
 import com.example.mainichi.feature.settings.navigation.settingsGraph
 import com.example.mainichi.feature.settings.settingsScreen.StartUpViewModel
 
@@ -83,44 +79,55 @@ class MainActivity : ComponentActivity() {
 //                            )
 //                        }
 
-                        dialog(route = "appMenu") {
-                            AppMenu(
-                                onItemClick = { screenType ->
+//                        composable(route = "news") {
+//                            NewsScreen(
+//                                viewModel = hiltViewModel(),
+//                                onNavigate = { effect ->
+//                                    when (effect) {
+//                                        is NewsEffect.Navigation.NavigateToSettings -> {
+//                                            navController.navigate(route = "settings")
+//                                        }
+//                                        is NewsEffect.Navigation.NavigateToMenu -> {
+//                                            navController.navigate(route = "appMenu")
+//                                        }
+//                                    }
+//                                },
+//                            )
+//                        }
 
-                                    when (screenType) {
-                                        ScreenType.Crypto -> navController.navigate(route = "crypto")
-                                        ScreenType.News -> navController.navigate(route = "news")
-                                    }
-                                },
-                                onNavigateUpRequested = { navController.navigateUp() }
-                            )
-                        }
-
-                        composable(route = "news") {
-                            NewsScreen(
-                                viewModel = hiltViewModel(),
-                                onNavigate = { effect ->
-                                    when (effect) {
-                                        is NewsEffect.Navigation.NavigateToSettings -> {
-                                            navController.navigate(route = "settings")
-                                        }
-                                        is NewsEffect.Navigation.NavigateToMenu -> {
-                                            navController.navigate(route = "appMenu")
-                                        }
-                                    }
-                                },
-                            )
-                        }
+                        newsGraph(
+                            onNavigate = { route ->
+                                navController.navigate(route = route)
+                            }
+                        )
 
                         cryptoGraph(
                             onNavigate = { route ->
-                                navController.navigate(route)
+                                navController.navigate(route = route)
+                            }
+                        )
+
+                        coinGraph(
+                            onBackClick = {
+                                navController.navigateUp()
+                            }
+                        )
+
+                        menuGraph(
+                            onNavigate = { route ->
+                                navController.navigate(route = route)
+                            },
+                            onBackClick = {
+                                navController.navigateUp()
                             }
                         )
 
                         notificationGraph(
                             onBackClick = {
                                 navController.navigateUp()
+                            },
+                            onNavigate = { route ->
+                                navController.navigate(route)
                             }
                         )
 
@@ -132,43 +139,6 @@ class MainActivity : ComponentActivity() {
                                 navController.navigateUp()
                             }
                         )
-
-                        composable(
-                            route = "showNotifications"
-                        ) {
-
-                            ShowNotificationScreen(
-                                viewModel = hiltViewModel(),
-                                onNavigate = {
-                                    navController.navigate(route = "createNotification")
-
-                                },
-                                onNavigateUp = {
-                                    navController.navigateUp()
-                                })
-                        }
-3
-                        composable(
-                            route = "createNotification"
-                        ) {
-
-                            CreateNotificationScreen(
-                                viewModel = hiltViewModel(),
-                                onDismissDialog = {
-                                    navController.navigateUp()
-
-                                })
-                        }
-
-//                        composable(
-//                            route = "settings"
-//                        ) {
-//                            SettingsScreen(
-//                                viewModel = hiltViewModel(),
-//                                onNavigate = { navController.navigate("showNotifications") },
-//                                onNavigateUp = { navController.navigateUp() }
-//                            )
-//                        }
                     }
                 }
             }

@@ -2,6 +2,9 @@ package com.example.mainichi.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.example.mainichi.data.database.dao.NotificationsDao
+import com.example.mainichi.data.database.model.DbArticle
+import com.example.mainichi.data.database.model.DbNotification
 
 @Database(
     entities = [
