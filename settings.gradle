@@ -23,6 +23,7 @@ include (":feature:news")
 include (":feature:settings")
 include (":feature:notification")
 include (":feature:appMenu")
+include (":feature:login")
 
 include (":core:data")
 include (":core:database")

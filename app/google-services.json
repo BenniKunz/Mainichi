@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "107398411052",
+    "project_id": "mainichi-e15de",
+    "storage_bucket": "mainichi-e15de.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:107398411052:android:046f1cfc3f4b779b52f289",
+        "android_client_info": {
+          "package_name": "com.bknz.mainichi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "107398411052-k73es9q3a1i8vjvtd06dabtuqm8rrck1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNaWb_aOXJYULAErL0SNZ7jMwSmZnYjVE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "107398411052-k73es9q3a1i8vjvtd06dabtuqm8rrck1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
