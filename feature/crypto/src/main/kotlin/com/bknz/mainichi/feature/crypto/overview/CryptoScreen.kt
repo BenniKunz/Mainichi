@@ -16,6 +16,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,7 @@ import com.bknz.mainichi.core.model.Asset
 import com.bknz.mainichi.feature.crypto.fakeAssets
 import com.bknz.mainichi.feature.crypto.overview.CryptoUiState.*
 import com.bknz.mainichi.core.designsystem.MainichiTheme
+import com.bknz.mainichi.feature.crypto.R
 import com.bknz.mainichi.ui.ImageLoader
 import com.bknz.mainichi.ui.LoadingStateProgressIndicator
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -61,7 +63,7 @@ internal fun CryptoScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Mainichi", //stringResource(id = R.string.app_name),
+                        text = stringResource(id = R.string.app_name) + " Hello ${state.userName}",
                         color = MaterialTheme.colors.primary
                     )
                 },

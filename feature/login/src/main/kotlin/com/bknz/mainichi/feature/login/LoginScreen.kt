@@ -1,16 +1,36 @@
 package com.bknz.mainichi.feature.login
 
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import android.content.res.Configuration
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.bknz.mainichi.core.designsystem.MainichiTheme
 import com.bknz.mainichi.ui.LoadingStateProgressIndicator
+import com.bknz.mainichi.ui.UserInteractionButton
 
-@androidx.compose.runtime.Composable
-internal fun LoginScreen(viewModel: LoginViewModel) {
+@Composable
+internal fun LoginScreen(
+    viewModel: LoginViewModel,
+    onNavigate: (String) -> Unit
+) {
 
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(key1 = viewModel) {
+
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is LoginEffect.Navigate -> {
+                    onNavigate(effect.route)
+                }
+            }
+        }
+    }
 
     when {
 
@@ -19,24 +39,80 @@ internal fun LoginScreen(viewModel: LoginViewModel) {
         }
         else -> LoginScreen(
             state = uiState,
-            onAuth = { viewModel.authenticate() })
-
+            onAnonymousLogin = { viewModel.loginAnonymously() },
+            navigate = { event -> viewModel.setEvent(event) })
     }
-
 }
 
 @Composable
 internal fun LoginScreen(
-    state: UiState,
-    onAuth: () -> Unit
+    state: LoginUiState,
+    onAnonymousLogin: () -> Unit,
+    navigate: (LoginEvent) -> Unit
 ) {
 
-    Button(onClick = {
-        onAuth()
-    }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
 
-        Text("Authenticate with Mail")
-    }
+//        var email by rememberSaveable { mutableStateOf("") }
+//        var password by rememberSaveable { mutableStateOf("") }
+//
+//        UserInteractionField(
+//            value = email,
+//            onNewValue = { email = it },
+//            placeholder = stringResource(id = R.string.email)
+//        )
+//
+//        UserInteractionField(
+//            value = password,
+//            onNewValue = { password = it },
+//            placeholder = stringResource(id = R.string.password)
+//        )
 
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+
+            UserInteractionButton(
+                text = "Sign up",
+                modifier = Modifier.background(MaterialTheme.colors.onBackground)
+            ) {
+                navigate(LoginEvent.Navigate("signUp"))
+            }
+
+            UserInteractionButton(
+                text = "Sign in",
+                modifier = Modifier.background(MaterialTheme.colors.onPrimary)
+            ) {
+                navigate(LoginEvent.Navigate("signIn"))
+            }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            UserInteractionButton(
+                text = "Explore without Login",
+                modifier = Modifier.background(MaterialTheme.colors.onPrimary)
+            ) {
+                onAnonymousLogin()
+            }
+        }
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewAppBar() {
+    MainichiTheme() {
+        LoginScreen(state = LoginUiState(loading = false), {}, {})
+    }
 }

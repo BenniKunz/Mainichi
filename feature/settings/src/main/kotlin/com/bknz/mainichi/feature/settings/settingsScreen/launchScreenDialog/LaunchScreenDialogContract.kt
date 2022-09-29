@@ -1,18 +1,18 @@
-package com.bknz.mainichi.ui.settingsScreen.launchScreenDialog
+package com.bknz.mainichi.feature.settings.settingsScreen.launchScreenDialog
 
-import com.bknz.mainichi.feature.settings.settingsScreen.SettingsContract
+import com.bknz.mainichi.core.model.LaunchScreen
 
 class LaunchScreenDialogContract {
 
     data class UiState(
         val isLoading: Boolean,
-        val currentScreen: SettingsContract.UiState.LaunchScreen? = null
+        val currentScreen: LaunchScreen? = null
 
     )
 
     sealed class LaunchScreenDialogEvent {
 
-        data class SetLaunchScreen(val launchScreen: SettingsContract.UiState.LaunchScreen) : LaunchScreenDialogEvent()
+        data class SetLaunchScreen(val launchScreen: LaunchScreen) : LaunchScreenDialogEvent()
 
     }
 

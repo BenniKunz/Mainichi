@@ -4,10 +4,12 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bknz.mainichi.feature.settings.settingsScreen.PreferenceKeys
-import com.bknz.mainichi.feature.settings.settingsScreen.Settings
-import com.bknz.mainichi.feature.settings.settingsScreen.themeDialog.ThemeDialogContract.*
-import com.bknz.mainichi.feature.settings.settingsScreen.themeDialog.ThemeDialogContract.ThemeDialogEvent.*
+import com.bknz.mainichi.data.PreferenceKeys
+import com.bknz.mainichi.data.Settings
+import com.bknz.mainichi.feature.settings.settingsScreen.themeDialog.ThemeDialogContract.UiState
+import com.bknz.mainichi.feature.settings.settingsScreen.themeDialog.ThemeDialogContract.ThemeDialogEvent
+import com.bknz.mainichi.feature.settings.settingsScreen.themeDialog.ThemeDialogContract.ThemeDialogEffect
+import com.bknz.mainichi.feature.settings.settingsScreen.themeDialog.ThemeDialogContract.ThemeDialogEvent.SetTheme
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*

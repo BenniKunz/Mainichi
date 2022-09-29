@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bknz.mainichi.data.Settings
 import com.bknz.mainichi.feature.settings.settingsScreen.SettingsContract.*
 import com.bknz.mainichi.feature.settings.settingsScreen.SettingsContract.SettingsEvent.*
 import dagger.hilt.android.lifecycle.HiltViewModel

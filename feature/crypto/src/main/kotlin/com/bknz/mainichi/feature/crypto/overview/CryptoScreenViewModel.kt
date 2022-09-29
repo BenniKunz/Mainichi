@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bknz.mainichi.core.model.Asset
 import com.bknz.mainichi.data.AssetRepository
+import com.bknz.mainichi.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -16,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CryptoScreenViewModel @Inject constructor(
     private val assetRepo: AssetRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<CryptoUiState.UiState> =
@@ -48,6 +50,19 @@ class CryptoScreenViewModel @Inject constructor(
     }
 
     init {
+
+        viewModelScope.launch {
+
+            userRepository.userData.collect { userData ->
+
+                _uiState.update { uiState ->
+                    uiState.copy(
+                        isLoading = false,
+                        userName = userData.name
+                    )
+                }
+            }
+        }
 
         viewModelScope.launch {
 

@@ -1,9 +1,11 @@
-package com.bknz.mainichi.feature.settings.settingsScreen
+package com.bknz.mainichi.data
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import com.bknz.mainichi.feature.settings.settingsScreen.themeDialog.ThemeDialogContract
+import androidx.datastore.preferences.core.intPreferencesKey
+import com.bknz.mainichi.core.model.LaunchScreen
+import com.bknz.mainichi.core.model.Theme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -46,7 +48,7 @@ class Settings @Inject constructor(
                     return@collect
                 }
                 settingsState.update { state ->
-                    state.copy(theme = ThemeDialogContract.UiState.Theme.values()[dataStoreValue])
+                    state.copy(theme = Theme.values()[dataStoreValue])
 
                 }
             }
@@ -60,7 +62,7 @@ class Settings @Inject constructor(
                     return@collect
                 }
                 settingsState.update { state ->
-                    state.copy(launchScreen = SettingsContract.UiState.LaunchScreen.values()[dataStoreValue])
+                    state.copy(launchScreen = LaunchScreen.values()[dataStoreValue])
 
                 }
             }
@@ -75,7 +77,7 @@ class Settings @Inject constructor(
                     dataStore.data.map { preferences -> preferences[PreferenceKeys.theme] }
                         .firstOrNull() != null -> {
 
-                        ThemeDialogContract.UiState.Theme.values()[dataStore.data.map { preferences -> preferences[PreferenceKeys.theme] }
+                        Theme.values()[dataStore.data.map { preferences -> preferences[PreferenceKeys.theme] }
                             .first() ?: 2]
                     }
                     else -> {
@@ -86,7 +88,7 @@ class Settings @Inject constructor(
                     dataStore.data.map { preferences -> preferences[PreferenceKeys.launchScreen] }
                         .firstOrNull() != null -> {
 
-                        SettingsContract.UiState.LaunchScreen.values()[dataStore.data.map { preferences -> preferences[PreferenceKeys.launchScreen] }
+                        LaunchScreen.values()[dataStore.data.map { preferences -> preferences[PreferenceKeys.launchScreen] }
                             .first() ?: 0]
                     }
                     else -> {
@@ -111,7 +113,17 @@ class Settings @Inject constructor(
     }
 
     data class SettingsState(
-        val theme: ThemeDialogContract.UiState.Theme = ThemeDialogContract.UiState.Theme.SystemSetting,
-        val launchScreen: SettingsContract.UiState.LaunchScreen = SettingsContract.UiState.LaunchScreen.Crypto
+        val theme: Theme = Theme.SystemSetting,
+        val launchScreen: LaunchScreen = LaunchScreen.Crypto
     )
+}
+
+object PreferenceKeys {
+    val theme = intPreferencesKey(UserSettings.THEME.toString())
+    val launchScreen = intPreferencesKey(UserSettings.LAUNCHSCREEN.toString())
+}
+
+enum class UserSettings {
+    THEME,
+    LAUNCHSCREEN
 }

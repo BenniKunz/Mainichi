@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.bknz.mainichi.core.model.Theme
 import com.bknz.mainichi.feature.settings.settingsScreen.asText
 import com.bknz.mainichi.feature.settings.settingsScreen.themeDialog.ThemeDialogContract.*
 
@@ -91,7 +92,7 @@ fun ThemeDialogContent(
                 .fillMaxWidth()
         ) {
 
-            enumValues<UiState.Theme>().forEach { theme ->
+            enumValues<Theme>().forEach { theme ->
 
                 item {
                     SelectableButton(
@@ -103,16 +104,16 @@ fun ThemeDialogContent(
                             )
                         },
                         imageVector = when {
-                            theme == UiState.Theme.DarkMode && theme == state.currentTheme -> Icons.Default.RadioButtonChecked
-                            theme == UiState.Theme.LightMode && theme == state.currentTheme -> Icons.Default.RadioButtonChecked
-                            theme == UiState.Theme.SystemSetting && theme == state.currentTheme -> Icons.Default.RadioButtonChecked
+                            theme == Theme.DarkMode && theme == state.currentTheme -> Icons.Default.RadioButtonChecked
+                            theme == Theme.LightMode && theme == state.currentTheme -> Icons.Default.RadioButtonChecked
+                            theme == Theme.SystemSetting && theme == state.currentTheme -> Icons.Default.RadioButtonChecked
                             else -> Icons.Default.RadioButtonUnchecked
                         },
                         text = theme.toString().asText(),
                         tint = when {
-                            theme == UiState.Theme.DarkMode && theme == state.currentTheme -> MaterialTheme.colors.primary
-                            theme == UiState.Theme.LightMode && theme == state.currentTheme -> MaterialTheme.colors.primary
-                            theme == UiState.Theme.SystemSetting && theme == state.currentTheme -> MaterialTheme.colors.primary
+                            theme == Theme.DarkMode && theme == state.currentTheme -> MaterialTheme.colors.primary
+                            theme == Theme.LightMode && theme == state.currentTheme -> MaterialTheme.colors.primary
+                            theme == Theme.SystemSetting && theme == state.currentTheme -> MaterialTheme.colors.primary
                             else -> MaterialTheme.colors.onPrimary
                         }
                     )

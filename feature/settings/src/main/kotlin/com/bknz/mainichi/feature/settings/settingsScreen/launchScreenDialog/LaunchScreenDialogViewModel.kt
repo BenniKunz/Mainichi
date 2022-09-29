@@ -1,12 +1,12 @@
-package com.bknz.mainichi.ui.settingsScreen.launchScreenDialog
+package com.bknz.mainichi.feature.settings.settingsScreen.launchScreenDialog
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bknz.mainichi.feature.settings.settingsScreen.PreferenceKeys
-import com.bknz.mainichi.feature.settings.settingsScreen.Settings
-import com.bknz.mainichi.ui.settingsScreen.launchScreenDialog.LaunchScreenDialogContract.*
+import com.bknz.mainichi.data.PreferenceKeys
+import com.bknz.mainichi.data.Settings
+import com.bknz.mainichi.feature.settings.settingsScreen.launchScreenDialog.LaunchScreenDialogContract.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*

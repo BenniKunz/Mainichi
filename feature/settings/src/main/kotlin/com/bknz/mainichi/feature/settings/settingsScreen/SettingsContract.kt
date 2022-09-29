@@ -3,9 +3,10 @@ package com.bknz.mainichi.feature.settings.settingsScreen
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.bknz.mainichi.core.model.LaunchScreen
+import com.bknz.mainichi.core.model.Theme
 import com.bknz.mainichi.feature.settings.settingsScreen.SettingsContract.*
 import com.bknz.mainichi.feature.settings.settingsScreen.SettingsContract.UiState.Setting
-import com.bknz.mainichi.feature.settings.settingsScreen.themeDialog.ThemeDialogContract.UiState.Theme
 
 class SettingsContract {
 
@@ -21,11 +22,6 @@ class SettingsContract {
             Notifications,
             LaunchScreen,
             Theme
-        }
-
-        enum class LaunchScreen {
-            Crypto,
-            News
         }
     }
 
@@ -53,7 +49,6 @@ fun Setting.getImageVector(theme: Theme = Theme.SystemSetting): ImageVector {
             Theme.LightMode -> Icons.Default.LightMode
             Theme.SystemSetting -> Icons.Default.SettingsSuggest
         }
-
     }
 }
 

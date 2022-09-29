@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.bknz.mainichi.feature.settings.settingsScreen.SettingsContract.UiState.*
 import com.bknz.mainichi.feature.settings.settingsScreen.themeDialog.ThemeDialogContract.UiState.*
 import com.bknz.mainichi.core.designsystem.MainichiTheme
+import com.bknz.mainichi.core.model.Theme
 import com.bknz.mainichi.feature.coin.navigation.coinGraph
 import com.bknz.mainichi.feature.crypto.navigation.CryptoDestination
 import com.bknz.mainichi.feature.crypto.navigation.cryptoGraph
@@ -60,17 +61,7 @@ class MainActivity : ComponentActivity() {
                     NavHost(
                         navController = navController,
                         startDestination = "login"
-//                        when (state.launchScreen) {
-//                            LaunchScreen.Crypto -> {
-//                                CryptoDestination.route
-//                            }
-//                            LaunchScreen.News -> {
-//                                "news"
-//                            }
-//                            else -> {
-//                                "crypto"
-//                            }
-//                        }
+
                     ) {
 
 //                        composable(route = "splash") {

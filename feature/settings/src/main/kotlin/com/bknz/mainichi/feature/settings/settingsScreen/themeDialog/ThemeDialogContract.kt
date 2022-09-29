@@ -1,19 +1,13 @@
 package com.bknz.mainichi.feature.settings.settingsScreen.themeDialog
 
-import com.bknz.mainichi.feature.settings.settingsScreen.themeDialog.ThemeDialogContract.UiState.Theme
+import com.bknz.mainichi.core.model.Theme
 
 class ThemeDialogContract {
 
     data class UiState(
         val isLoading: Boolean,
         val currentTheme : Theme? = null,
-    ) {
-        enum class Theme {
-            DarkMode,
-            LightMode,
-            SystemSetting
-        }
-    }
+    )
 
     sealed class ThemeDialogEvent {
 

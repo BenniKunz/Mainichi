@@ -11,8 +11,9 @@ buildscript {
         }
 
         firebaseDependencies = [
-                common:        "com.google.firebase:firebase-common-ktx:20.1.2",
-                auth :         "com.google.firebase:firebase-auth-ktx:21.0.8",
+                bom:            "com.google.firebase:firebase-bom:30.4.1",
+                common:        "com.google.firebase:firebase-common-ktx",
+                auth :         "com.google.firebase:firebase-auth-ktx",
 
         ];
 

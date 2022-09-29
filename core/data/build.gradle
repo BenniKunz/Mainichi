@@ -58,9 +58,8 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
 
-//    implementation platform('com.google.firebase:firebase-bom:30.4.1')
-//    implementation 'com.google.firebase:firebase-auth-ktx'
 
+    implementation platform(firebaseDependencies.bom)
     implementation firebaseDependencies.common
     implementation firebaseDependencies.auth
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'

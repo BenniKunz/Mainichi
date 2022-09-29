@@ -19,9 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.bknz.mainichi.feature.settings.settingsScreen.SettingsContract.UiState.*
-import com.bknz.mainichi.ui.settingsScreen.launchScreenDialog.LaunchScreenDialogContract
-import com.bknz.mainichi.ui.settingsScreen.launchScreenDialog.LaunchScreenDialogViewModel
+import com.bknz.mainichi.core.model.LaunchScreen
 
 
 @RequiresApi(Build.VERSION_CODES.O)

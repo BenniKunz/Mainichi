@@ -7,6 +7,7 @@ sealed class CryptoUiState {
     data class UiState(
         val isLoading: Boolean,
         val isRefreshing: Boolean = false,
+        val userName : String? = null,
         val assets: List<Asset> = emptyList(),
         val filteredAssets: List<Asset> = emptyList()
     ) : CryptoUiState() {

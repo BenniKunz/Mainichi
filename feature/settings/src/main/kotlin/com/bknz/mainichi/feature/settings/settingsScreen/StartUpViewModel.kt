@@ -3,8 +3,10 @@ package com.bknz.mainichi.feature.settings.settingsScreen
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bknz.mainichi.feature.settings.settingsScreen.SettingsContract.UiState.LaunchScreen
-import com.bknz.mainichi.feature.settings.settingsScreen.themeDialog.ThemeDialogContract.UiState.Theme
+import com.bknz.mainichi.core.model.LaunchScreen
+import com.bknz.mainichi.core.model.Theme
+import com.bknz.mainichi.data.PreferenceKeys
+import com.bknz.mainichi.data.Settings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -43,14 +45,4 @@ class StartUpViewModel @Inject constructor(
         val theme: Theme = Theme.SystemSetting,
         val launchScreen: LaunchScreen = LaunchScreen.Crypto
     )
-}
-
-object PreferenceKeys {
-    val theme = intPreferencesKey(UserSettings.THEME.toString())
-    val launchScreen = intPreferencesKey(UserSettings.LAUNCHSCREEN.toString())
-}
-
-enum class UserSettings {
-    THEME,
-    LAUNCHSCREEN
 }
