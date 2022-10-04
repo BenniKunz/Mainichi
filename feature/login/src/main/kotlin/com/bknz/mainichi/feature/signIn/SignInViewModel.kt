@@ -1,4 +1,4 @@
-package com.bknz.mainichi.feature.signUp
+package com.bknz.mainichi.feature.signIn
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -6,47 +6,50 @@ import androidx.lifecycle.viewModelScope
 import com.bknz.mainichi.core.model.LaunchScreen
 import com.bknz.mainichi.data.Settings
 import com.bknz.mainichi.data.UserRepository
-import com.bknz.mainichi.feature.signIn.SignInEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-internal data class SignUpUiState(
+internal data class SignInUiState(
     val loading: Boolean = true,
-    val signedUp: Boolean = false,
+    val signedIn: Boolean = false,
 )
 
-internal sealed class SignUpEffect {
+internal sealed class SignInEffect {
 
-    data class Navigate(val route: String) : SignUpEffect()
+    data class Navigate(val route: String) : SignInEffect()
 }
 
-internal sealed class SignUpEvent {
+internal sealed class SignInEvent {
 
-    data class Navigate(val route: String) : SignUpEvent()
+    data class Navigate(val route: String) : SignInEvent()
 
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-internal class SignUpViewModel @Inject constructor(
+internal class SignInViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val settings: Settings
 ) : ViewModel() {
 
-    private val _event: MutableSharedFlow<SignUpEvent> = MutableSharedFlow()
+    private val _event: MutableSharedFlow<SignInEvent> = MutableSharedFlow()
 
-    fun setEvent(event: SignUpEvent) {
+    fun setEvent(event: SignInEvent) {
         viewModelScope.launch { _event.emit(event) }
     }
 
-    private val _effect: Channel<SignUpEffect> = Channel()
+    private val _effect: Channel<SignInEffect> = Channel()
     val effect = _effect.receiveAsFlow()
 
-    private fun setEffect(builder: () -> SignUpEffect) {
+    private fun setEffect(builder: () -> SignInEffect) {
         val effectValue = builder()
         viewModelScope.launch { _effect.send(effectValue) }
     }
@@ -56,8 +59,8 @@ internal class SignUpViewModel @Inject constructor(
             _event.collect { event ->
 
                 when (event) {
-                    is SignUpEvent.Navigate -> setEffect {
-                        SignUpEffect.Navigate(
+                    is SignInEvent.Navigate -> setEffect {
+                        SignInEffect.Navigate(
                             event.route
                         )
                     }
@@ -68,23 +71,24 @@ internal class SignUpViewModel @Inject constructor(
 
     val uiState = userRepository.userData.mapLatest { userData ->
 
-        com.bknz.mainichi.feature.signUp.SignUpUiState(
-            loading = false
+        SignInUiState(
+            loading = false,
+            signedIn = userData.authenticatedWithEmail
         )
 
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
-        initialValue = com.bknz.mainichi.feature.signUp.SignUpUiState()
+        initialValue = SignInUiState()
     )
 
-    fun signUpWithEmail(email: String, password: String) {
+    fun signInWithEmail(email: String, password: String) {
 
-        userRepository.createEmailAccount(email = email, password = password) { exception ->
+        userRepository.authenticateWithMail(email = email, password = password) { exception ->
 
             when (exception) {
                 null -> setEffect {
-                    SignUpEffect.Navigate(
+                    SignInEffect.Navigate(
                         when (settings.settingsState.value.launchScreen) {
                             LaunchScreen.Crypto -> "crypto"
                             LaunchScreen.News -> "news"
@@ -92,7 +96,7 @@ internal class SignUpViewModel @Inject constructor(
                     )
                 }
                 else -> {
-                    Log.d("Auth Test", "Couldn't authenticate")
+                    Log.d("Auth Test", "Couldn't authenticate: ${exception.message}")
                 }
             }
         }
@@ -102,7 +106,7 @@ internal class SignUpViewModel @Inject constructor(
 
         when (userRepository.signOut()) {
             true -> setEffect {
-                SignUpEffect.Navigate(
+                SignInEffect.Navigate(
                     route = "loginScreen"
                 )
             }
@@ -110,5 +114,6 @@ internal class SignUpViewModel @Inject constructor(
                 Log.d("Auth Test", "Couldn't logout")
             }
         }
+
     }
 }

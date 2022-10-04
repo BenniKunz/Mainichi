@@ -2,6 +2,7 @@ package com.bknz.mainichi.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.bknz.mainichi.data.database.dao.ArticleDao
 import com.bknz.mainichi.data.database.dao.NotificationsDao
 import com.bknz.mainichi.data.database.model.DbArticle
 import com.bknz.mainichi.data.database.model.DbNotification

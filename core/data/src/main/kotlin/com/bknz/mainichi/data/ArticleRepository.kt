@@ -3,7 +3,7 @@ package com.bknz.mainichi.data
 import android.util.Log
 import com.bknz.mainichi.api.news.Article
 import com.bknz.mainichi.api.news.NewsAPI
-import com.bknz.mainichi.data.database.ArticleDao
+import com.bknz.mainichi.data.database.dao.ArticleDao
 import com.bknz.mainichi.data.database.model.toArticle
 import com.bknz.mainichi.data.database.model.toDbArticle
 import kotlinx.coroutines.CoroutineScope

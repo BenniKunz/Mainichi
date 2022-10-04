@@ -14,12 +14,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.bknz.mainichi.feature.settings.settingsScreen.SettingsContract.UiState.*
-import com.bknz.mainichi.feature.settings.settingsScreen.themeDialog.ThemeDialogContract.UiState.*
 import com.bknz.mainichi.core.designsystem.MainichiTheme
 import com.bknz.mainichi.core.model.Theme
 import com.bknz.mainichi.feature.coin.navigation.coinGraph
-import com.bknz.mainichi.feature.crypto.navigation.CryptoDestination
 import com.bknz.mainichi.feature.crypto.navigation.cryptoGraph
 import com.bknz.mainichi.feature.navigation.loginGraph
 import com.bknz.mainichi.feature.navigation.menuGraph

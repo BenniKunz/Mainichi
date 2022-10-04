@@ -54,57 +54,31 @@ internal fun LoginScreen(
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.spacedBy(64.dp, Alignment.CenterVertically)
     ) {
 
-//        var email by rememberSaveable { mutableStateOf("") }
-//        var password by rememberSaveable { mutableStateOf("") }
-//
-//        UserInteractionField(
-//            value = email,
-//            onNewValue = { email = it },
-//            placeholder = stringResource(id = R.string.email)
-//        )
-//
-//        UserInteractionField(
-//            value = password,
-//            onNewValue = { password = it },
-//            placeholder = stringResource(id = R.string.password)
-//        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+        UserInteractionButton(
+            text = "Sign up",
+            modifier = Modifier
+                .background(MaterialTheme.colors.onBackground)
         ) {
-
-            UserInteractionButton(
-                text = "Sign up",
-                modifier = Modifier.background(MaterialTheme.colors.onBackground)
-            ) {
-                navigate(LoginEvent.Navigate("signUp"))
-            }
-
-            UserInteractionButton(
-                text = "Sign in",
-                modifier = Modifier.background(MaterialTheme.colors.onPrimary)
-            ) {
-                navigate(LoginEvent.Navigate("signIn"))
-            }
+            navigate(LoginEvent.Navigate("signUp"))
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+        UserInteractionButton(
+            text = "Sign in",
+            modifier = Modifier.background(MaterialTheme.colors.onPrimary)
         ) {
-            UserInteractionButton(
-                text = "Explore without Login",
-                modifier = Modifier.background(MaterialTheme.colors.onPrimary)
-            ) {
-                onAnonymousLogin()
-            }
+            navigate(LoginEvent.Navigate("signIn"))
         }
+
+        UserInteractionButton(
+            text = "Explore without Login",
+            modifier = Modifier.background(MaterialTheme.colors.onPrimary)
+        ) {
+            onAnonymousLogin()
+        }
+
     }
 }
 

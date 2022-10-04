@@ -1,4 +1,4 @@
-package com.bknz.mainichi.feature.signUp
+package com.bknz.mainichi.feature.signIn
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -20,8 +20,8 @@ import com.bknz.mainichi.ui.UserInteractionButton
 import com.bknz.mainichi.ui.UserInteractionField
 
 @Composable
-internal fun SignUpScreen(
-    viewModel: SignUpViewModel,
+internal fun SignInScreen(
+    viewModel: SignInViewModel,
     onNavigate: (String) -> Unit
 ) {
 
@@ -31,7 +31,7 @@ internal fun SignUpScreen(
 
         viewModel.effect.collect { effect ->
             when (effect) {
-                is SignUpEffect.Navigate -> {
+                is SignInEffect.Navigate -> {
                     onNavigate(effect.route)
                 }
             }
@@ -43,22 +43,24 @@ internal fun SignUpScreen(
         uiState.loading -> {
             LoadingStateProgressIndicator()
         }
-        else -> SignUpScreen(
+        else -> SignInScreen(
             state = uiState,
-            onSignUp = { email: String, password: String ->
-                viewModel.signUpWithEmail(
+            onSignIn = { email: String, password: String ->
+                viewModel.signInWithEmail(
                     email = email,
                     password = password
                 )
             },
-            onLogout = { viewModel.logout() })
+            onLogout = {
+                viewModel.logout()
+            })
     }
 }
 
 @Composable
-internal fun SignUpScreen(
-    state: SignUpUiState,
-    onSignUp: (String, String) -> Unit,
+internal fun SignInScreen(
+    state: SignInUiState,
+    onSignIn: (String, String) -> Unit,
     onLogout: () -> Unit
 ) {
 
@@ -71,7 +73,7 @@ internal fun SignUpScreen(
         var email by rememberSaveable { mutableStateOf("") }
         var password by rememberSaveable { mutableStateOf("") }
 
-        if (!state.signedUp) {
+        if (!state.signedIn) {
             UserInteractionField(
                 value = email,
                 onNewValue = { email = it },
@@ -91,14 +93,14 @@ internal fun SignUpScreen(
         }
 
         UserInteractionButton(
-            text = when (state.signedUp) {
+            text = when (state.signedIn) {
                 true -> "Logout"
                 false -> "Sign In"
             },
             modifier = Modifier.background(color = MaterialTheme.colors.onBackground)
         ) {
-            when (state.signedUp) {
-                false -> onSignUp(email, password)
+            when (state.signedIn) {
+                false -> onSignIn(email, password)
                 true -> onLogout()
             }
         }
@@ -110,9 +112,9 @@ internal fun SignUpScreen(
 @Composable
 fun PreviewAppBar() {
     MainichiTheme() {
-        SignUpScreen(
-            state = SignUpUiState(loading = false),
+        SignInScreen(
+            state = SignInUiState(loading = false),
             onLogout = {},
-            onSignUp = { _: String, _: String -> })
+            onSignIn = { _: String, _: String -> })
     }
 }

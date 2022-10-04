@@ -1,6 +1,6 @@
 package com.bknz.mainichi.data.database.di
 
-import com.bknz.mainichi.data.database.ArticleDao
+import com.bknz.mainichi.data.database.dao.ArticleDao
 import com.bknz.mainichi.data.database.AppDatabase
 import com.bknz.mainichi.data.database.AssetDao
 import com.bknz.mainichi.data.database.FavoriteAssetDao

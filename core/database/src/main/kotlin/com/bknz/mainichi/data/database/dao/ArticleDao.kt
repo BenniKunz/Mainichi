@@ -1,4 +1,4 @@
-package com.bknz.mainichi.data.database
+package com.bknz.mainichi.data.database.dao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao

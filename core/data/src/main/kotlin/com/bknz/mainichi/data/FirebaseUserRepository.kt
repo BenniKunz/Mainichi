@@ -2,13 +2,9 @@ package com.bknz.mainichi.data
 
 import android.content.Intent
 import android.util.Log
-import androidx.annotation.MainThread
-import com.bknz.mainichi.core.data.R
 import com.bknz.mainichi.core.model.UserData
-import com.firebase.ui.auth.AuthMethodPickerLayout
-import com.firebase.ui.auth.AuthUI
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -76,7 +72,7 @@ internal class FirebaseUserRepository @Inject constructor() : UserRepository {
                 if (task.isSuccessful) {
                     UserData(
                         authenticatedAnonymously = false,
-                        authenticatedCredentials = true,
+                        authenticatedWithEmail = true,
                         name = Firebase.auth.currentUser?.displayName
                             ?: Firebase.auth.currentUser?.email ?: "No Name"
                     )
@@ -87,9 +83,12 @@ internal class FirebaseUserRepository @Inject constructor() : UserRepository {
             }
     }
 
-    override fun authenticate(email: String, password: String, onResult: (Throwable?) -> Unit) {
-
-        Firebase.auth.signInWithEmailAndPassword(email, password)
+    override fun authenticateWithMail(
+        email: String,
+        password: String,
+        onResult: (Throwable?) -> Unit
+    ) {
+        Firebase.auth.signInWithEmailAndPassword(email.trim(), password)
             .addOnCompleteListener { task ->
 
                 if (task.isSuccessful) {
@@ -97,7 +96,7 @@ internal class FirebaseUserRepository @Inject constructor() : UserRepository {
                     userData.update {
                         UserData(
                             authenticatedAnonymously = false,
-                            authenticatedCredentials = true,
+                            authenticatedWithEmail = true,
                             name = Firebase.auth.currentUser?.displayName
                                 ?: Firebase.auth.currentUser?.email ?: "No Name"
                         )
@@ -107,5 +106,26 @@ internal class FirebaseUserRepository @Inject constructor() : UserRepository {
                 }
                 onResult(task.exception)
             }
+    }
+
+    override fun signOut() : Boolean
+    {
+        val x = Firebase.auth.currentUser
+
+        if (x != null) {
+            Firebase.auth.signOut()
+
+            if (Firebase.auth.currentUser == null) {
+                userData.update {
+                    UserData(
+                        authenticatedAnonymously = false,
+                        authenticatedWithEmail = false
+                    )
+                }
+                return true
+            }
+            return false
+        }
+        return false
     }
 }

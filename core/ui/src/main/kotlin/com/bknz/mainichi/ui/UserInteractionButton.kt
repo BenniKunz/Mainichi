@@ -12,8 +12,8 @@ fun UserInteractionButton(text: String, modifier: Modifier, onClick: () -> Unit)
 
     Button(
         onClick = { onClick() },
+        shape = RoundedCornerShape(60.dp),
 //        modifier = modifier,
-        shape = RoundedCornerShape(60.dp)
     ) {
         Text(text = text)
     }

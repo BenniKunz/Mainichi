@@ -7,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.bknz.mainichi.feature.login.LoginScreen
+import com.bknz.mainichi.feature.signIn.SignInScreen
 import com.bknz.mainichi.feature.signUp.SignUpScreen
 import com.bknz.mainichi.navigation.MainichiDestinationNavigation
 
@@ -44,7 +45,9 @@ fun NavGraphBuilder.loginGraph(
         }
 
         composable(route = SignInDestination.route) {
-
+            SignInScreen(viewModel = hiltViewModel(), onNavigate = { route ->
+                onNavigate(route)
+            })
         }
 
         composable(route = SignUpDestination.route) {

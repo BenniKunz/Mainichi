@@ -71,7 +71,7 @@ internal class LoginViewModel @Inject constructor(
         LoginUiState(
             loading = false,
             authenticatedAnonymously = userData.authenticatedAnonymously,
-            authenticatedCredentials = userData.authenticatedCredentials
+            authenticatedCredentials = userData.authenticatedWithEmail
         )
 
     }.stateIn(
