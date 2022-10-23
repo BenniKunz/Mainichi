@@ -3,6 +3,7 @@ package com.bknz.mainichi.feature.login
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -11,7 +12,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bknz.mainichi.core.designsystem.MainichiTheme
 import com.bknz.mainichi.ui.LoadingStateProgressIndicator
-import com.bknz.mainichi.ui.UserInteractionButton
 
 @Composable
 internal fun LoginScreen(
@@ -52,33 +52,47 @@ internal fun LoginScreen(
 ) {
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(64.dp, Alignment.CenterVertically)
+        verticalArrangement = Arrangement.spacedBy(64.dp, Alignment.Bottom)
     ) {
 
-        UserInteractionButton(
-            text = "Sign up",
+        Button(
+            onClick = { onAnonymousLogin() },
+            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
             modifier = Modifier
-                .background(MaterialTheme.colors.onBackground)
+                .size(160.dp, 80.dp)
         ) {
-            navigate(LoginEvent.Navigate("signUp"))
+            Text(text = "Explore without Login")
         }
 
-        UserInteractionButton(
-            text = "Sign in",
-            modifier = Modifier.background(MaterialTheme.colors.onPrimary)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround
         ) {
-            navigate(LoginEvent.Navigate("signIn"))
-        }
 
-        UserInteractionButton(
-            text = "Explore without Login",
-            modifier = Modifier.background(MaterialTheme.colors.onPrimary)
-        ) {
-            onAnonymousLogin()
-        }
+            Button(
+                onClick = { navigate(LoginEvent.Navigate("signUp")) },
+                shape = RoundedCornerShape(32.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
+                modifier = Modifier
+                    .size(160.dp, 80.dp)
+            ) {
+                Text(text = "SIGN UP",)
+            }
 
+            Button(
+                onClick = { navigate(LoginEvent.Navigate("signIn")) },
+                shape = RoundedCornerShape(32.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
+                modifier = Modifier
+                    .size(160.dp, 80.dp)
+            ) {
+                Text(text = "SIGN IN",)
+            }
+        }
     }
 }
 

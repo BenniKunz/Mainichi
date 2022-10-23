@@ -1,13 +1,16 @@
 package com.bknz.mainichi.feature.coin.coinScreen
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bknz.mainichi.data.AssetRepository
+import com.bknz.mainichi.data.database.dao.FavoriteAssetDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,7 +43,8 @@ internal class CoinScreenViewModel @Inject constructor(
     init {
         viewModelScope.launch {
 
-            val asset = assetRepository.getAsset(name = handle ?: "")
+            Log.d("API Test", "$handle")
+            val asset = assetRepository.getAsset(id = handle ?: "")
 
             assetRepository.observeFavoriteAssets().collect { favoriteAssets ->
 
@@ -56,7 +60,7 @@ internal class CoinScreenViewModel @Inject constructor(
                             isLoading = false,
                             isError = false,
                             asset = if (favoriteAssets.find { favorite -> favorite.name == asset.name } != null) {
-                                asset.copy(isFavorite = true)
+                                asset.copy(isFavorite = flowOf(true))
                             } else {
                                 asset
                             }
@@ -67,29 +71,29 @@ internal class CoinScreenViewModel @Inject constructor(
             }
         }
 
-    viewModelScope.launch {
-        _event.collect() { event ->
-            when (event) {
-                is CoinEvent.FavoriteClicked -> {
+        viewModelScope.launch {
+            _event.collect() { event ->
+                when (event) {
+                    is CoinEvent.FavoriteClicked -> {
 
-                    assetRepository.changeFavorites(event.coin, event.clicked)
+                        assetRepository.changeFavorites(event.coin, event.clicked)
 
-                    _uiState.update { uiState ->
+                        _uiState.update { uiState ->
 
-                        CoinUiState.UiState(
-                            isLoading = false,
-                            isError = false,
-                            asset = uiState.asset?.copy(isFavorite = event.clicked)
-                        )
+                            CoinUiState.UiState(
+                                isLoading = false,
+                                isError = false,
+                                asset = uiState.asset?.copy(isFavorite = flowOf(event.clicked))
+                            )
+                        }
                     }
-                }
-                is CoinEvent.NavigateUp -> {
-                    setEffect {
-                        CoinEffect.NavigateUp
+                    is CoinEvent.NavigateUp -> {
+                        setEffect {
+                            CoinEffect.NavigateUp
+                        }
                     }
                 }
             }
         }
     }
-}
 }

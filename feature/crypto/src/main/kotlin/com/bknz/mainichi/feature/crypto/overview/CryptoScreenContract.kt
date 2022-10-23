@@ -1,17 +1,18 @@
 package com.bknz.mainichi.feature.crypto.overview
 
+import androidx.paging.PagingData
 import com.bknz.mainichi.core.model.Asset
+import kotlinx.coroutines.flow.Flow
 
 sealed class CryptoUiState {
 
-    data class UiState(
-        val isLoading: Boolean,
-        val isRefreshing: Boolean = false,
-        val userName : String? = null,
-        val assets: List<Asset> = emptyList(),
-        val filteredAssets: List<Asset> = emptyList()
-    ) : CryptoUiState() {
-    }
+    object Loading : CryptoUiState()
+
+    data class Content(
+//        val isRefreshing: Boolean = false,
+        val userName: String? = null,
+        val pager: Flow<PagingData<Asset>>
+    ) : CryptoUiState()
 }
 
 sealed class CryptoEvent {
@@ -28,7 +29,7 @@ sealed class CryptoEvent {
 sealed class CryptoEffect {
 
     sealed class Navigation() : CryptoEffect() {
-        data class NavigateToCoinScreen(val coin : String) : Navigation()
+        data class NavigateToCoinScreen(val coin: String) : Navigation()
         object NavigateToSettingsScreen : Navigation()
         object NavigateToMenuScreen : Navigation()
     }

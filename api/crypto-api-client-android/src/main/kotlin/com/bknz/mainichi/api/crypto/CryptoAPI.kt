@@ -1,12 +1,19 @@
 package com.bknz.mainichi.api.crypto
 
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface CryptoAPI {
 
     //Coin Gecko
-    @GET("api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false&price_change_percentage=24h")
-    suspend fun getAllCryptoAssets(): List<APIAsset>
+    @GET("api/v3/coins/markets")
+    suspend fun getAssets(
+        @Query("vs_currency") currency: String = "usd",
+        @Query("ids") ids : String = "",
+        @Query("per_page") count: Int = 25,
+        @Query("page") page: Int = 1,
+        @Query("price_change_percentage") priceChangePercentage: String = "24h"
+    ): List<APIAsset>
 
 //    @GET("api/v3/coins/{coin}")
 //    suspend fun getAsset(

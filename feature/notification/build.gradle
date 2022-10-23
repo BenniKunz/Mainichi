@@ -52,10 +52,8 @@ dependencies {
     implementation(libs.compose.material.core)
     implementation(libs.compose.material.icons)
 
-//    implementation 'androidx.hilt:hilt-common:1.0.0'
     implementation (libs.google.android.material)
 
-    //Hilt
     implementation(libs.hilt.android.runtime)
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.hilt.compiler)
@@ -70,13 +68,8 @@ dependencies {
 //    debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
 //    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
 
-
-    //Navigation
     implementation(libs.androidx.navigation.compose)
-
-    //WorkManager
     implementation(libs.androidx.work)
-
 }
 
 kapt {

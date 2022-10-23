@@ -1,5 +1,6 @@
 package com.bknz.mainichi.api.crypto
 import com.bknz.mainichi.core.model.Asset
+import kotlinx.coroutines.flow.Flow
 
 
 @kotlinx.serialization.Serializable
@@ -12,12 +13,12 @@ data class APIAsset(
     val atl_date: String,
     val circulating_supply: Double,
     val current_price: Double,
-    val fully_diluted_valuation: Long?,
-    val high_24h: Double,
+    val fully_diluted_valuation: Double?,
+    val high_24h: Double?,
     val id: String,
     val image: String,
     val last_updated: String,
-    val low_24h: Double,
+    val low_24h: Double?,
     val market_cap: Long,
     val market_cap_change_24h: Float,
     val market_cap_change_percentage_24h: Double,
@@ -33,14 +34,15 @@ data class APIAsset(
     val total_volume: Double,
 )
 
-fun APIAsset.asAsset() = Asset(
+fun APIAsset.asAsset(isFavorite: Flow<Boolean>) = Asset(
+    id = this.id,
     name = this.name,
     currentPrice = this.current_price,
     image = this.image,
     symbol = this.symbol,
-    isFavorite = false,
-    high24h = this.high_24h,
-    low24h = this.low_24h,
+    isFavorite = isFavorite,
+    high24h = this.high_24h ?: 0.0,
+    low24h = this.low_24h ?: 0.0,
     marketCap = this.market_cap,
     ath = this.ath,
     atl = this.atl,

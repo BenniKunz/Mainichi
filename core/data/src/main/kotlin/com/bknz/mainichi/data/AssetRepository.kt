@@ -1,16 +1,14 @@
 package com.bknz.mainichi.data
 
+import androidx.paging.PagingData
 import com.bknz.mainichi.core.model.Asset
-import com.bknz.mainichi.data.database.DbFavoriteAsset
+import com.bknz.mainichi.data.database.model.DbFavoriteAsset
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 interface AssetRepository {
 
-    suspend fun getAssets(): List<Asset>
-
-    suspend fun getAsset(name: String): Asset?
-
-    fun observeAssets(): Flow<List<Asset>>
+    suspend fun getAsset(id: String): Asset
 
     fun observeFavoriteAssets(): Flow<List<DbFavoriteAsset>>
 

@@ -42,6 +42,8 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:navigation"))
     implementation(project(":core:ui"))
+    implementation(project(":core:ui"))
+    implementation(project(":api:crypto-api-client-android"))
 
     implementation(libs.androidx.core)
     implementation(libs.androidx.lifecycle.runtime)
@@ -51,10 +53,8 @@ dependencies {
     implementation(libs.compose.material.core)
     implementation(libs.compose.material.icons)
 
-//    implementation 'androidx.hilt:hilt-common:1.0.0'
     implementation (libs.google.android.material)
 
-    //Hilt
     implementation(libs.hilt.android.runtime)
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.hilt.compiler)
@@ -69,11 +69,10 @@ dependencies {
 //    debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
 //    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
 
-
-    //Navigation
     implementation(libs.androidx.navigation.compose)
-
     implementation(libs.accompanist.swiperefresh)
+
+    implementation(libs.androidx.paging)
 }
 
 kapt {

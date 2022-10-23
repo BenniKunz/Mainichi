@@ -4,7 +4,9 @@ import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -16,7 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.bknz.mainichi.core.designsystem.MainichiTheme
 import com.bknz.mainichi.feature.login.R
 import com.bknz.mainichi.ui.LoadingStateProgressIndicator
-import com.bknz.mainichi.ui.UserInteractionButton
 import com.bknz.mainichi.ui.UserInteractionField
 
 @Composable
@@ -92,17 +93,20 @@ internal fun SignInScreen(
             )
         }
 
-        UserInteractionButton(
-            text = when (state.signedIn) {
-                true -> "Logout"
-                false -> "Sign In"
-            },
-            modifier = Modifier.background(color = MaterialTheme.colors.onBackground)
-        ) {
-            when (state.signedIn) {
-                false -> onSignIn(email, password)
-                true -> onLogout()
+        Button(
+            onClick = {
+                when (state.signedIn) {
+                    false -> onSignIn(email, password)
+                    true -> onLogout()
+                }
             }
+        ) {
+            Text(
+                text = when (state.signedIn) {
+                    true -> "Logout"
+                    false -> "Sign In"
+                }
+            )
         }
     }
 }

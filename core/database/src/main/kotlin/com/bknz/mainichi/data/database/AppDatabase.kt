@@ -3,8 +3,10 @@ package com.bknz.mainichi.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.bknz.mainichi.data.database.dao.ArticleDao
+import com.bknz.mainichi.data.database.dao.FavoriteAssetDao
 import com.bknz.mainichi.data.database.dao.NotificationsDao
 import com.bknz.mainichi.data.database.model.DbArticle
+import com.bknz.mainichi.data.database.model.DbFavoriteAsset
 import com.bknz.mainichi.data.database.model.DbNotification
 
 @Database(
@@ -14,7 +16,7 @@ import com.bknz.mainichi.data.database.model.DbNotification
         DbFavoriteAsset::class,
         DbNotification::class],
     exportSchema = true,
-    version = 1
+    version = 2
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun articleDao(): ArticleDao

@@ -27,7 +27,7 @@ class PriceChangeWorker @AssistedInject constructor(
         val event = inputData.getString("event") ?: ""
         val eventValue = inputData.getString("eventValue") ?: ""
 
-        val asset = api.getAllCryptoAssets().first { asset -> asset.name == name }
+        val asset = api.getAssets().first { asset -> asset.name == name }
 
         val priceChangePercentage = asset.price_change_percentage_24h
 

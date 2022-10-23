@@ -20,6 +20,15 @@ import androidx.compose.ui.unit.dp
 import com.bknz.mainichi.core.model.Asset
 import com.bknz.mainichi.core.designsystem.MainichiTheme
 import com.bknz.mainichi.ui.LoadingStateProgressIndicator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @Composable
 internal fun CoinScreen(
@@ -102,6 +111,8 @@ internal fun CoinContent(
     onViewModelEvent: (CoinEvent) -> Unit
 ) {
 
+    val scope = CoroutineScope(Dispatchers.IO)
+
     Column(modifier = Modifier.fillMaxWidth()) {
 
         Row(
@@ -125,7 +136,7 @@ internal fun CoinContent(
 //            val gradientGreenRed = Brush.horizontalGradient(0f to MaterialTheme.colors.primary, 1000f to MaterialTheme.colors.onBackground)
 
             Text(
-                text = "${coin.name}",
+                text = coin.name,
                 color = MaterialTheme.colors.onBackground,
                 style = MaterialTheme.typography.h5,
                 modifier = Modifier
@@ -142,8 +153,8 @@ internal fun CoinContent(
             IconButton(onClick = {
                 onViewModelEvent(
                     CoinEvent.FavoriteClicked(
-                        coin.name,
-                        !coin.isFavorite
+                        coin = coin.name,
+                        clicked = runBlocking { coin.isFavorite.first() }
                     )
                 )
             }) {
@@ -151,7 +162,7 @@ internal fun CoinContent(
                     Icons.Filled.Favorite,
                     contentDescription = "Favorite",
                     tint = when {
-                        coin.isFavorite -> {
+                        runBlocking { coin.isFavorite.first() } -> {
                             MaterialTheme.colors.primary
                         }
                         else -> {
@@ -283,11 +294,12 @@ private fun PreviewCoinContent() {
 
         CoinContent(
             coin = Asset(
+                id = "bitcoin",
                 name = "Bitcoin",
                 currentPrice = 20000.0,
                 image = "",
                 symbol = "BTC",
-                isFavorite = true,
+                isFavorite = flowOf(true),
                 high24h = 21000.5,
                 low24h = 19000.0,
                 marketCap = 3000000,

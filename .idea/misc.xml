@@ -13,9 +13,10 @@
         <entry key="..\:/Programme/Android_Studio_Projects/Mainichi/app/src/main/res/drawable/splash.xml" value="0.132" />
         <entry key="..\:/Programme/Android_Studio_Projects/Mainichi/feature/appMenu/src/main/kotlin/com/example/mainichi/feature/appMenu/AppBar.kt" value="0.24444444444444444" />
         <entry key="..\:/Programme/Android_Studio_Projects/Mainichi/feature/appMenu/src/main/kotlin/com/example/mainichi/feature/settings/appMenu/AppBar.kt" value="0.24444444444444444" />
+        <entry key="..\:/Programme/Android_Studio_Projects/Mainichi/feature/coin/src/main/kotlin/com/bknz/mainichi/feature/coin/coinScreen/CoinScreen.kt" value="0.956953642384106" />
         <entry key="..\:/Programme/Android_Studio_Projects/Mainichi/feature/crypto/src/main/kotlin/com/bknz/mainichi/feature/crypto/overview/CryptoScreen.kt" value="0.24444444444444444" />
         <entry key="..\:/Programme/Android_Studio_Projects/Mainichi/feature/crypto/src/main/kotlin/com/example/mainichi/feature/crypto/overview/CryptoScreen.kt" value="0.2722222222222222" />
-        <entry key="..\:/Programme/Android_Studio_Projects/Mainichi/feature/login/src/main/kotlin/com/bknz/mainichi/feature/login/LoginScreen.kt" value="0.33" />
+        <entry key="..\:/Programme/Android_Studio_Projects/Mainichi/feature/login/src/main/kotlin/com/bknz/mainichi/feature/login/LoginScreen.kt" value="0.25" />
         <entry key="..\:/Programme/Android_Studio_Projects/Mainichi/feature/login/src/main/kotlin/com/bknz/mainichi/feature/signIn/SignInScreen.kt" value="0.25" />
         <entry key="..\:/Programme/Android_Studio_Projects/Mainichi/feature/login/src/main/kotlin/com/bknz/mainichi/feature/signIn/SignUpScreen.kt" value="0.10275689223057644" />
         <entry key="..\:/Programme/Android_Studio_Projects/Mainichi/feature/login/src/main/kotlin/com/bknz/mainichi/feature/signUp/LoginScreen.kt" value="0.1193561872909699" />

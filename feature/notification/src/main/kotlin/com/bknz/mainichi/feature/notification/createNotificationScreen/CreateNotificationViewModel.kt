@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -104,8 +105,8 @@ class CreateNotificationViewModel @Inject constructor(
 
     private suspend fun loadData() {
         val assets = withContext(Dispatchers.IO) {
-            api.getAllCryptoAssets().map { apiAsset ->
-                apiAsset.asAsset()
+            api.getAssets().map { apiAsset ->
+                apiAsset.asAsset(flowOf(true))
             }
         }
 

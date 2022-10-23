@@ -8,8 +8,14 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -53,13 +59,27 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
 
-                    val navController = rememberNavController()
+                    Scaffold(
+                        modifier = Modifier,
+                        contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
+                        bottomBar = {
+                            NavigationBar() {
+                                NavigationBarItem(
+                                    selected = false,
+                                    onClick = {  },
+                                    icon = { Icon(Icons.Default.Create, contentDescription = null) }
+                                )
+                            }
+                        }
+                    ) { paddingValues ->
 
-                    NavHost(
-                        navController = navController,
-                        startDestination = "login"
+                        val navController = rememberNavController()
 
-                    ) {
+                        NavHost(
+                            navController = navController,
+                            startDestination = "login"
+
+                        ) {
 
 //                        composable(route = "splash") {
 //                            com.example.mainichi.ui.splashScreen.SplashScreen(
@@ -68,58 +88,61 @@ class MainActivity : ComponentActivity() {
 //                            )
 //                        }
 
-                        loginGraph(
-                            onNavigate = { route ->
-                                navController.navigate(route = route)
-                            }
-                        )
+                            loginGraph(
+                                onNavigate = { route ->
+                                    navController.navigate(route = route)
+                                }
+                            )
 
-                        newsGraph(
-                            onNavigate = { route ->
-                                navController.navigate(route = route)
-                            }
-                        )
+                            newsGraph(
+                                onNavigate = { route ->
+                                    navController.navigate(route = route)
+                                }
+                            )
 
-                        cryptoGraph(
-                            onNavigate = { route ->
-                                navController.navigate(route = route)
-                            }
-                        )
+                            cryptoGraph(
+                                onNavigate = { route ->
+                                    navController.navigate(route = route)
+                                }
+                            )
 
-                        coinGraph(
-                            onBackClick = {
-                                navController.navigateUp()
-                            }
-                        )
+                            coinGraph(
+                                onBackClick = {
+                                    navController.navigateUp()
+                                }
+                            )
 
-                        menuGraph(
-                            onNavigate = { route ->
-                                navController.navigate(route = route)
-                            },
-                            onBackClick = {
-                                navController.navigateUp()
-                            }
-                        )
+                            menuGraph(
+                                onNavigate = { route ->
+                                    navController.navigate(route = route)
+                                },
+                                onBackClick = {
+                                    navController.navigateUp()
+                                }
+                            )
 
-                        notificationGraph(
-                            onBackClick = {
-                                navController.navigateUp()
-                            },
-                            onNavigate = { route ->
-                                navController.navigate(route)
-                            }
-                        )
+                            notificationGraph(
+                                onBackClick = {
+                                    navController.navigateUp()
+                                },
+                                onNavigate = { route ->
+                                    navController.navigate(route)
+                                }
+                            )
 
-                        settingsGraph(
-                            onNavigate = { route ->
-                                navController.navigate(route)
-                            },
-                            onBackClick = {
-                                navController.navigateUp()
-                            }
-                        )
+                            settingsGraph(
+                                onNavigate = { route ->
+                                    navController.navigate(route)
+                                },
+                                onBackClick = {
+                                    navController.navigateUp()
+                                }
+                            )
+                        }
                     }
-                }
+
+
+                    }
             }
         }
     }

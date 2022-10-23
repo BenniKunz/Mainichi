@@ -2,11 +2,14 @@ package com.bknz.mainichi.feature.crypto.overview
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -20,23 +23,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemsIndexed
 import com.bknz.mainichi.core.model.Asset
 import com.bknz.mainichi.feature.crypto.fakeAssets
 import com.bknz.mainichi.feature.crypto.overview.CryptoUiState.*
 import com.bknz.mainichi.core.designsystem.MainichiTheme
 import com.bknz.mainichi.feature.crypto.R
 import com.bknz.mainichi.ui.ImageLoader
-import com.bknz.mainichi.ui.LoadingStateProgressIndicator
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun CryptoScreen(
     viewModel: CryptoScreenViewModel,
     onNavigate: (CryptoEffect) -> Unit,
 ) {
-
-    val state = viewModel.uiState.collectAsState().value
+    val state = viewModel.state.collectAsState().value
 
     LaunchedEffect(key1 = viewModel, key2 = onNavigate) {
 
@@ -47,17 +53,29 @@ internal fun CryptoScreen(
         }
     }
 
-    CryptoScreen(
-        state = state,
-        onViewModelEvent = { event -> viewModel.setEvent(event) })
+    when (state) {
+        is Content -> {
+            CryptoScreen(
+                state = state,
+                assets = state.pager.collectAsLazyPagingItems(),
+                onViewModelEvent = { event -> viewModel.setEvent(event) })
+
+        }
+        Loading -> CircularProgressIndicator()
+    }
 }
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 internal fun CryptoScreen(
-    state: UiState,
+    state: Content,
+    assets: LazyPagingItems<Asset>,
     onViewModelEvent: (CryptoEvent) -> Unit
 ) {
+
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -95,31 +113,42 @@ internal fun CryptoScreen(
                 }
             )
         },
-
-        ) {
-
-        when (state.isLoading) {
-            true -> LoadingStateProgressIndicator(
-                color = MaterialTheme.colors.onBackground,
-                size = 50
-            )
-            false -> CryptoContent(
-                assets = state.assets,
-                isRefreshing = state.isRefreshing,
-                filteredAssets = state.filteredAssets,
-                onViewModelEvent = onViewModelEvent
-            )
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { scope.launch { listState.scrollToItem(0) } },
+                backgroundColor = MaterialTheme.colors.primary,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                androidx.compose.material3.Icon(
+                    imageVector = Icons.Default.MoveUp,
+                    contentDescription = null
+                )
+            }
         }
+
+    ) {
+
+        CryptoContent(
+            assets = assets,
+            listState = listState,
+            isRefreshing = false,
+            onViewModelEvent = onViewModelEvent
+        )
     }
 }
 
 @Composable
 internal fun CryptoContent(
-    assets: List<Asset>,
+    assets: LazyPagingItems<Asset>,
+    listState: LazyListState,
     isRefreshing: Boolean,
-    filteredAssets: List<Asset>,
     onViewModelEvent: (CryptoEvent) -> Unit,
 ) {
+    val favoriteAssets = assets.itemSnapshotList.items.filter { asset ->
+        asset.isFavorite.collectAsState(
+            initial = false
+        ).value
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
 
@@ -139,38 +168,47 @@ internal fun CryptoContent(
 
         SwipeRefresh(
             state = rememberSwipeRefreshState(isRefreshing),
-            onRefresh = { onViewModelEvent(CryptoEvent.UpdateRequested) },
+            onRefresh = {
+//                onViewModelEvent(CryptoEvent.UpdateRequested)
+            },
         ) {
             LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .background(MaterialTheme.colors.background),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
 
-                if (filteredAssets.isEmpty()) {
-                    item {
-                        CryptoNews(
-                            assets = assets
-                        )
-                    }
+                item {
 
-                    item {
+                    CryptoNews(
+                        assets = favoriteAssets
+                    )
+                }
 
-                        FavoritesRow(
-                            topic = "Your favorites",
-                            assets = assets,
-                            onViewModelEvent = onViewModelEvent
-                        )
+                item {
+
+                    FavoritesRow(
+                        topic = "Your favorites",
+                        assets = favoriteAssets,
+                        onViewModelEvent = onViewModelEvent
+                    )
+                }
+
+                Log.d("Paging", "Size: ${assets.itemCount}")
+                itemsIndexed(assets) { index, coin ->
+                    if (coin != null) {
+                        AssetRow(onViewModelEvent, coin, index)
                     }
                 }
 
                 item {
-                    AllAssets(
-                        assets = assets,
-                        filteredAssets = filteredAssets,
-                        onViewModelEvent = onViewModelEvent
-                    )
+                    if (assets.loadState.append == LoadState.Loading) {
+                        CircularProgressIndicator()
+                    }
                 }
+
+                item { Spacer(modifier = Modifier.height(10.dp)) }
             }
         }
     }
@@ -207,27 +245,6 @@ internal fun SearchBar(
 }
 
 @Composable
-internal fun AllAssets(
-    assets: List<Asset>,
-    filteredAssets: List<Asset>,
-    onViewModelEvent: (CryptoEvent) -> Unit
-) {
-
-    if (filteredAssets.isNotEmpty()) {
-        filteredAssets.forEachIndexed { index, coin ->
-
-            AssetRow(onViewModelEvent, coin, index)
-        }
-    } else {
-        assets.forEachIndexed { index, coin ->
-
-            AssetRow(onViewModelEvent, coin, index)
-        }
-    }
-    Spacer(modifier = Modifier.height(10.dp))
-}
-
-@Composable
 private fun AssetRow(
     onViewModelEvent: (CryptoEvent) -> Unit,
     coin: Asset,
@@ -235,7 +252,7 @@ private fun AssetRow(
 ) {
     Card(
         modifier = Modifier.clickable {
-            onViewModelEvent(CryptoEvent.CoinClicked(coin.name))
+            onViewModelEvent(CryptoEvent.CoinClicked(coin.id))
         },
         elevation = 10.dp
     ) {
@@ -316,19 +333,20 @@ private fun AssetRow(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
+                val isFavorite = coin.isFavorite.collectAsState(initial = false).value
                 IconButton(onClick = {
                     onViewModelEvent(
                         CryptoEvent.FavoriteClicked(
                             coin.name,
-                            setFavorite = !coin.isFavorite
+                            setFavorite = !isFavorite
                         )
                     )
                 }) {
                     Icon(
                         Icons.Filled.Favorite,
                         contentDescription = "Favorite",
-                        tint = when {
-                            coin.isFavorite -> {
+                        tint = when (isFavorite) {
+                            true -> {
                                 MaterialTheme.colors.primary
                             }
                             else -> {
@@ -395,7 +413,9 @@ private fun FavoritesRow(
             color = MaterialTheme.colors.onBackground
         )
 
-        IconButton(onClick = { onViewModelEvent(CryptoEvent.UpdateRequested) }) {
+        IconButton(onClick = {
+//            onViewModelEvent(CryptoEvent.UpdateRequested)
+        }) {
             Icon(
                 Icons.Filled.Favorite,
                 contentDescription = "Favorite",
@@ -414,15 +434,13 @@ private fun FavoritesRow(
 
         assets.forEach { coin ->
 
-            if (coin.isFavorite) {
-                item {
+            item {
 
-                    CryptoItem(
-                        coin = coin,
-                        url = coin.image,
-                        onViewModelEvent = onViewModelEvent
-                    )
-                }
+                CryptoItem(
+                    coin = coin,
+                    url = coin.image,
+                    onViewModelEvent = onViewModelEvent
+                )
             }
         }
     }
@@ -443,7 +461,7 @@ private fun CryptoItem(
             .clickable {
                 onViewModelEvent(
                     CryptoEvent.CoinClicked(
-                        coin = coin.name
+                        coin = coin.id
                     )
                 )
             }
@@ -507,11 +525,11 @@ private fun PreviewCryptoMain() {
     MainichiTheme(
     ) {
 
-        AllAssets(
-            assets = fakeAssets,
-            filteredAssets = emptyList(),
-            onViewModelEvent = {}
-        )
+//        AllAssets(
+//            assets = fakeAssets,
+//            filteredAssets = emptyList(),
+//            onViewModelEvent = {}
+//        )
     }
 }
 

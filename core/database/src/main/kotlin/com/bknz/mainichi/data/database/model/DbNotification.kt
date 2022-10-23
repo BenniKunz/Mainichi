@@ -23,6 +23,7 @@ data class DbNotification(
 fun DbNotification.toNotificationConfiguration() = NotificationConfiguration(
     assets = listOf(
         Asset(
+            id = this.name,
             name = this.name,
             symbol = this.symbol,
             image = this.image
