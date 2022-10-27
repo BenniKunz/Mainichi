@@ -19,11 +19,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.bknz.mainichi.core.model.Asset
 import com.bknz.mainichi.core.model.NotificationConfiguration.Periodically
 import com.bknz.mainichi.core.model.NotificationConfiguration.PriceEvent
+import com.bknz.mainichi.feature.notification.R
 import com.bknz.mainichi.ui.ImageLoader
 import com.bknz.mainichi.ui.LoadingStateProgressIndicator
 import com.bknz.mainichi.feature.notification.createNotificationScreen.CreateNotificationContract.*
@@ -66,10 +68,19 @@ fun CreateNotificationScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "Hello", //stringResource(id = R.string.app_name),
-                        color = MaterialTheme.colors.primary
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = stringResource(id = R.string.app_name),
+                            color = MaterialTheme.colors.primary,
+                            style = MaterialTheme.typography.h5
+                        )
+
+                        Text(
+                            text = "Hello Benni",
+                            color = MaterialTheme.colors.onBackground,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
                 },
                 backgroundColor = MaterialTheme.colors.background,
                 contentColor = MaterialTheme.colors.primary,
@@ -291,17 +302,18 @@ fun SettingsContent(
                     )
                 }
 
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = checkedState, onCheckedChange = {
+                        checkedState = !checkedState
 
-                Checkbox(checked = checkedState, onCheckedChange = {
-                    checkedState = !checkedState
+                        onViewModelEvent(CreateNotificationEvent.ToggleAnyValue)
+                    })
 
-                    onViewModelEvent(CreateNotificationEvent.ToggleAnyValue)
-                })
+                    SectionHeader(
+                        text = "Any change"
+                    )
+                }
 
-                Text(
-                    text = "Any  Change",
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
             }
         }
 

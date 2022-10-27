@@ -6,12 +6,21 @@ import com.bknz.mainichi.api.crypto.CryptoAPI
 import com.bknz.mainichi.api.crypto.asAsset
 import com.bknz.mainichi.core.model.Asset
 import com.bknz.mainichi.data.database.dao.FavoriteAssetDao
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import java.io.IOException
 import java.util.Locale
 
-class CryptoPagingSource constructor(
+@AssistedFactory
+interface CryptoPagingSourceFactory {
+
+    fun create(filter: String?) : CryptoPagingSource
+}
+
+class CryptoPagingSource @AssistedInject constructor(
     private val cryptoAPI: CryptoAPI,
-    private val filter: String? = null,
+    @Assisted private val filter: String? = null,
     private val favoriteAssetDao: FavoriteAssetDao
 ) : PagingSource<Int, Asset>() {
 

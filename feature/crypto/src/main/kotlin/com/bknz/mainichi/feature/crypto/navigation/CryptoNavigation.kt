@@ -1,5 +1,6 @@
 package com.bknz.mainichi.feature.crypto.navigation
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -13,7 +14,8 @@ object CryptoDestination : MainichiDestinationNavigation {
 }
 
 fun NavGraphBuilder.cryptoGraph(
-    onNavigate: (String) -> Unit
+    onNavigate: (String) -> Unit,
+    paddingValues: PaddingValues
 ) {
     composable(route = CryptoDestination.route) {
         CryptoScreen(
@@ -30,7 +32,8 @@ fun NavGraphBuilder.cryptoGraph(
                         onNavigate("appMenu")
                     }
                 }
-            }
+            },
+            paddingValues = paddingValues
         )
     }
 }

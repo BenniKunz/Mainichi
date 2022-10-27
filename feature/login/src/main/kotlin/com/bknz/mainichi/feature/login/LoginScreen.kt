@@ -16,7 +16,8 @@ import com.bknz.mainichi.ui.LoadingStateProgressIndicator
 @Composable
 internal fun LoginScreen(
     viewModel: LoginViewModel,
-    onNavigate: (String) -> Unit
+    onNavigate: (String) -> Unit,
+    paddingValues: PaddingValues
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -40,7 +41,9 @@ internal fun LoginScreen(
         else -> LoginScreen(
             state = uiState,
             onAnonymousLogin = { viewModel.loginAnonymously() },
-            navigate = { event -> viewModel.setEvent(event) })
+            navigate = { event -> viewModel.setEvent(event) },
+            paddingValues = paddingValues
+        )
     }
 }
 
@@ -48,13 +51,14 @@ internal fun LoginScreen(
 internal fun LoginScreen(
     state: LoginUiState,
     onAnonymousLogin: () -> Unit,
-    navigate: (LoginEvent) -> Unit
+    navigate: (LoginEvent) -> Unit,
+    paddingValues: PaddingValues
 ) {
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 32.dp),
+            .padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(64.dp, Alignment.Bottom)
     ) {
@@ -80,7 +84,7 @@ internal fun LoginScreen(
                 modifier = Modifier
                     .size(160.dp, 80.dp)
             ) {
-                Text(text = "SIGN UP",)
+                Text(text = "SIGN UP")
             }
 
             Button(
@@ -90,7 +94,7 @@ internal fun LoginScreen(
                 modifier = Modifier
                     .size(160.dp, 80.dp)
             ) {
-                Text(text = "SIGN IN",)
+                Text(text = "SIGN IN")
             }
         }
     }
@@ -101,6 +105,11 @@ internal fun LoginScreen(
 @Composable
 fun PreviewAppBar() {
     MainichiTheme() {
-        LoginScreen(state = LoginUiState(loading = false), {}, {})
+        LoginScreen(
+            state = LoginUiState(loading = false),
+            onAnonymousLogin = {},
+            navigate = {},
+            paddingValues = PaddingValues()
+        )
     }
 }

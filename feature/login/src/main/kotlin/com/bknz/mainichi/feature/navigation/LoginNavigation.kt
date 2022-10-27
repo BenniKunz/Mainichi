@@ -2,6 +2,7 @@ package com.bknz.mainichi.feature.navigation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -28,7 +29,8 @@ object SignUpDestination : MainichiDestinationNavigation {
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.loginGraph(
-    onNavigate: (String) -> Unit
+    onNavigate: (String) -> Unit,
+    paddingValues: PaddingValues
 ) {
 
     navigation(
@@ -41,7 +43,9 @@ fun NavGraphBuilder.loginGraph(
                 viewModel = hiltViewModel(),
                 onNavigate = { route ->
                     onNavigate(route)
-                })
+                },
+                paddingValues = paddingValues
+            )
         }
 
         composable(route = SignInDestination.route) {

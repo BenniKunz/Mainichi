@@ -11,6 +11,7 @@ import com.bknz.mainichi.data.AssetRepository
 import com.bknz.mainichi.data.UserRepository
 import com.bknz.mainichi.data.database.dao.FavoriteAssetDao
 import com.bknz.mainichi.feature.crypto.overview.CryptoUiState.Content
+import com.bknz.mainichi.feature.crypto.paging.CryptoPagingSourceFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -21,17 +22,19 @@ import javax.inject.Inject
 class CryptoScreenViewModel @Inject constructor(
     private val assetRepo: AssetRepository,
     private val userRepository: UserRepository,
-    private val cryptoAPI: CryptoAPI,
-    private val favoriteAssetDao: FavoriteAssetDao
+    private val pagingSourceFactory: CryptoPagingSourceFactory
 ) : ViewModel() {
 
     private val filter = MutableStateFlow("")
 
+    private val refreshCount = MutableStateFlow(0)
+
     val state =
         combine(
             flow = userRepository.userData,
-            flow2 = filter
-        ) { userData, filter ->
+            flow2 = filter,
+            flow3 = refreshCount
+        ) { userData, filter, refreshCount ->
 
             Content(
                 userName = userData.name,
@@ -41,11 +44,7 @@ class CryptoScreenViewModel @Inject constructor(
                         enablePlaceholders = false
                     ),
                     pagingSourceFactory = {
-                        CryptoPagingSource(
-                            cryptoAPI = cryptoAPI,
-                            filter = filter.takeUnless { filter.isEmpty() },
-                            favoriteAssetDao = favoriteAssetDao
-                        )
+                        pagingSourceFactory.create(filter = filter.takeUnless { filter.isEmpty() })
                     }
                 ).flow.cachedIn(scope = viewModelScope)
             )
@@ -144,6 +143,9 @@ class CryptoScreenViewModel @Inject constructor(
 
     private suspend fun updateData() {
 
+        refreshCount.update {
+            it + 1
+        }
 //        _uiState.update { uiState ->
 //            uiState.copy(isRefreshing = true)
 //        }

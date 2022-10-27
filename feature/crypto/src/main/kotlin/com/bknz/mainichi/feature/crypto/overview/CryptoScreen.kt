@@ -41,6 +41,7 @@ import kotlinx.coroutines.launch
 internal fun CryptoScreen(
     viewModel: CryptoScreenViewModel,
     onNavigate: (CryptoEffect) -> Unit,
+    paddingValues: PaddingValues
 ) {
     val state = viewModel.state.collectAsState().value
 
@@ -58,7 +59,9 @@ internal fun CryptoScreen(
             CryptoScreen(
                 state = state,
                 assets = state.pager.collectAsLazyPagingItems(),
-                onViewModelEvent = { event -> viewModel.setEvent(event) })
+                onViewModelEvent = { event -> viewModel.setEvent(event) },
+                paddingValues = paddingValues
+            )
 
         }
         Loading -> CircularProgressIndicator()
@@ -70,7 +73,8 @@ internal fun CryptoScreen(
 internal fun CryptoScreen(
     state: Content,
     assets: LazyPagingItems<Asset>,
-    onViewModelEvent: (CryptoEvent) -> Unit
+    onViewModelEvent: (CryptoEvent) -> Unit,
+    paddingValues: PaddingValues
 ) {
 
     val listState = rememberLazyListState()
@@ -80,26 +84,24 @@ internal fun CryptoScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = stringResource(id = R.string.app_name) + " Hello ${state.userName}",
-                        color = MaterialTheme.colors.primary
-                    )
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = stringResource(id = R.string.app_name),
+                            color = MaterialTheme.colors.primary,
+                            style = MaterialTheme.typography.h5
+                        )
+
+                        Text(
+                            text = "Hello Benni", //${state.userName}",
+                            color = MaterialTheme.colors.onBackground,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
+
                 },
                 backgroundColor = MaterialTheme.colors.background,
                 contentColor = MaterialTheme.colors.primary,
-                navigationIcon = {
-
-                    IconButton(onClick = {
-                        onViewModelEvent(CryptoEvent.NavigateToMenu)
-                    }) {
-
-                        Icon(
-                            imageVector = Icons.Default.Menu,
-                            contentDescription = "Open menu",
-                            tint = MaterialTheme.colors.onBackground
-                        )
-                    }
-                },
                 actions = {
                     IconButton(onClick = {
                         onViewModelEvent(CryptoEvent.NavigateToSettingsScreen)
@@ -112,27 +114,17 @@ internal fun CryptoScreen(
                     }
                 }
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { scope.launch { listState.scrollToItem(0) } },
-                backgroundColor = MaterialTheme.colors.primary,
-                modifier = Modifier.padding(16.dp)
-            ) {
-                androidx.compose.material3.Icon(
-                    imageVector = Icons.Default.MoveUp,
-                    contentDescription = null
-                )
-            }
         }
 
-    ) {
+    ) { localPadding ->
 
         CryptoContent(
             assets = assets,
             listState = listState,
             isRefreshing = false,
-            onViewModelEvent = onViewModelEvent
+            onViewModelEvent = onViewModelEvent,
+            paddingValues = paddingValues
+
         )
     }
 }
@@ -143,6 +135,7 @@ internal fun CryptoContent(
     listState: LazyListState,
     isRefreshing: Boolean,
     onViewModelEvent: (CryptoEvent) -> Unit,
+    paddingValues: PaddingValues
 ) {
     val favoriteAssets = assets.itemSnapshotList.items.filter { asset ->
         asset.isFavorite.collectAsState(
@@ -150,7 +143,11 @@ internal fun CryptoContent(
         ).value
     }
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(paddingValues)
+    ) {
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -169,7 +166,7 @@ internal fun CryptoContent(
         SwipeRefresh(
             state = rememberSwipeRefreshState(isRefreshing),
             onRefresh = {
-//                onViewModelEvent(CryptoEvent.UpdateRequested)
+                onViewModelEvent(CryptoEvent.UpdateRequested)
             },
         ) {
             LazyColumn(
@@ -333,7 +330,7 @@ private fun AssetRow(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                val isFavorite = coin.isFavorite.collectAsState(initial = false).value
+                val isFavorite by coin.isFavorite.collectAsState(initial = false)
                 IconButton(onClick = {
                     onViewModelEvent(
                         CryptoEvent.FavoriteClicked(

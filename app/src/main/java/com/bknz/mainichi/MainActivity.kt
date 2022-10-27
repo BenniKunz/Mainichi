@@ -2,6 +2,7 @@ package com.bknz.mainichi
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -10,6 +11,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.CurrencyBitcoin
+import androidx.compose.material.icons.filled.CurrencyExchange
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -17,8 +22,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.bknz.mainichi.core.designsystem.MainichiTheme
 import com.bknz.mainichi.core.model.Theme
@@ -59,21 +66,72 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
 
+                    val navController = rememberNavController()
+
                     Scaffold(
                         modifier = Modifier,
                         contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
                         bottomBar = {
-                            NavigationBar() {
-                                NavigationBarItem(
-                                    selected = false,
-                                    onClick = {  },
-                                    icon = { Icon(Icons.Default.Create, contentDescription = null) }
+                            BottomNavigation() {
+
+                                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                                val currentRoute = navBackStackEntry?.destination?.route
+
+                                BottomNavigationItem(
+                                    selected = currentRoute == "crypto",
+                                    onClick = { navController.navigate(route = "crypto") },
+                                    icon = {
+                                        Icon(
+                                            imageVector = when (currentRoute == "crypto") {
+                                                true -> Icons.Default.CurrencyBitcoin
+                                                else -> Icons.Default.CurrencyExchange
+                                            },
+                                            tint = when (currentRoute == "crypto") {
+                                                true -> MaterialTheme.colors.primary
+                                                else -> MaterialTheme.colors.onSecondary
+                                            },
+                                            contentDescription = null
+                                        )
+                                    },
+                                    label = {
+                                        Text(
+                                            text = "Crypto",
+                                            style = MaterialTheme.typography.caption,
+                                            color = when (currentRoute == "crypto") {
+                                                true -> MaterialTheme.colors.onBackground
+                                                else -> MaterialTheme.colors.onSecondary
+                                            }
+                                        )
+                                    }
+                                )
+                                BottomNavigationItem(
+                                    selected = currentRoute == "news",
+                                    onClick = { navController.navigate(route = "news") },
+                                    icon = {
+                                        Icon(
+                                            Icons.Default.Newspaper,
+                                            tint = when (currentRoute == "news") {
+                                                true -> MaterialTheme.colors.primary
+                                                else -> MaterialTheme.colors.onSecondary
+                                            },
+                                            contentDescription = null
+                                        )
+                                    },
+                                    label = {
+                                        Text(
+                                            text = "News",
+                                            style = MaterialTheme.typography.caption,
+                                            color = when (currentRoute == "news") {
+                                                true -> MaterialTheme.colors.onPrimary
+                                                else -> MaterialTheme.colors.onSecondary
+                                            }
+                                        )
+                                    }
                                 )
                             }
+
                         }
                     ) { paddingValues ->
-
-                        val navController = rememberNavController()
 
                         NavHost(
                             navController = navController,
@@ -81,17 +139,11 @@ class MainActivity : ComponentActivity() {
 
                         ) {
 
-//                        composable(route = "splash") {
-//                            com.example.mainichi.ui.splashScreen.SplashScreen(
-//                                navController = navController,
-//                                launchScreen = state.launchScreen
-//                            )
-//                        }
-
                             loginGraph(
                                 onNavigate = { route ->
                                     navController.navigate(route = route)
-                                }
+                                },
+                                paddingValues = paddingValues
                             )
 
                             newsGraph(
@@ -103,7 +155,8 @@ class MainActivity : ComponentActivity() {
                             cryptoGraph(
                                 onNavigate = { route ->
                                     navController.navigate(route = route)
-                                }
+                                },
+                                paddingValues = paddingValues
                             )
 
                             coinGraph(
@@ -141,8 +194,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-
-                    }
+                }
             }
         }
     }
